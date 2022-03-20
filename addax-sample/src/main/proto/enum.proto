@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+option java_package = "com.github.jitwxs.addax.sample.message";
+option java_outer_classname = "EnumProto";
+
+enum SexEnum {
+  DEFAULT_SEX = 0;
+  MALE = 1;
+  FEMALE = 2;
+}

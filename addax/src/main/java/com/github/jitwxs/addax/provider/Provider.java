@@ -1,5 +1,6 @@
 package com.github.jitwxs.addax.provider;
 
+import com.github.jitwxs.addax.common.exception.AddaxException;
 import com.github.jitwxs.addax.common.exception.AddaxLoaderException;
 import com.github.jitwxs.addax.common.util.ReflectionUtils;
 
@@ -44,12 +45,7 @@ public abstract class Provider<T> {
     }
 
     public T delegate(final Class<?>... args) {
-        final T instance = this.instanceMap.get(uniqueKey(args));
-        if (instance == null) {
-            throw new AddaxLoaderException(String.format("Not Exist Instance In %s, params: %s", getClass(), Arrays.toString(args)));
-        }
-
-        return instance;
+        return this.instanceMap.get(uniqueKey(args));
     }
 
     /**

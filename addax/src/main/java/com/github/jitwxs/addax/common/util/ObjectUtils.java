@@ -1,7 +1,10 @@
 package com.github.jitwxs.addax.common.util;
 
+import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.reflection.ReflectionException;
 import org.apache.ibatis.reflection.factory.DefaultObjectFactory;
 import org.apache.ibatis.reflection.factory.ObjectFactory;
+import org.powermock.reflect.Whitebox;
 
 import java.util.List;
 
@@ -9,6 +12,7 @@ import java.util.List;
  * @author jitwxs@foxmail.com
  * @since 2022-03-19 18:38
  */
+@Slf4j
 public class ObjectUtils {
     private static final ObjectFactory delegate = new DefaultObjectFactory();
 
@@ -18,7 +22,12 @@ public class ObjectUtils {
      * @param type 类型
      */
     public static <T> T create(Class<T> type) {
-        return delegate.create(type);
+        try {
+            return delegate.create(type);
+        } catch (ReflectionException e) {
+            log.error("ObjectUtils create error, type: {}", type, e);
+            return null;
+        }
     }
 
     /**

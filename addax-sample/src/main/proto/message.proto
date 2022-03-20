@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+option java_package = "com.github.jitwxs.addax.sample.message";
+option java_outer_classname = "MessageProto";
+
+message OrderEvaluate {
+  string id = 1;
+  bool hasOpen = 2;
+  string userId = 3;
+  string userSource = 4;
+  string userEvaluate = 5;
+  int64 userDate = 6;
+  string courierId = 7;
+  string courierScore = 8;
+  string courierEvaluate = 9;
+  int32 version = 10;
+  int64 courierDate = 11;
+  int64 updateDate = 12;
+}

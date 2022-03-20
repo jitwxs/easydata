@@ -2,10 +2,14 @@ package com.github.jitwxs.addax.common.cache;
 
 import com.github.jitwxs.addax.common.exception.AddaxException;
 import lombok.Getter;
+import org.powermock.reflect.Whitebox;
+import org.powermock.reflect.exceptions.FieldNotFoundException;
 
+import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,6 +31,10 @@ public class PropertyCache {
         return classPropertyMap.computeIfAbsent(clazz, i -> new ClassProperty(clazz));
     }
 
+    public static Field tryGetField(final Class<?> clazz, final String fieldName) {
+        return tryGet(clazz).getFieldMap().get(fieldName);
+    }
+
     @Getter
     public static class ClassProperty {
         private final Map<String, PropertyDescriptor> all = new HashMap<>();
@@ -37,12 +45,22 @@ public class PropertyCache {
 
         private final Map<String, PropertyDescriptor> readAndWriteAble = new HashMap<>();
 
+        private final Map<String, Field> fieldMap = new HashMap<>();
+
         private final BiConsumer<PropertyDescriptor, Map<String, PropertyDescriptor>> put = (e, map) -> map.put(e.getName(), e);
 
         public ClassProperty(Class<?> clazz) {
             try {
-                for (PropertyDescriptor descriptor : Introspector.getBeanInfo(clazz, Object.class).getPropertyDescriptors()) {
+                final BeanInfo beanInfo = clazz.isInterface() ? Introspector.getBeanInfo(clazz) : Introspector.getBeanInfo(clazz, Object.class);
+
+                for (PropertyDescriptor descriptor : beanInfo.getPropertyDescriptors()) {
                     put.accept(descriptor, all);
+
+                    try {
+                        fieldMap.put(descriptor.getName(), Whitebox.getField(clazz, descriptor.getName()));
+                    } catch (FieldNotFoundException ignored) {
+                    }
+
                     final boolean isReadable = descriptor.getReadMethod() != null, isWriteable = descriptor.getWriteMethod() != null;
 
                     if (isReadable) {

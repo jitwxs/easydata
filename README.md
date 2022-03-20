@@ -25,7 +25,7 @@
 
 (1) 公共模块 Publiv Module
 
-- [x] 所有主要模块支持 SPI 的横向扩展
+- [x] 所有模块支持 SPI 扩展
 
 (2) 数据加载模块 Data Loader Module 
 
@@ -37,16 +37,16 @@
 (3) 数据转换模块 Data Convert Module
 
 - [x] 支持全部基本数据类型与 String 的转换
-- [ ] 支持常用原生数据类型与 String 的转换
+- [x] 支持常用原生数据类型与 String 的转换
 - [x] 支持复杂对象与 String 的转换
 - [x] 对 protobuf 对象的支持
 
 (4) 数据生成模块 Data Mock Module
 
-- [ ] 支持基本数据类型的生成
-- [ ] 支持复杂对象的生成，自动填充属性
-- [ ] 支持对集合、Map 的支持
-- [ ] 对 protobuf 对象的支持
+- [x] 支持基本数据类型的生成
+- [x] 支持复杂对象的生成，自动填充属性
+- [x] 支持对集合、Map 的支持
+- [x] 对 protobuf 对象的支持
 
 (5) 数据验证模块 Data Verify Module
 
@@ -60,3 +60,10 @@
 - [ ] 支持校验 ResultMap 和查询字段是否完全匹配
 - [ ] 支持校验 ResultMap 与对应 POJO 实体字段是否完全匹配
 - [ ] 支持简单的 SQL 语句静态校验
+
+### 项目参考
+
+Addax 源码中，参考了以下项目的代码:
+
+- https://github.com/jsonzou/jmockdata
+- https://github.com/binarywang/java-testdata-generator
