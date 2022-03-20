@@ -21,11 +21,17 @@ public abstract class Provider<T> {
      */
     protected abstract List<T> loadNative();
 
+    /**
+     * 根据实例，获取唯一键
+     */
     protected abstract Object uniqueKeyByInstance(T instance);
 
+    /**
+     * 根据参数，生成唯一键
+     */
     protected abstract Object uniqueKey(Class<?>... args);
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "ConstantConditions"})
     public Provider() {
         this.instanceMap = new HashMap<>();
 

@@ -20,6 +20,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
+ * 提供 {@link IConvert} 统一获取门面
+ *
  * @author jitwxs@foxmail.com
  * @since 2022-03-19 20:36
  */

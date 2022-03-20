@@ -12,6 +12,7 @@ import java.util.Map;
  * @author jitwxs@foxmail.com
  * @since 2022-03-19 18:35
  */
+@SuppressWarnings("rawtypes")
 public class ProviderFactory {
     private static final Map<Class<? extends Provider>, Provider> providerMap = new HashMap<>();
 
@@ -29,6 +30,7 @@ public class ProviderFactory {
         });
     }
 
+    @SuppressWarnings("unchecked")
     public static <T extends Provider> T delegate(final Class<T> clazz) {
         final T provider = (T) providerMap.get(clazz);
         if (provider == null) {
