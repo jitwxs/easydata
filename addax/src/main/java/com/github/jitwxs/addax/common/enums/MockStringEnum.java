@@ -15,11 +15,31 @@ public enum MockStringEnum {
      */
     UUID,
     /**
-     * 随机长度的字符
+     * 随机长度的英语字符
      */
-    CHARACTER,
+    ENGLISH,
     /**
      * 随机长度的数字
      */
     NUMBER,
+    /**
+     * 邮箱
+     */
+    EMAIL,
+    /**
+     * 中国身份证号
+     */
+    CN_ID_CARD,
+    /**
+     * 中国手机号码
+     */
+    CN_TEL,
+    /**
+     * 中文名
+     */
+    CN_NAME,
+    /**
+     * 英文名
+     */
+    ENGLISH_NAME,
 }

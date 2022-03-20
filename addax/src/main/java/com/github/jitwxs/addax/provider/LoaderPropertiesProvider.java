@@ -12,7 +12,7 @@ import java.util.List;
  * @author jitwxs@foxmail.com
  * @since 2022-03-19 17:53
  */
-public class LoaderPropertiesProvider extends Provider<LoaderProperties> {
+public class LoaderPropertiesProvider extends Provider<LoaderProperties, Class<?>> {
 
     @Override
     protected List<LoaderProperties> loadNative() {

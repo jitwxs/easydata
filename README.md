@@ -23,7 +23,7 @@
 
 目前处于 Beta 阶段，待稳定后发布 Release 版本，暂定会实现的主要功能如下。
 
-(1) 公共模块 Publiv Module
+(1) 公共模块 Public Module
 
 - [x] 所有模块支持 SPI 扩展
 
@@ -47,6 +47,7 @@
 - [x] 支持复杂对象的生成，自动填充属性
 - [x] 支持对集合、Map 的支持
 - [x] 对 protobuf 对象的支持
+- [x] 支持个性化的数据生成【邮箱、身份证号、姓名等】
 
 (5) 数据验证模块 Data Verify Module
 

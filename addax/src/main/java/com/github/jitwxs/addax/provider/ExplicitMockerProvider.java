@@ -15,7 +15,7 @@ import java.util.List;
  * @author jitwxs@foxmail.com
  * @since 2022-03-20 13:22
  */
-public class ExplicitMockerProvider extends Provider<IMocker> {
+public class ExplicitMockerProvider extends Provider<IMocker, Class<?>> {
     @Override
     protected List<IMocker> loadNative() {
         final List<IMocker> resultList = new ArrayList<>();

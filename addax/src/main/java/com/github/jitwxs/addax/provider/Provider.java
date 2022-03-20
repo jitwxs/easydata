@@ -1,7 +1,5 @@
 package com.github.jitwxs.addax.provider;
 
-import com.github.jitwxs.addax.common.exception.AddaxException;
-import com.github.jitwxs.addax.common.exception.AddaxLoaderException;
 import com.github.jitwxs.addax.common.util.ReflectionUtils;
 
 import java.lang.reflect.Modifier;
@@ -14,7 +12,7 @@ import static org.apache.commons.collections4.CollectionUtils.emptyIfNull;
  * @author jitwxs@foxmail.com
  * @since 2022-03-19 17:54
  */
-public abstract class Provider<T> {
+public abstract class Provider<T, UK> {
     private final Map<Object, T> instanceMap;
 
     /**
@@ -30,7 +28,7 @@ public abstract class Provider<T> {
     /**
      * 根据参数，生成唯一键
      */
-    protected abstract Object uniqueKey(Class<?>... args);
+    protected abstract Object uniqueKey(UK... args);
 
     @SuppressWarnings({"unchecked", "ConstantConditions"})
     public Provider() {
@@ -44,7 +42,7 @@ public abstract class Provider<T> {
         addToMemory.accept(this.loadSpi(this.getClass().getClassLoader(), targetClazz));
     }
 
-    public T delegate(final Class<?>... args) {
+    public final T delegate(final UK... args) {
         return this.instanceMap.get(uniqueKey(args));
     }
 

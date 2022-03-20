@@ -25,7 +25,7 @@ import java.util.List;
  * @author jitwxs@foxmail.com
  * @since 2022-03-19 20:36
  */
-public class ConvertProvider extends Provider<IConvert> {
+public class ConvertProvider extends Provider<IConvert, Class<?>> {
     @Override
     protected List<IConvert> loadNative() {
         final List<IConvert> resultList = new ArrayList<>();
