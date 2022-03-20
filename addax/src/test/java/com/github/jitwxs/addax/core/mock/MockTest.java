@@ -146,6 +146,8 @@ public class MockTest {
         return Stream.of(
                 Arguments.of("普通集合", (Function<Integer, Object>) i -> Mock.run(new TypeKit<List<Integer>>() {
                 })),
+                Arguments.of("LinkedList", (Function<Integer, Object>) i -> Mock.run(new TypeKit<LinkedList<Double>>() {
+                })),
                 Arguments.of("数组集合", (Function<Integer, Object>) i -> Mock.run(new TypeKit<List<Integer[]>>() {
                 })),
                 Arguments.of("对象集合", (Function<Integer, Object>) i -> Mock.run(new TypeKit<List<MockConfig>>() {
