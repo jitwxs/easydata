@@ -1,0 +1,45 @@
+{
+  "_id": "623e89c4428d5dddb8ef0146",
+  "index": 0,
+  "guid": "5c1c6392-9867-4fdb-9a81-34560f4dc7f7",
+  "isActive": false,
+  "balance": "$2,807.44",
+  "picture": "http://placehold.it/32x32",
+  "age": 23,
+  "eyeColor": "green",
+  "name": "Harper Moran",
+  "gender": "male",
+  "company": "ULTRASURE",
+  "email": "harpermoran@ultrasure.com",
+  "phone": "+1 (980) 469-3459",
+  "address": "406 Cumberland Street, Starks, Connecticut, 8707",
+  "about": "Ea commodo magna nostrud laboris officia anim velit voluptate quis. Quis aute sunt laborum anim est ut tempor id nulla. Exercitation culpa sunt est aute et enim consequat eu Lorem elit aliqua ea. Qui laborum est dolore enim ea quis mollit dolor veniam est sit ut adipisicing. Laboris elit veniam commodo nisi occaecat voluptate quis voluptate enim id laborum. Est quis nisi qui culpa. Enim ut id velit officia labore mollit minim eiusmod ad cupidatat laboris reprehenderit eiusmod.\r\n",
+  "registered": "2018-04-05T03:04:09 -08:00",
+  "latitude": 41.826634,
+  "longitude": -114.574655,
+  "tags": [
+    "aute",
+    "ullamco",
+    "velit",
+    "est",
+    "excepteur",
+    "amet",
+    "id"
+  ],
+  "friends": [
+    {
+      "id": 0,
+      "name": "Amanda Graves"
+    },
+    {
+      "id": 1,
+      "name": "Kristen Hoover"
+    },
+    {
+      "id": 2,
+      "name": "Hogan Head"
+    }
+  ],
+  "greeting": "Hello, Harper Moran! You have 3 unread messages.",
+  "favoriteFruit": "apple"
+}

@@ -11,6 +11,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -43,41 +44,54 @@ public class LoadingUtils {
      * load json content
      *
      * @param path file path
-     * @return file content with pair <title_line, data_lines>
      */
     public static List<String> loadJson(final String path, final Charset charset) throws IOException {
-        final List<String> resultList = new ArrayList<>();
-
         try (final InputStream inputStream = CLAZZ.getResourceAsStream(path)) {
             if (inputStream == null) {
                 throw new IOException("InputStream Not Exist");
             }
 
             final String string = IOUtils.toString(inputStream, charset);
+
+            // single one
+            if (string.startsWith("{")) {
+                return Collections.singletonList(string);
+            }
+
+            final List<String> resultList = new ArrayList<>();
             final char[] chars = string.toCharArray();
+            final StringBuilder sb = new StringBuilder();
 
-            int brackets = 0, startIndex = 0;
+            int brace = 0;
+            boolean isIncremented = false;
 
-            for (int i = 0; i < chars.length; i++) {
-                final char c = chars[i];
+            for (final char c : chars) {
                 if (c == '{') {
-                    brackets++;
+                    ++brace;
+                    isIncremented = true;
                 } else if (c == '}') {
-                    brackets--;
+                    --brace;
                 }
+                sb.append(c);
 
-                if (brackets < 0) {
-                    // illegal data, reset
-                    brackets = 0;
-                    startIndex = i;
-                } else if (brackets == 0) {
-                    final String subJson = string.substring(startIndex, i + 1);
-                    resultList.add(subJson);
+                if (brace < 0) {
+                    throw new IOException("Illegal JSON Content");
+                }
+                if (brace == 0) {
+                    if (isIncremented) {
+                        resultList.add(sb.toString());
+                    }
+                    sb.setLength(0);
+                    isIncremented = false;
                 }
             }
-        }
 
-        return resultList;
+            if (brace != 0 || sb.length() > 0) {
+                throw new IOException("Illegal JSON Content");
+            }
+
+            return resultList;
+        }
     }
 
     public static List<String[]> loadSql(MySQLConnection mySQLConnection, String sql) throws ClassNotFoundException, SQLException {

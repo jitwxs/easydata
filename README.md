@@ -30,7 +30,7 @@
 (2) 数据加载模块 Data Loader Module 
 
 - [x] 支持本地 CSV 文件解析
-- [ ] 支持本地 JSON 文件解析
+- [x] 支持本地 JSON 文件解析
 - [x] 支持远程 SELECT SQL 语句执行结果
 - [ ] 支持本地 INSERT 文件解析
   

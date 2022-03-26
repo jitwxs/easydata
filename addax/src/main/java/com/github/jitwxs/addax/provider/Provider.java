@@ -13,7 +13,7 @@ import static org.apache.commons.collections4.CollectionUtils.emptyIfNull;
  * @since 2022-03-19 17:54
  */
 public abstract class Provider<T, UK> {
-    private final Map<Object, T> instanceMap;
+    private final Map<Object, T> instanceMap = new HashMap<>();
 
     /**
      * 加载原生实现
@@ -30,16 +30,14 @@ public abstract class Provider<T, UK> {
      */
     protected abstract Object uniqueKey(UK... args);
 
-    @SuppressWarnings({"unchecked", "ConstantConditions"})
+    protected final Consumer<Collection<T>> doRegister = instances ->
+            emptyIfNull(instances).stream().filter(Objects::nonNull).forEach(e -> this.instanceMap.put(this.uniqueKeyByInstance(e), e));
+
     public Provider() {
-        this.instanceMap = new HashMap<>();
-
         final Class<T> targetClazz = (Class<T>) ReflectionUtils.getGenericSuperClass(this.getClass())[0];
-        final Consumer<List<T>> addToMemory = instances ->
-                emptyIfNull(instances).stream().filter(Objects::nonNull).forEach(e -> this.instanceMap.put(this.uniqueKeyByInstance(e), e));
 
-        addToMemory.accept(this.loadNative());
-        addToMemory.accept(this.loadSpi(this.getClass().getClassLoader(), targetClazz));
+        doRegister.accept(this.loadNative());
+        doRegister.accept(this.loadSpi(this.getClass().getClassLoader(), targetClazz));
     }
 
     public final T delegate(final UK... args) {
@@ -49,7 +47,7 @@ public abstract class Provider<T, UK> {
     /**
      * 加载 SPI 实现
      */
-    private List<T> loadSpi(final ClassLoader classLoader, final Class<T> loadClass) {
+    protected List<T> loadSpi(final ClassLoader classLoader, final Class<T> loadClass) {
         final List<T> resultList = new ArrayList<>();
 
         for (T t : ServiceLoader.load(loadClass, classLoader)) {

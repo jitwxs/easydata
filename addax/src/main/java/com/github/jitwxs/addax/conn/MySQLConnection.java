@@ -1,11 +1,12 @@
 package com.github.jitwxs.addax.conn;
 
-import com.github.jitwxs.addax.core.loader.LoaderProperties;
-import com.github.jitwxs.addax.common.enums.DataTypeEnum;
+import com.github.jitwxs.addax.core.loader.LoadingSource;
+import com.github.jitwxs.addax.common.bean.MatrixBean;
+import com.github.jitwxs.addax.core.loader.MatrixLoadingSource;
 import com.github.jitwxs.addax.common.exception.AddaxLoaderException;
 import com.github.jitwxs.addax.common.util.LoadingUtils;
+import com.github.jitwxs.addax.core.loader.LoaderProperties;
 import lombok.Getter;
-import org.apache.commons.lang3.tuple.Pair;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -33,10 +34,10 @@ public class MySQLConnection implements IConnection {
     }
 
     @Override
-    public Optional<Pair<DataTypeEnum, List<String[]>>> loading(LoaderProperties properties) {
+    public Optional<LoadingSource<?>> loading(LoaderProperties properties) {
         try {
-            final List<String[]> list = LoadingUtils.loadSql(this, properties.url().getSqlConn());
-            return Optional.of(Pair.of(DataTypeEnum.MATRIX, list));
+            final List<String[]> list = LoadingUtils.loadSql(this, properties.getSqlUrl());
+            return Optional.of(new MatrixLoadingSource(properties, new MatrixBean(list)));
         } catch (ClassNotFoundException | SQLException e) {
             throw new AddaxLoaderException(e);
         }

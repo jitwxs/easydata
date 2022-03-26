@@ -1,7 +1,7 @@
 package com.github.jitwxs.addax.provider;
 
-import com.github.jitwxs.addax.core.loader.LoaderProperties;
 import com.github.jitwxs.addax.common.exception.AddaxLoaderException;
+import com.github.jitwxs.addax.core.loader.LoaderProperties;
 
 import java.util.Arrays;
 import java.util.List;
@@ -21,7 +21,7 @@ public class LoaderPropertiesProvider extends Provider<LoaderProperties, Class<?
 
     @Override
     protected Object uniqueKeyByInstance(LoaderProperties instance) {
-        return instance.clazz();
+        return instance.getClazz();
     }
 
     @Override
@@ -31,5 +31,18 @@ public class LoaderPropertiesProvider extends Provider<LoaderProperties, Class<?
         }
 
         return args[0];
+    }
+
+    @Override
+    protected List<LoaderProperties> loadSpi(ClassLoader classLoader, Class<LoaderProperties> loadClass) {
+        // not support spi register
+        return null;
+    }
+
+    public static void register(final LoaderProperties... properties) {
+        if (properties != null && properties.length > 0) {
+            final LoaderPropertiesProvider provider = ProviderFactory.delegate(LoaderPropertiesProvider.class);
+            provider.doRegister.accept(Arrays.asList(properties));
+        }
     }
 }

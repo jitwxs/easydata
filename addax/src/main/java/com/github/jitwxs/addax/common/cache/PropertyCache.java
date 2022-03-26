@@ -78,6 +78,10 @@ public class PropertyCache {
             } catch (IntrospectionException e) {
                 throw new AddaxException(String.format("Cache Class %s Property Failed", clazz), e);
             }
+
+            for (Field field : clazz.getDeclaredFields()) {
+                fieldMap.putIfAbsent(field.getName(), field);
+            }
         }
     }
 }

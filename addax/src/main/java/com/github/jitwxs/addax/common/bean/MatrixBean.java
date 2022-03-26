@@ -26,6 +26,10 @@ public class MatrixBean {
         this.dataList = lines.subList(1, lines.size());
     }
 
+    public String getTitle(final int index) {
+        return this.title[index];
+    }
+
     public static boolean ignore(final MatrixBean matrixBean) {
         return matrixBean == null || matrixBean == FALLBACK_BEAN;
     }

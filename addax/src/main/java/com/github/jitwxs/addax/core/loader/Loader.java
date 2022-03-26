@@ -1,20 +1,15 @@
 package com.github.jitwxs.addax.core.loader;
 
-import com.github.jitwxs.addax.common.bean.MatrixBean;
-import com.github.jitwxs.addax.common.enums.DataTypeEnum;
 import com.github.jitwxs.addax.common.exception.AddaxLoaderException;
-import com.github.jitwxs.addax.common.util.DataConvertUtils;
 import com.github.jitwxs.addax.conn.IConnection;
 import com.github.jitwxs.addax.provider.LoaderPropertiesProvider;
 import com.github.jitwxs.addax.provider.ProviderFactory;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.tuple.Pair;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+import lombok.NonNull;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-
-import static org.apache.commons.collections4.CollectionUtils.emptyIfNull;
 
 /**
  * 数据加载主类
@@ -29,27 +24,35 @@ public class Loader {
         this.connection = connection;
     }
 
-    public <T> List<T> loading(final Class<T> types) {
+    public <T> List<T> loading(@NonNull final Class<T> types) {
         final LoaderPropertiesProvider provider = ProviderFactory.delegate(LoaderPropertiesProvider.class);
 
         final LoaderProperties properties = provider.delegate(types);
-
-        final Optional<Pair<DataTypeEnum, List<String[]>>> data = this.connection.loading(properties);
-        if (!data.isPresent()) {
-            return null;
+        if (properties == null) {
+            throw new AddaxLoaderException("Not Match LoaderProperties For: " + types);
         }
 
-        final DataTypeEnum dataTypeEnum = data.get().getLeft();
-        final List<String[]> dataList = data.get().getRight();
-        final Collection<Pair<String, String>> extraFieldMappings = emptyIfNull(properties.extraFieldMappings());
+        return loading(types, properties);
+    }
 
-        switch (dataTypeEnum) {
-            case MATRIX:
-                return DataConvertUtils.matrixToList(new MatrixBean(dataList), types, extraFieldMappings);
-            case JSON:
-                return DataConvertUtils.jsonToList(dataList, types, extraFieldMappings);
-            default:
-                throw new AddaxLoaderException(String.format("Not Support Loader %s Data", dataTypeEnum));
+    public <T> List<T> loading(@NonNull final Class<T> types, @NonNull final LoaderProperties properties) {
+        final Optional<LoadingSource<?>> data = this.connection.loading(properties);
+
+        final BiMap<String, String> extraFiledMap = this.initialExtraFields(properties);
+
+        return data.map(loadingSource -> loadingSource.toBean(types, extraFiledMap)).orElse(null);
+    }
+
+    private BiMap<String, String> initialExtraFields(final LoaderProperties properties) {
+        final BiMap<String, String> extraFiledMap = HashBiMap.create();
+
+        final String[] fields = properties.getExtraFields();
+        if (fields != null) {
+            for (int i = 0; i < fields.length; i += 2) {
+                extraFiledMap.put(fields[i], fields[i + 1]);
+            }
         }
+
+        return extraFiledMap;
     }
 }

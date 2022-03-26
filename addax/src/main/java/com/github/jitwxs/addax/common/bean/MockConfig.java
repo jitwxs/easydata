@@ -36,7 +36,7 @@ public class MockConfig {
 
     private int[] sizeRange = {1, 5};
 
-    private MockStringEnum stringEnum = MockStringEnum.UUID;
+    private MockStringEnum stringEnum = MockStringEnum.ENGLISH;
 
     private Map<String, Type> typeVariableCache = new HashMap<>();
 

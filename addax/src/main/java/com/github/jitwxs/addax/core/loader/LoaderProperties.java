@@ -1,27 +1,54 @@
 package com.github.jitwxs.addax.core.loader;
 
-import com.github.jitwxs.addax.common.bean.LoaderPropertiesUrl;
-import org.apache.commons.lang3.tuple.Pair;
-
-import java.util.List;
+import lombok.*;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author jitwxs@foxmail.com
  * @since 2022-03-19 17:44
  */
-public interface LoaderProperties {
+@Getter
+@Builder
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+public class LoaderProperties {
     /**
      * 加载类
      */
-    Class<?> clazz();
+    private Class<?> clazz;
 
-    /**
-     * 查询路径
-     */
-    LoaderPropertiesUrl url();
+    private String fileUrl;
+
+    private String sqlUrl;
 
     /**
      * 额外指定的字段映射
      */
-    List<Pair<String, String>> extraFieldMappings();
+    private String[] extraFields;
+
+    public static LoaderPropertiesBuilder builder() {
+        return new LoaderPropertiesSelfBuilder();
+    }
+
+    static class LoaderPropertiesSelfBuilder extends LoaderPropertiesBuilder {
+        @Override
+        public LoaderProperties build() {
+            final LoaderProperties properties = super.build();
+
+            if (properties.getClazz() == null) {
+                throw new IllegalArgumentException("params clazz must define");
+            }
+
+            if (StringUtils.isAllBlank(properties.getSqlUrl(), properties.getFileUrl())) {
+                throw new IllegalArgumentException("params url must define");
+            }
+
+            final String[] extraFields = properties.getExtraFields();
+            if (extraFields != null && extraFields.length % 2 != 0) {
+                throw new IllegalArgumentException("params extraFields must configuration in pairs");
+            }
+
+            return properties;
+        }
+    }
 }
