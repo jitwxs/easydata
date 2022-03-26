@@ -1,7 +1,3 @@
-CREATE DATABASE IF NOT EXISTS express default charset utf8mb4 COLLATE utf8mb4_general_ci;
-
-USE express;
-
 -- ----------------------------
 -- Table structure for order_evaluate
 -- ----------------------------
@@ -25,6 +21,6 @@ CREATE TABLE `order_evaluate`  (
 -- ----------------------------
 -- Records of order_evaluate
 -- ----------------------------
-BEGIN;
-INSERT INTO `order_evaluate` VALUES ('1120376407025811458', 0, '1', 9.500, '满意', '2019-05-04 12:57:26', 'f10960e7392847a2c691ad066e2a87c4', 7.000, '可以的', 0, '2019-05-04 12:57:12', '2019-05-04 12:57:26'), ('1120377206619549698', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, '2019-05-04 12:57:05' ), ( '1120377582852812802', 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, '2019-05-04 12:57:05' ), ( '1120378178322362370', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, '2019-05-04 12:57:05'), ('1120378688504975362', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, '2019-05-04 12:57:05'), ('1120379705921404930', 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, '2019-05-04 12:57:20'), ('1121054404204625921', 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, '2019-05-04 12:57:05'), ('1124573211875373058', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, '2019-05-04 15:16:08');
-COMMIT;
+INSERT INTO `express`.`order_evaluate`(`id`, `has_open`, `user_id`, `user_score`, `user_evaluate`, `user_date`, `courier_id`, `courier_score`, `courier_evaluate`, `version`, `courier_date`, `update_date`)
+VALUES
+('1120376407025811458', 0, '1', 9.500, '满意', '2019-05-04 12:57:26', 'f10960e7392847a2c691ad066e2a87c4', 7.000, '可以的', 0, '2019-05-04 12:57:12', '2019-05-04 12:57:26');
