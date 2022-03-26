@@ -9,7 +9,7 @@ import com.github.jitwxs.addax.sample.utils.TimeUtils;
  * @since 2022-03-20 12:21
  */
 public class OrderEvaluateConvert {
-    public MessageProto.OrderEvaluate db2Proto(final OrderEvaluate orderEvaluate) {
+    public static MessageProto.OrderEvaluate db2Proto(final OrderEvaluate orderEvaluate) {
         return MessageProto.OrderEvaluate.newBuilder()
                 .setId(orderEvaluate.getId())
                 .setHasOpen(orderEvaluate.getHasOpen())
