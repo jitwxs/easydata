@@ -4,10 +4,12 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.github.jitwxs.addax.common.exception.AddaxConvertException;
 import com.github.jitwxs.addax.common.util.ObjectUtils;
+import com.github.jitwxs.addax.common.util.ProtobufUtils;
 import com.github.jitwxs.addax.common.util.ReflectionUtils;
 import com.github.jitwxs.addax.core.convert.IConvert;
 import com.github.jitwxs.addax.core.convert.explicit.ExplicitConvert;
 import com.github.jitwxs.addax.core.convert.implicit.ImplicitConvert;
+import com.google.protobuf.Message;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.reflections.Reflections;
@@ -118,8 +120,8 @@ public class ConvertProvider extends Provider<IConvert, Class<?>> {
             }
         }
 
-        // 3、使用 json 兜底
-        return JSONObject.parseObject(JSON.toJSONString(source), targetClass);
+        // 4、使用 json 兜底
+        return serialization(source, targetClass);
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -137,5 +139,20 @@ public class ConvertProvider extends Provider<IConvert, Class<?>> {
         }
 
         throw new AddaxConvertException("TypeConvertProvider DoConvert unknown: " + convert.getClass());
+    }
+
+    private static <T> T serialization(Object source, Class<T> targetClass) {
+        final String json;
+        if (source instanceof Message) {
+            json = ProtobufUtils.toJson((Message) source);
+        } else {
+            json = JSON.toJSONString(source);
+        }
+
+        if (Message.class.isAssignableFrom(targetClass)) {
+            return ProtobufUtils.toBean(json, targetClass);
+        } else {
+            return JSONObject.parseObject(json, targetClass);
+        }
     }
 }

@@ -57,4 +57,9 @@ public class MockConfig {
     public int nexSize() {
         return sizeRange[0] + RandomUtils.nextInt(0, sizeRange[1] - sizeRange[0] + 1);
     }
+
+    public MockConfig setStringEnum(final MockStringEnum stringEnum) {
+        this.stringEnum = stringEnum;
+        return this;
+    }
 }

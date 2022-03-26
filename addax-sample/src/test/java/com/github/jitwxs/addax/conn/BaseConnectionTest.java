@@ -1,5 +1,6 @@
 package com.github.jitwxs.addax.conn;
 
+import com.github.jitwxs.addax.LoggerStarter;
 import com.github.jitwxs.addax.common.bean.MatrixBean;
 import com.github.jitwxs.addax.common.enums.DataTypeEnum;
 import com.github.jitwxs.addax.core.loader.LoaderProperties;
@@ -14,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @author jitwxs@foxmail.com
  * @since 2022-03-26 16:12
  */
-public class BaseConnectionTest {
+public class BaseConnectionTest extends LoggerStarter {
     public void assert0(final IConnection connection, final LoaderProperties properties) {
         final Optional<LoadingSource<?>> optional = connection.loading(properties);
 

@@ -35,6 +35,11 @@
             <artifactId>fastjson</artifactId>
             <version>1.2.79</version>
         </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>3.22.0</version>
+        </dependency>
 
         <!-- 调用方重载依赖 -->
         <dependency>
@@ -77,6 +82,12 @@
         <dependency>
             <groupId>com.google.protobuf</groupId>
             <artifactId>protobuf-java</artifactId>
+            <version>3.19.4</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java-util</artifactId>
             <version>3.19.4</version>
             <optional>true</optional>
         </dependency>

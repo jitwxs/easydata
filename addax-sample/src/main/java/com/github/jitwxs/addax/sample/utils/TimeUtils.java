@@ -1,8 +1,8 @@
 package com.github.jitwxs.addax.sample.utils;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.util.Date;
 
 /**
@@ -11,7 +11,7 @@ import java.util.Date;
  */
 public class TimeUtils {
     public static long ldtToMs(final LocalDateTime localDateTime) {
-        return localDateTime.toInstant(ZoneOffset.of("+8")).getEpochSecond();
+        return Timestamp.valueOf(localDateTime).getTime();
     }
 
     public static LocalDateTime dateToLdt(final Date date) {

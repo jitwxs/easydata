@@ -7,7 +7,7 @@ message OrderEvaluate {
   string id = 1;
   bool hasOpen = 2;
   string userId = 3;
-  string userSource = 4;
+  string userScore = 4;
   string userEvaluate = 5;
   int64 userDate = 6;
   string courierId = 7;

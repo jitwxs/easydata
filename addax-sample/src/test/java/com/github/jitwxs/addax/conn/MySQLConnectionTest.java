@@ -2,7 +2,6 @@ package com.github.jitwxs.addax.conn;
 
 import com.github.jitwxs.addax.core.loader.LoaderProperties;
 import com.github.jitwxs.addax.sample.bean.OrderEvaluate;
-import org.apache.log4j.PropertyConfigurator;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.JdbcDatabaseContainer;
 import org.testcontainers.containers.MySQLContainer;
@@ -21,10 +20,6 @@ public class MySQLConnectionTest extends BaseConnectionTest {
     private static final JdbcDatabaseContainer container = new MySQLContainer()
             .withDatabaseName("express")
             .withInitScript("express.sql");
-
-    static {
-        PropertyConfigurator.configure(MySQLConnectionTest.class.getResourceAsStream("/log4j.properties"));
-    }
 
     @Test
     public void loading() {

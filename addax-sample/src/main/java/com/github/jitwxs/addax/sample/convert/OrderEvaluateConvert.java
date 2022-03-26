@@ -14,7 +14,7 @@ public class OrderEvaluateConvert {
                 .setId(orderEvaluate.getId())
                 .setHasOpen(orderEvaluate.getHasOpen())
                 .setUserId(orderEvaluate.getUserId())
-                .setUserSource(orderEvaluate.getUserScore().toPlainString())
+                .setUserScore(orderEvaluate.getUserScore().toPlainString())
                 .setUserEvaluate(orderEvaluate.getUserEvaluate())
                 .setUserDate(TimeUtils.ldtToMs(orderEvaluate.getUserDate()))
                 .setCourierId(orderEvaluate.getCourierId())

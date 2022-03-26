@@ -1,6 +1,9 @@
 package com.github.jitwxs.addax.sample.bean;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
@@ -9,6 +12,9 @@ import java.util.List;
  * @since 2022-03-26 11:49
  */
 @Data
+@Builder(toBuilder = true)
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserInfo {
     private String _id;
 
@@ -16,7 +22,7 @@ public class UserInfo {
 
     private String guid;
 
-    private boolean isActive;
+    private boolean active;
 
     private String balance;
 
@@ -53,4 +59,8 @@ public class UserInfo {
     private String greeting;
 
     private String favoriteFruit;
+
+    public UserInfo copy() {
+        return this.toBuilder().build();
+    }
 }
