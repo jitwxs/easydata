@@ -2,6 +2,7 @@ package com.github.jitwxs.addax.provider;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializeConfig;
 import com.github.jitwxs.addax.common.exception.AddaxConvertException;
 import com.github.jitwxs.addax.common.util.ObjectUtils;
 import com.github.jitwxs.addax.common.util.ProtobufUtils;

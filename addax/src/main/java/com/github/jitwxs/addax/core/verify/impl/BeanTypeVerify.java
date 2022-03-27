@@ -1,9 +1,12 @@
 package com.github.jitwxs.addax.core.verify.impl;
 
 import com.github.jitwxs.addax.common.enums.GatherEnum;
-import com.github.jitwxs.addax.core.verify.VerifyContext;
+import com.github.jitwxs.addax.core.verify.VerifyInstance;
+import com.github.jitwxs.addax.core.verify.comp.BaseComp;
 import com.github.jitwxs.addax.provider.ConvertProvider;
 import com.github.jitwxs.addax.provider.ProviderFactory;
+import org.apache.commons.lang3.ClassUtils;
+import org.assertj.core.api.ObjectAssert;
 import org.assertj.core.api.RecursiveComparisonAssert;
 
 import java.util.Collection;
@@ -20,11 +23,11 @@ import static org.assertj.core.api.Assertions.fail;
  * @since 2022-03-26 20:38
  */
 public class BeanTypeVerify {
-    public void check(Object a, Object b, VerifyContext context) {
+    public void check(Object a, Object b, VerifyInstance instance) {
         final Class<?> classA = a.getClass(), classB = b.getClass();
 
         // 类型强校验
-        if (!context.isIgnoreClassDiff()) {
+        if (!instance.isIgnoreClassDiff()) {
             assertThat(a).hasSameClassAs(b);
         }
 
@@ -41,22 +44,18 @@ public class BeanTypeVerify {
             final GatherEnum gatherEnum = gatherA.get();
             switch (gatherEnum) {
                 case COLLECTION:
-                    COLLECTION_TYPE_VERIFY.check((Collection) a, (Collection) b, context);
+                    COLLECTION_TYPE_VERIFY.check((Collection) a, (Collection) b, instance);
                     break;
                 case MAP:
-                    MAP_TYPE_VERIFY.check((Map) a, (Map) b, context);
+                    MAP_TYPE_VERIFY.check((Map) a, (Map) b, instance);
                     break;
             }
         } else {
-            this.doOneEquals(a, b, context);
+            this.doOneEquals(a, b, instance);
         }
     }
 
-    public Object alignmentClass(Class<?> target, Object value) {
-        return ProviderFactory.delegate(ConvertProvider.class).convert(value, target);
-    }
-
-    public void doOneEquals(Object a, Object b, VerifyContext context) {
+    public void doOneEquals(Object a, Object b, VerifyInstance instance) {
         final Class<?> target = a.getClass();
 
         // 类型统一
@@ -64,19 +63,64 @@ public class BeanTypeVerify {
             b = alignmentClass(target, b);
         }
 
-        // 比较
-        RecursiveComparisonAssert<?> assert0 = assertThat(a).usingRecursiveComparison();
+        if (isEnableRecursiveCompare(target)) {
+            RecursiveComparisonAssert<?> anAssert = assertThat(a).usingRecursiveComparison();
 
-        final String[] ignoreFields = context.toIgnoreFields();
-        if (ignoreFields.length > 0) {
-            assert0 = assert0.ignoringFields(ignoreFields);
+            final String[] ignoreFields = instance.toIgnoreFields();
+            if (ignoreFields.length > 0) {
+                anAssert = anAssert.ignoringFields(ignoreFields);
+            }
+
+            final String[] validateFields = instance.toValidateFields();
+            if (validateFields.length > 0) {
+                anAssert = anAssert.comparingOnlyFields(validateFields);
+            }
+
+            for (Map.Entry<Class<?>, BaseComp> entry : instance.getCompConfigs().entrySet()) {
+                anAssert = anAssert.withComparatorForType(entry.getValue(), entry.getKey());
+            }
+
+            anAssert.isEqualTo(b);
+        } else {
+            ObjectAssert<Object> anAssert = assertThat(a);
+
+            final BaseComp comp = instance.getCompConfigs().get(target);
+            if (comp != null) {
+                anAssert = anAssert.usingComparator(comp);
+            }
+
+            anAssert.isEqualTo(b);
+        }
+    }
+
+    /**
+     * 类型统一
+     */
+    private Object alignmentClass(Class<?> target, Object value) {
+        return ProviderFactory.delegate(ConvertProvider.class).convert(value, target);
+    }
+
+    /**
+     * 是否起用递归比较
+     *
+     * @param target 类型
+     */
+    public boolean isEnableRecursiveCompare(final Class<?> target) {
+        // 基本类型或包装类型，无需递归
+        if (ClassUtils.isPrimitiveOrWrapper(target)) {
+            return false;
         }
 
-        final String[] validateFields = context.toValidateFields();
-        if (validateFields.length > 0) {
-            assert0 = assert0.comparingOnlyFields(validateFields);
+        // 集合复杂类型，需要递归
+        if (GatherEnum.delegate(target).isPresent()) {
+            return true;
         }
 
-        assert0.isEqualTo(b);
+        // 其他 java 原生对象，无需递归
+        if (target.getPackage().getName().startsWith("java.")) {
+            return false;
+        }
+
+        return true;
     }
 }

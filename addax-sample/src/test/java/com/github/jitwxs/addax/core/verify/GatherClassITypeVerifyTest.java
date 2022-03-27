@@ -17,6 +17,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static com.github.jitwxs.addax.core.verify.Verify.go;
+
 /**
  * 相同复杂类型的 Equals 比较
  *
@@ -35,7 +37,7 @@ public class GatherClassITypeVerifyTest extends LoggerStarter {
             set2.add(i);
         });
 
-        new Verify(set1).asserts(set2);
+        go(set1, set2).run();
     }
 
     @Test
@@ -52,8 +54,8 @@ public class GatherClassITypeVerifyTest extends LoggerStarter {
             b.add(str);
         });
 
-        Assertions.assertThrows(AssertionError.class, () -> new Verify(a).asserts(b));
-        Assertions.assertDoesNotThrow(() -> new Verify(a).ignoreClassDiff().asserts(b));
+        Assertions.assertThrows(AssertionError.class, () -> go(a, b).run());
+        Assertions.assertDoesNotThrow(() -> go(a, b).ignoreClassDiff().run());
     }
 
     @Test
@@ -73,7 +75,7 @@ public class GatherClassITypeVerifyTest extends LoggerStarter {
         final List scenarios = Arrays.asList(enums1, enums2, enums3, enums4, enums5);
         scenarios.stream().flatMap(i -> scenarios.stream().peek(j -> {
             log.info("testEnumCollection {} Equals {}", i.getClass().getName(), j.getClass().getName());
-            new Verify(i).ignoreClassDiff().asserts(j);
+            go(i, j).ignoreClassDiff().run();
         })).collect(Collectors.toList());
     }
 
@@ -95,7 +97,7 @@ public class GatherClassITypeVerifyTest extends LoggerStarter {
         final List scenarios = Arrays.asList(map1, map2);
         scenarios.stream().flatMap(i -> scenarios.stream().peek(j -> {
             log.info("testObjectMap {} Equals {}", i.getClass().getName(), j.getClass().getName());
-            new Verify(i).ignoreClassDiff().asserts(j);
+            go(i, j).ignoreClassDiff().run();
         })).collect(Collectors.toList());
     }
 
@@ -110,7 +112,7 @@ public class GatherClassITypeVerifyTest extends LoggerStarter {
                 .email(Mock.run(String.class, new MockConfig().setStringEnum(MockStringEnum.EMAIL)))
                 .build());
 
-        new Verify(list1).ignoredFields("email").ignoreClassDiff().asserts(list2);
+        go(list1, list2).ignoredFields("email").ignoreClassDiff().run();
     }
 
     @Test
@@ -124,6 +126,6 @@ public class GatherClassITypeVerifyTest extends LoggerStarter {
         final HashMap<String, UserInfo> map2 = new HashMap<>();
         map2.put("1", userInfo.toBuilder().email(Mock.run(String.class, new MockConfig().setStringEnum(MockStringEnum.EMAIL))).build());
 
-        new Verify(map1).ignoredFields("email").asserts(map2);
+        go(map1, map2).ignoredFields("email").run();
     }
 }

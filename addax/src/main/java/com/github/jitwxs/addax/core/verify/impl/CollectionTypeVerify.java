@@ -1,7 +1,7 @@
 package com.github.jitwxs.addax.core.verify.impl;
 
 import com.github.jitwxs.addax.common.util.ObjectUtils;
-import com.github.jitwxs.addax.core.verify.VerifyContext;
+import com.github.jitwxs.addax.core.verify.VerifyInstance;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,13 +17,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @since 2022-03-26 20:37
  */
 public class CollectionTypeVerify {
-    public void check(Collection a, Collection b, VerifyContext context) {
+    public void check(Collection a, Collection b, VerifyInstance instance) {
         // 数量比较
         assertThat(a).hasSameSizeAs(b);
 
         // 类型统一
         if (a.getClass() != b.getClass()) {
-            // 如果有一个类型为 set，就使用 set 进行统一
+            // 如果存在 set，就使用 set 进行统一
             final boolean usingSet = Stream.of(a.getClass(), b.getClass()).anyMatch(Set.class::isAssignableFrom);
 
             final Class<?> clazz = usingSet ? HashSet.class : ArrayList.class;
@@ -32,10 +32,10 @@ public class CollectionTypeVerify {
             b = alignmentClass(clazz, b);
         }
 
-        BEAN_TYPE_VERIFY.doOneEquals(a, b, context);
+        BEAN_TYPE_VERIFY.doOneEquals(a, b, instance);
     }
 
-    public Collection alignmentClass(Class<?> target, Collection value) {
+    private Collection alignmentClass(Class<?> target, Collection value) {
         final Collection newValue = (Collection) ObjectUtils.create(target);
 
         newValue.addAll(value);

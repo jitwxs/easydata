@@ -1,5 +1,6 @@
 package com.github.jitwxs.addax.provider;
 
+import com.github.jitwxs.addax.AddaxEntrance;
 import com.github.jitwxs.addax.common.exception.AddaxException;
 import com.github.jitwxs.addax.common.util.ObjectUtils;
 import org.reflections.Reflections;
@@ -13,7 +14,7 @@ import java.util.Map;
  * @since 2022-03-19 18:35
  */
 @SuppressWarnings("rawtypes")
-public class ProviderFactory {
+public class ProviderFactory extends AddaxEntrance {
     private static final Map<Class<? extends Provider>, Provider> providerMap = new HashMap<>();
 
     static {

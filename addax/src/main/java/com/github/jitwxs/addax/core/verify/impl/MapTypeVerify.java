@@ -1,7 +1,7 @@
 package com.github.jitwxs.addax.core.verify.impl;
 
 import com.github.jitwxs.addax.common.util.ObjectUtils;
-import com.github.jitwxs.addax.core.verify.VerifyContext;
+import com.github.jitwxs.addax.core.verify.VerifyInstance;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @since 2022-03-26 20:37
  */
 public class MapTypeVerify {
-    public void check(Map a, Map b, VerifyContext context) {
+    public void check(Map a, Map b, VerifyInstance instance) {
         // 数量比较
         assertThat(a).hasSameSizeAs(b);
 
@@ -25,15 +25,15 @@ public class MapTypeVerify {
         }
 
         // 比较 keySet 是否相等
-        BEAN_TYPE_VERIFY.check(a.keySet(), b.keySet(), context);
+        BEAN_TYPE_VERIFY.check(a.keySet(), b.keySet(), instance);
 
         // 比较对应 value 是否相等
         for (Object key : a.keySet()) {
-            BEAN_TYPE_VERIFY.check(a.get(key), b.get(key), context);
+            BEAN_TYPE_VERIFY.check(a.get(key), b.get(key), instance);
         }
     }
 
-    public Map alignmentClass(Class<?> target, Map value) {
+    private Map alignmentClass(Class<?> target, Map value) {
         final Map newValue = (Map) ObjectUtils.create(target);
 
         newValue.putAll(value);

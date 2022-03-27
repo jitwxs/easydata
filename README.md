@@ -45,6 +45,7 @@
 - [x] 支持复杂对象的比较
 - [x] 支持对集合、Map 的对象支持
 - [x] 对 protobuf 对象的支持
+- [x] 支持精度误差
 
 (6) MyBatis Mapper Verify Module
 

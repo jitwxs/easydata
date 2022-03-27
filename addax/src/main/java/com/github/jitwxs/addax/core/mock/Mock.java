@@ -1,5 +1,6 @@
 package com.github.jitwxs.addax.core.mock;
 
+import com.github.jitwxs.addax.AddaxEntrance;
 import com.github.jitwxs.addax.common.bean.MockConfig;
 import com.github.jitwxs.addax.core.mock.mocker.BaseMocker;
 
@@ -7,7 +8,7 @@ import com.github.jitwxs.addax.core.mock.mocker.BaseMocker;
  * @author jitwxs@foxmail.com
  * @since 2022-03-20 12:44
  */
-public class Mock {
+public class Mock extends AddaxEntrance {
     /**
      * 模拟数据
      *

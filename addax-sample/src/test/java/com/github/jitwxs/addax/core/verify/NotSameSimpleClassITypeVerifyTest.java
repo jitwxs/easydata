@@ -8,6 +8,8 @@ import com.github.jitwxs.addax.sample.message.EnumProto;
 import com.github.jitwxs.addax.sample.message.MessageProto;
 import org.junit.jupiter.api.Test;
 
+import static com.github.jitwxs.addax.core.verify.Verify.go;
+
 /**
  * 不同简单类型的 Equals 比较
  *
@@ -17,7 +19,7 @@ import org.junit.jupiter.api.Test;
 public class NotSameSimpleClassITypeVerifyTest {
     @Test
     public void testCompareProtoAndBean1() {
-        new Verify(EnumProto.SexEnum.MALE).ignoreClassDiff().asserts(SexEnum.MALE);
+        go(EnumProto.SexEnum.MALE, SexEnum.MALE).ignoreClassDiff().run();
     }
 
     @Test
@@ -25,6 +27,6 @@ public class NotSameSimpleClassITypeVerifyTest {
         final OrderEvaluate evaluate = Mock.run(OrderEvaluate.class);
         final MessageProto.OrderEvaluate evaluate1 = OrderEvaluateConvert.db2Proto(evaluate);
 
-        new Verify(evaluate).ignoreClassDiff().asserts(evaluate1);
+        go(evaluate, evaluate1).ignoreClassDiff().run();
     }
 }
