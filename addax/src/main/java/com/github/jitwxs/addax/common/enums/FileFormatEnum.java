@@ -18,7 +18,10 @@ public enum FileFormatEnum {
     private final String suffix;
 
     /**
-     * 从路径中文件后缀解析出文件格式
+     * Analyze the file format from the path suffix
+     *
+     * @param path path name
+     * @return resolve format from path
      */
     public static FileFormatEnum delegate(final String path) {
         for (FileFormatEnum suffixEnum : values()) {

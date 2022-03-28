@@ -13,6 +13,9 @@ import com.github.jitwxs.addax.core.convert.IConvert;
 public interface ExplicitConvert<I, T> extends IConvert {
     /**
      * convert implement
+     *
+     * @param input 输入对象
+     * @return 经过转换后的输出对象
      */
     T convert(I input);
 }

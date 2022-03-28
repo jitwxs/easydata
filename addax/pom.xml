@@ -106,4 +106,35 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+<!--    <build>-->
+<!--        <plugins>-->
+<!--            <plugin>-->
+<!--                <groupId>org.projectlombok</groupId>-->
+<!--                <artifactId>lombok-maven-plugin</artifactId>-->
+<!--                <version>1.18.0.0</version>-->
+<!--                <configuration>-->
+<!--                    <sourceDirectory>${project.basedir}/src/main/java</sourceDirectory>-->
+<!--                    <outputDirectory>${delombok.output}</outputDirectory>-->
+<!--                    <addOutputDirectory>false</addOutputDirectory>-->
+<!--                </configuration>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <phase>generate-sources</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>delombok</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-javadoc-plugin</artifactId>-->
+<!--                <version>2.9</version>-->
+<!--                <configuration>-->
+<!--                    <sourcepath>${delombok.output}</sourcepath>-->
+<!--                </configuration>-->
+<!--            </plugin>-->
+<!--        </plugins>-->
+<!--    </build>-->
 </project>

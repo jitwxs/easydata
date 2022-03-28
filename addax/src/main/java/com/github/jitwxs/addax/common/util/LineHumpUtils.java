@@ -4,9 +4,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * line <--> hump
+ * Naming rules convert utils
  *
- * such as: lower_case <-> lowerCase
+ * - line, such as: `hello_world`
+ * - hump, such as: `helloWorld`
  *
  * @author jitwxs@foxmail.com
  * @since 2022-03-19 20:00
@@ -15,7 +16,7 @@ public class LineHumpUtils {
     private static final Pattern linePattern = Pattern.compile("_(\\w)"), humpPattern = Pattern.compile("[A-Z]");
 
     /**
-     * line --> hump
+     * convert line naming rules to hump
      *
      * @param str line type string, such as lower_case
      * @return hump type string, such as lowerCase
@@ -32,7 +33,7 @@ public class LineHumpUtils {
     }
 
     /**
-     * hump --> line
+     * convert hump naming rules to line
      *
      * @param str hump type string, such as lowerCase
      * @return line type string, such as lower_case

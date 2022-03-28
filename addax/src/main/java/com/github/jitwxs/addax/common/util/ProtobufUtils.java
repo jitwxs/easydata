@@ -18,10 +18,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Protobuf 序列化与反序列化
+ * Protobuf serialization and deserialization
  *
  * @author jitwxs
- * @date 2021-08-22 18:30
+ * @since 2021-08-22 18:30
  */
 public class ProtobufUtils {
     private static final JsonFormat.Printer printer;
@@ -42,6 +42,12 @@ public class ProtobufUtils {
                 .usingTypeRegistry(registry);
     }
 
+    /**
+     * convert protobuf message to json string
+     *
+     * @param message protobuf message
+     * @return json string
+     */
     public static String toJson(Message message) {
         if (message == null) {
             return "";
@@ -54,6 +60,12 @@ public class ProtobufUtils {
         }
     }
 
+    /**
+     * convert protobuf message map to json string
+     *
+     * @param messageMap (any key, protobuf message)
+     * @return json string
+     */
     public static String toJson(Map<?, ? extends Message> messageMap) {
         if (messageMap == null) {
             return "";
@@ -71,6 +83,12 @@ public class ProtobufUtils {
         return sb.toString();
     }
 
+    /**
+     * convert protobuf message list to json string
+     *
+     * @param messageList protobuf message list
+     * @return json string
+     */
     public static String toJson(List<? extends MessageOrBuilder> messageList) {
         if (messageList == null) {
             return "";
@@ -93,33 +111,39 @@ public class ProtobufUtils {
     }
 
     /**
-     * 反序列化 Message
+     * deserialization json to protobuf message
      *
-     * @param json {@link #toJson(Message)} 得到
+     * @param json   {@link #toJson(Message)} 得到
+     * @param target protobuf message class
+     * @param <T>    protobuf message generic
+     * @return protobuf message instance
      */
-    public static <T> T toBean(String json, Class<T> clazz) {
+    public static <T> T toBean(String json, Class<T> target) {
         if (StringUtils.isBlank(json)) {
             return null;
         }
 
         try {
-            final Method method = clazz.getMethod("newBuilder");
+            final Method method = target.getMethod("newBuilder");
             final Message.Builder builder = (Message.Builder) method.invoke(null);
 
             parser.merge(json, builder);
 
             return (T) builder.build();
         } catch (Exception e) {
-            throw new RuntimeException("ProtobufUtil toMessage happen error, class: " + clazz + ", json: " + json, e);
+            throw new RuntimeException("ProtobufUtil toMessage happen error, class: " + target + ", json: " + json, e);
         }
     }
 
     /**
-     * 反序列化 Message List
+     * deserialization Message List
      *
-     * @param json {@link #toJson(List)} 得到
+     * @param json   {@link #toJson(List)} 得到
+     * @param target protobuf message class
+     * @param <T>    protobuf message generic
+     * @return protobuf message instance list
      */
-    public static <T extends Message> List<T> toBeanList(String json, Class<T> clazz) {
+    public static <T extends Message> List<T> toBeanList(String json, Class<T> target) {
         if (StringUtils.isBlank(json)) {
             return Collections.emptyList();
         }
@@ -129,18 +153,23 @@ public class ProtobufUtils {
         final List<T> resultList = new ArrayList<>(jsonArray.size());
 
         for (int i = 0; i < jsonArray.size(); i++) {
-            resultList.add(toBean(jsonArray.getString(i), clazz));
+            resultList.add(toBean(jsonArray.getString(i), target));
         }
 
         return resultList;
     }
 
     /**
-     * 反序列化 Message Map
+     * deserialization Message Map
      *
-     * @param json {@link #toJson(Map)} 得到
+     * @param json       {@link #toJson(Map)} 得到
+     * @param keyClass   result map key class type
+     * @param <K>        result map key class generic
+     * @param valueClass result map value class type
+     * @param <V>        result map value class generic
+     * @return protobuf message instance map
      */
-    public static <K, V extends Message> Map<K, V> toBeanMap(String json, Class<K> keyClazz, Class<V> valueClazz) {
+    public static <K, V extends Message> Map<K, V> toBeanMap(String json, Class<K> keyClass, Class<V> valueClass) {
         if (StringUtils.isBlank(json)) {
             return Collections.emptyMap();
         }
@@ -149,8 +178,8 @@ public class ProtobufUtils {
 
         final Map<K, V> map = Maps.newHashMapWithExpectedSize(jsonObject.size());
         for (String key : jsonObject.keySet()) {
-            final K k = JSONObject.parseObject(key, keyClazz);
-            final V v = toBean(jsonObject.getString(key), valueClazz);
+            final K k = JSONObject.parseObject(key, keyClass);
+            final V v = toBean(jsonObject.getString(key), valueClass);
 
             map.put(k, v);
         }

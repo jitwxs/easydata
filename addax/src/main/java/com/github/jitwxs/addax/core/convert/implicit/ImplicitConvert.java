@@ -8,14 +8,15 @@ import com.github.jitwxs.addax.core.convert.IConvert;
  *
  * @param <I> specify input class type
  * @param <P> specify output's parent class type
- *
  * @author jitwxs@foxmail.com
  * @since 2022-03-19 20:35
  */
 public interface ImplicitConvert<I, P> extends IConvert {
     /**
-     * @param source input object
+     * @param source      input object
      * @param targetClass specify output class type
+     * @param <T>         target type to be converted
+     * @return convert result instance
      */
     <T> T convert(I source, Class<T> targetClass);
 

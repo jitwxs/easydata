@@ -34,7 +34,7 @@ public class LoaderPropertiesProvider extends Provider<LoaderProperties, Class<?
     }
 
     @Override
-    protected List<LoaderProperties> loadSpi(ClassLoader classLoader, Class<LoaderProperties> loadClass) {
+    protected List<LoaderProperties> loadSpi(ClassLoader classLoader, Class<LoaderProperties> target) {
         // not support spi register
         return null;
     }

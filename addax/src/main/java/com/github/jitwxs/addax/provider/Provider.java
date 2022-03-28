@@ -16,17 +16,25 @@ public abstract class Provider<T, UK> {
     private final Map<Object, T> instanceMap = new HashMap<>();
 
     /**
-     * 加载原生实现
+     * loading native implements
+     *
+     * @return native implements
      */
     protected abstract List<T> loadNative();
 
     /**
-     * 根据实例，获取唯一键
+     * Generate unique key according to instance
+     *
+     * @param instance instance
+     * @return unique key
      */
     protected abstract Object uniqueKeyByInstance(T instance);
 
     /**
-     * 根据参数，生成唯一键
+     * Generate unique key according to parameters
+     *
+     * @param args parameters
+     * @return unique key
      */
     protected abstract Object uniqueKey(UK... args);
 
@@ -40,17 +48,29 @@ public abstract class Provider<T, UK> {
         doRegister.accept(this.loadSpi(this.getClass().getClassLoader(), targetClazz));
     }
 
+    /**
+     * Route the instance object according to the parameter list
+     *
+     * @param args parameter list
+     * @return instance object
+     */
     public final T delegate(final UK... args) {
         return this.instanceMap.get(uniqueKey(args));
     }
 
     /**
-     * 加载 SPI 实现
+     * loading service provider interface implements
+     *
+     * @param classLoader The class loader to be used to load provider-configuration files
+     *                    and provider classes, or <tt>null</tt> if the system class
+     *                    loader (or, failing that, the bootstrap class loader) is to be used
+     * @param target      The interface or abstract class representing the service
+     * @return loading implement results
      */
-    protected List<T> loadSpi(final ClassLoader classLoader, final Class<T> loadClass) {
+    protected List<T> loadSpi(final ClassLoader classLoader, final Class<T> target) {
         final List<T> resultList = new ArrayList<>();
 
-        for (T t : ServiceLoader.load(loadClass, classLoader)) {
+        for (T t : ServiceLoader.load(target, classLoader)) {
             if (Modifier.isInterface(t.getClass().getModifiers())) {
                 continue;
             }

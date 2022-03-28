@@ -15,7 +15,7 @@
 - Mybatis Mapper XML，总是会出现新加了字段，而 resultMap 或者 columns sql 漏了这个字段的情况，有什么办法能确保不会忘记加呢。
 - Mybatis Mapper XML 中，写了个 SQL 语句，结果犯了个语法错误，导致开发时间又被浪费了一点，有什么办法能提早发现这个问题呢。
 
-如果有的话，是不是已经血压升高了，毕竟写需求就已经很痛苦了，还得做这些劳心却没有技术含量的重复工作。为了解决这些问题，`Addax` 应运而生。花点时间往下了解一下，欢迎 Star 或 Issue 来一起支持和改进它把。
+如果有的话，是不是已经血压升高了，毕竟写需求就已经很痛苦了，还得做这些劳心却没有技术含量的重复工作。为了解决这些问题，`Addax` 应运而生。花点时间往下了解一下，欢迎 Star 或 Issue 来一起支持和改进它吧。
 
 [![Stargazers over time](https://starchart.cc/jitwxs/addax.svg)](https://starchart.cc/jitwxs/addax) 
 

@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.reflection.ReflectionException;
 import org.apache.ibatis.reflection.factory.DefaultObjectFactory;
 import org.apache.ibatis.reflection.factory.ObjectFactory;
-import org.powermock.reflect.Whitebox;
 
 import java.util.List;
 
@@ -19,13 +18,15 @@ public class ObjectUtils {
     /**
      * 根据 class 创建对象，智能调用构造方法
      *
-     * @param type 类型
+     * @param target create object's class
+     * @param <T>    create object's generic
+     * @return instance
      */
-    public static <T> T create(Class<T> type) {
+    public static <T> T create(Class<T> target) {
         try {
-            return delegate.create(type);
+            return delegate.create(target);
         } catch (ReflectionException e) {
-            log.error("ObjectUtils create error, type: {}", type, e);
+            log.error("ObjectUtils create error, target: {}", target, e);
             return null;
         }
     }
@@ -33,11 +34,13 @@ public class ObjectUtils {
     /**
      * 根据 class 创建对象，指定构造方法
      *
-     * @param type                类型
+     * @param target              create object's class
+     * @param <T>                 create object's generic
      * @param constructorArgTypes 构造方法参数类型
      * @param constructorArgs     构造方法参数
+     * @return instance
      */
-    public static <T> T create(Class<T> type, List<Class<?>> constructorArgTypes, List<Object> constructorArgs) {
-        return delegate.create(type, constructorArgTypes, constructorArgs);
+    public static <T> T create(Class<T> target, List<Class<?>> constructorArgTypes, List<Object> constructorArgs) {
+        return delegate.create(target, constructorArgTypes, constructorArgs);
     }
 }

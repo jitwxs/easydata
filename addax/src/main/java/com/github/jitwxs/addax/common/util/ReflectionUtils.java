@@ -10,12 +10,15 @@ import java.util.List;
  */
 public class ReflectionUtils {
     /**
-     * 父类中获取子类泛型
+     * 子类获取继承父类中的泛型
+     *
+     * @param target 子类
+     * @return 父类中的泛型信息
      */
-    public static Type[] getGenericSuperClass(final Class<?> clazz) {
-        Type t = clazz.getGenericSuperclass();
+    public static Type[] getGenericSuperClass(final Class<?> target) {
+        Type t = target.getGenericSuperclass();
 
-        if (t instanceof  ParameterizedType) {
+        if (t instanceof ParameterizedType) {
             return ((ParameterizedType) t).getActualTypeArguments();
         }
 
@@ -26,14 +29,26 @@ public class ReflectionUtils {
         return null;
     }
 
-    public static Type[] getGenericInterface0Class(final Class<?> clazz) {
-        final Type t = clazz.getGenericInterfaces()[0];
-        ParameterizedType p = (ParameterizedType) t ;
+    /**
+     * 子类获取接口父类中的泛型
+     *
+     * @param target 子类
+     * @return 父类接口中的泛型信息
+     */
+    public static Type[] getGenericInterface0Class(final Class<?> target) {
+        final Type t = target.getGenericInterfaces()[0];
+        ParameterizedType p = (ParameterizedType) t;
         return p.getActualTypeArguments();
     }
 
-    public static void loadSuperAndInterfaceClass(final Class<?> clazz, final List<Class<?>> resultList) {
-        for (Type interfaceType : clazz.getGenericInterfaces()) {
+    /**
+     * 获取某类的所有父类和接口，递归查询
+     *
+     * @param target     目标类
+     * @param resultList 结果集
+     */
+    public static void loadSuperAndInterfaceClass(final Class<?> target, final List<Class<?>> resultList) {
+        for (Type interfaceType : target.getGenericInterfaces()) {
             final Class<?> actualClass = resolveActualClass(interfaceType);
             if (actualClass != null) {
                 resultList.add(actualClass);
@@ -41,7 +56,7 @@ public class ReflectionUtils {
             }
         }
 
-        final Type superType = clazz.getGenericSuperclass();
+        final Type superType = target.getGenericSuperclass();
         if (superType != null) {
             final Class<?> actualClass = resolveActualClass(superType);
             if (actualClass != null) {
@@ -51,9 +66,9 @@ public class ReflectionUtils {
         }
     }
 
-    private static Class resolveActualClass(final Type type) {
+    private static Class<?> resolveActualClass(final Type type) {
         if (type instanceof Class) {
-            return (Class) type;
+            return (Class<?>) type;
         } else if (type instanceof ParameterizedType) {
             return resolveActualClass(((ParameterizedType) type).getRawType());
         }

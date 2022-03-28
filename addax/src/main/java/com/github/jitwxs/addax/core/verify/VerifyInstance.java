@@ -44,6 +44,9 @@ public class VerifyInstance {
 
     /**
      * 忽略比较字段
+     *
+     * @param fields 忽略字段列表
+     * @return this
      */
     public VerifyInstance ignoredFields(final String... fields) {
         if (fields != null && fields.length > 0) {
@@ -54,6 +57,9 @@ public class VerifyInstance {
 
     /**
      * 指定比较字段
+     *
+     * @param fields 比较字段列表
+     * @return this
      */
     public VerifyInstance validateFields(final String... fields) {
         if (fields != null && fields.length > 0) {
@@ -65,28 +71,49 @@ public class VerifyInstance {
     /**
      * 忽略不同类型直接的差异
      * <p>
-     * 例如 set -> list, hashmap -> treemap
+     * 例如 {@link Set} 和 {@link List}，{@link HashMap} 和 {@link TreeMap} 等
+     *
+     * @return this
      */
     public VerifyInstance ignoreClassDiff() {
         this.ignoreClassDiff = true;
         return this;
     }
 
+    /**
+     * 配置精度误差值
+     *
+     * @param precision 精度误差配置
+     * @return this
+     */
     public VerifyInstance withPrecision(@NonNull Object precision) {
         this.precisionConfigs.put(precision.getClass(), precision);
         return this;
     }
 
+    /**
+     * 真正执行 verify 的方法
+     */
     public void run() {
         this.collect();
 
         BEAN_TYPE_VERIFY.check(except, actual, this);
     }
 
+    /**
+     * 将忽略字段转换为 string 数组结构
+     *
+     * @return 忽略字段列表
+     */
     public String[] toIgnoreFields() {
         return ignoreFields.toArray(new String[0]);
     }
 
+    /**
+     * 将比较的字段转换为 string 数组结构
+     *
+     * @return 比较字段列表
+     */
     public String[] toValidateFields() {
         return validateFields.toArray(new String[0]);
     }

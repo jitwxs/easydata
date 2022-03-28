@@ -5,55 +5,55 @@ import com.github.jitwxs.addax.common.bean.MockConfig;
 import com.github.jitwxs.addax.core.mock.mocker.BaseMocker;
 
 /**
+ * data mock module entrance
+ *
  * @author jitwxs@foxmail.com
  * @since 2022-03-20 12:44
  */
 public class Mock extends AddaxEntrance {
     /**
-     * 模拟数据
+     * mock simple class instance, using default mockConfig
      *
-     * @param clazz 模拟数据类型
-     * @return 模拟数据对象
+     * @param target mock target simple class
+     * @param <T>    mock target class generic
+     * @return mock result instance
      */
-    public static <T> T run(Class<T> clazz) {
-        return run(clazz, new MockConfig());
+    public static <T> T run(Class<T> target) {
+        return run(target, new MockConfig());
     }
 
     /**
-     * 模拟数据
+     * mock simple class instance, specify mockConfig
      *
-     * @param clazz 模拟数据类型
-     * @param mockConfig 模拟数据配置
-     * @return 模拟数据对象
+     * @param target     mock target simple class
+     * @param <T>        mock target class generic
+     * @param mockConfig mock configuration
+     * @return mock result instance
      */
-    public static <T> T run(Class<T> clazz, MockConfig mockConfig) {
-        return new BaseMocker<T>(clazz).mock(mockConfig);
+    public static <T> T run(Class<T> target, MockConfig mockConfig) {
+        return new BaseMocker<T>(target).mock(mockConfig);
     }
 
     /**
-     * 模拟数据
-     * <pre>
-     * 注意typeReference必须以{}结尾
-     * </pre>
+     * mock complex class instance, using default mockConfig
      *
-     * @param typeReference 模拟数据包装类型
-     * @return 模拟数据对象
+     * @param reference mock target complex class
+     * @param <T>       mock target class generic
+     * @return mock result instance
      */
-    public static <T> T run(TypeKit<T> typeReference) {
-        return run(typeReference, new MockConfig());
+    public static <T> T run(TypeKit<T> reference) {
+        return run(reference, new MockConfig());
     }
 
     /**
-     * 模拟数据
-     * <pre>
-     * 注意typeReference必须以{}结尾
-     * </pre>
+     * mock complex class instance, specify mockConfig
      *
-     * @param typeReference 模拟数据类型
-     * @param mockConfig 模拟数据配置
-     * @return 模拟数据对象
+     * @param reference  mock target complex class
+     * @param mockConfig mock configuration
+     * @param <T>        mock target class generic
+     * @return mock result instance
      */
-    public static <T> T run(TypeKit<T> typeReference, MockConfig mockConfig) {
-        return new BaseMocker<T>(typeReference.getType()).mock(mockConfig.init(typeReference.getType()));
+    public static <T> T run(TypeKit<T> reference, MockConfig mockConfig) {
+        return new BaseMocker<T>(reference.getType()).mock(mockConfig.init(reference.getType()));
     }
 }

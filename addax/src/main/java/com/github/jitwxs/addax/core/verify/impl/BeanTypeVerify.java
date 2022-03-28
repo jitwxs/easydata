@@ -101,9 +101,10 @@ public class BeanTypeVerify {
     }
 
     /**
-     * 是否起用递归比较
+     * 是否对字段起用递归比较
      *
      * @param target 类型
+     * @return true: 启用; false: 不启用
      */
     public boolean isEnableRecursiveCompare(final Class<?> target) {
         // 基本类型或包装类型，无需递归
