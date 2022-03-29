@@ -1,7 +1,6 @@
 ## Addax
 
-[![Release](https://img.shields.io/github/v/release/jitwxs/addax.svg)](https://github.com/jitwxs/addax/releases)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+![](https://badgen.net/github/release/jitwxs/addax)![](https://badgen.net/github/stars/jitwxs/addax)![](https://badgen.net/github/forks/jitwxs/addax)![](https://badgen.net/github/license/jitwxs/addax)
 
 ### 前言
 
@@ -21,7 +20,7 @@
 
 ### 主要功能
 
-> 详细 WIKI 施工中
+> 使用文档：https://github.com/jitwxs/addax/wiki
 
 **数据加载模块**
 
