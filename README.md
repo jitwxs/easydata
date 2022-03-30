@@ -2,6 +2,8 @@
 
 ![](https://badgen.net/github/release/jitwxs/addax)![](https://badgen.net/github/stars/jitwxs/addax)![](https://badgen.net/github/forks/jitwxs/addax)![](https://badgen.net/github/license/jitwxs/addax)
 
+> 使用文档：https://github.com/jitwxs/addax/wiki
+
 ### 前言
 
 在日常工作中，不知道你有没有遇到过这些场景：
@@ -19,8 +21,6 @@
 [![Stargazers over time](https://starchart.cc/jitwxs/addax.svg)](https://starchart.cc/jitwxs/addax) 
 
 ### 主要功能
-
-> 使用文档：https://github.com/jitwxs/addax/wiki
 
 **数据加载模块**
 
