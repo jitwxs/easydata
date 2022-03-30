@@ -36,7 +36,7 @@ public class MySQLConnection implements IConnection {
     @Override
     public Optional<LoadingSource<?>> loading(LoaderProperties properties) {
         try {
-            final List<String[]> list = LoadingUtils.loadSql(this, properties.getSqlUrl());
+            final List<String[]> list = LoadingUtils.loadSql(this, properties.getUrl());
             return Optional.of(new MatrixLoadingSource(properties, new MatrixBean(list)));
         } catch (ClassNotFoundException | SQLException e) {
             throw new AddaxLoaderException(e);

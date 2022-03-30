@@ -13,13 +13,9 @@ import org.apache.commons.lang3.StringUtils;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class LoaderProperties {
     /**
-     * 加载类
+     * 加载路径
      */
-    private Class<?> clazz;
-
-    private String fileUrl;
-
-    private String sqlUrl;
+    private String url;
 
     /**
      * 额外指定的字段映射
@@ -35,11 +31,7 @@ public class LoaderProperties {
         public LoaderProperties build() {
             final LoaderProperties properties = super.build();
 
-            if (properties.getClazz() == null) {
-                throw new IllegalArgumentException("params clazz must define");
-            }
-
-            if (StringUtils.isAllBlank(properties.getSqlUrl(), properties.getFileUrl())) {
+            if (StringUtils.isBlank(properties.getUrl())) {
                 throw new IllegalArgumentException("params url must define");
             }
 

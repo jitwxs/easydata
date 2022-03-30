@@ -23,7 +23,7 @@ public class FileConnection implements IConnection {
     @Override
     public Optional<LoadingSource<?>> loading(LoaderProperties properties) {
         try {
-            final String queryUrl = properties.getFileUrl();
+            final String queryUrl = properties.getUrl();
             final FileFormatEnum fileFormatEnum = FileFormatEnum.delegate(queryUrl);
 
             switch (fileFormatEnum) {

@@ -1,9 +1,7 @@
 package com.github.jitwxs.addax.core.loader;
 
-import com.github.jitwxs.addax.common.exception.AddaxLoaderException;
+import com.github.jitwxs.addax.conn.FileConnection;
 import com.github.jitwxs.addax.conn.IConnection;
-import com.github.jitwxs.addax.provider.LoaderPropertiesProvider;
-import com.github.jitwxs.addax.provider.ProviderFactory;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import lombok.NonNull;
@@ -18,21 +16,12 @@ import java.util.Optional;
  * @since 2022-03-19 19:25
  */
 public class Loader {
+    public static final Loader FILE_LOADER = new Loader(new FileConnection());
+
     public final IConnection connection;
 
     public Loader(final IConnection connection) {
         this.connection = connection;
-    }
-
-    public <T> List<T> loading(@NonNull final Class<T> types) {
-        final LoaderPropertiesProvider provider = ProviderFactory.delegate(LoaderPropertiesProvider.class);
-
-        final LoaderProperties properties = provider.delegate(types);
-        if (properties == null) {
-            throw new AddaxLoaderException("Not Match LoaderProperties For: " + types);
-        }
-
-        return loading(types, properties);
     }
 
     public <T> List<T> loading(@NonNull final Class<T> types, @NonNull final LoaderProperties properties) {

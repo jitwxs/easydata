@@ -75,7 +75,7 @@ public abstract class LoadingSource<T> {
                 final Field field = PropertyCache.tryGetField(target, name);
                 if (field != null) {
                     final Object value = provider.convert(fieldValue, field.getType());
-                    Whitebox.setInternalState(object, value);
+                    Whitebox.setInternalState(object, name, value);
                 }
             }
         }

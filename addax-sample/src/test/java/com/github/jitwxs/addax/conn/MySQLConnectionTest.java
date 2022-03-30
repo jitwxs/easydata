@@ -1,7 +1,6 @@
 package com.github.jitwxs.addax.conn;
 
 import com.github.jitwxs.addax.core.loader.LoaderProperties;
-import com.github.jitwxs.addax.sample.bean.OrderEvaluate;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.JdbcDatabaseContainer;
 import org.testcontainers.containers.MySQLContainer;
@@ -19,7 +18,7 @@ public class MySQLConnectionTest extends BaseConnectionTest {
     @Container
     private static final JdbcDatabaseContainer container = new MySQLContainer()
             .withDatabaseName("express")
-            .withInitScript("express.sql");
+            .withInitScript("addax/sql/express.sql");
 
     @Test
     public void loading() {
@@ -29,11 +28,6 @@ public class MySQLConnectionTest extends BaseConnectionTest {
                 container.getPassword(),
                 container.getJdbcUrl());
 
-        final LoaderProperties properties = LoaderProperties.builder()
-                .clazz(OrderEvaluate.class)
-                .sqlUrl("SELECT * FROM order_evaluate")
-                .build();
-
-        assert0(connection, properties);
+        assert0(connection, LoaderProperties.builder().url("SELECT * FROM order_evaluate").build());
     }
 }
