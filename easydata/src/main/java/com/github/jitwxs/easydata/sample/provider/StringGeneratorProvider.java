@@ -8,6 +8,7 @@ import org.reflections.Reflections;
 
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -30,8 +31,8 @@ public class StringGeneratorProvider extends Provider<IStringGenerator, MockStri
     }
 
     @Override
-    protected Object uniqueKeyByInstance(IStringGenerator instance) {
-        return instance.type();
+    protected List<Object> uniqueKeyByInstance(IStringGenerator instance) {
+        return Collections.singletonList(instance.type());
     }
 
     @Override

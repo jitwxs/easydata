@@ -205,7 +205,7 @@ public class EasyMockTest {
         final Integer integer = EasyMock.run(Integer.class);
         System.out.println(integer);
 
-        final Double aDouble = EasyMock.run(double.class);
+        final double aDouble = EasyMock.run(double.class);
         System.out.println(aDouble);
 
         final char[] chars = EasyMock.run(char[].class);

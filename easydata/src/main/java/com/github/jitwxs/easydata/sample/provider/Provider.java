@@ -28,7 +28,7 @@ public abstract class Provider<T, UK> {
      * @param instance instance
      * @return unique key
      */
-    protected abstract Object uniqueKeyByInstance(T instance);
+    protected abstract List<Object> uniqueKeyByInstance(T instance);
 
     /**
      * Generate unique key according to parameters
@@ -39,7 +39,9 @@ public abstract class Provider<T, UK> {
     protected abstract Object uniqueKey(UK... args);
 
     protected final Consumer<Collection<T>> doRegister = instances ->
-            emptyIfNull(instances).stream().filter(Objects::nonNull).forEach(e -> this.instanceMap.put(this.uniqueKeyByInstance(e), e));
+            emptyIfNull(instances).stream().filter(Objects::nonNull)
+                    .forEach(e -> this.uniqueKeyByInstance(e)
+                            .forEach(key -> this.instanceMap.put(key, e)));
 
     public Provider() {
         final Class<T> targetClazz = (Class<T>) ReflectionUtils.getGenericSuperClass(this.getClass())[0];

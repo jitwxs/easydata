@@ -11,6 +11,9 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.apache.commons.lang3.ClassUtils.isPrimitiveWrapper;
+import static org.apache.commons.lang3.ClassUtils.wrapperToPrimitive;
+
 /**
  * @author jitwxs@foxmail.com
  * @since 2022-03-20 13:22
@@ -33,7 +36,7 @@ public class ExplicitMockerProvider extends Provider<IMocker, Class<?>> {
     }
 
     @Override
-    protected Object uniqueKeyByInstance(IMocker instance) {
+    protected List<Object> uniqueKeyByInstance(IMocker instance) {
         final Class<? extends IMocker> clazz = instance.getClass();
 
         final Type[] arguments = ReflectionUtils.getGenericInterface0Class(clazz);
@@ -42,7 +45,15 @@ public class ExplicitMockerProvider extends Provider<IMocker, Class<?>> {
             throw new EasyDataMockException("Illegal uniqueKeyByInstance() params");
         }
 
-        return arguments[0];
+        final Class<?> target = (Class<?>) arguments[0];
+
+        final List<Object> keyList = new ArrayList<>();
+        keyList.add(target);
+        if (isPrimitiveWrapper(target)) {
+            keyList.add(wrapperToPrimitive(target));
+        }
+
+        return keyList;
     }
 
     @Override

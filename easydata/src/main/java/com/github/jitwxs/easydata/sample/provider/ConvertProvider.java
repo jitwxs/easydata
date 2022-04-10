@@ -10,7 +10,6 @@ import com.github.jitwxs.easydata.sample.core.convert.IConvert;
 import com.github.jitwxs.easydata.sample.core.convert.explicit.ExplicitConvert;
 import com.github.jitwxs.easydata.sample.core.convert.implicit.ImplicitConvert;
 import com.google.protobuf.Message;
-import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.reflections.Reflections;
 
@@ -20,6 +19,8 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+
+import static org.apache.commons.lang3.ClassUtils.*;
 
 /**
  * 提供 {@link IConvert} 统一获取门面
@@ -43,7 +44,7 @@ public class ConvertProvider extends Provider<IConvert, Class<?>> {
     }
 
     @Override
-    protected Object uniqueKeyByInstance(IConvert instance) {
+    protected List<Object> uniqueKeyByInstance(IConvert instance) {
         final Class<? extends IConvert> clazz = instance.getClass();
 
         final Type[] arguments = ReflectionUtils.getGenericInterface0Class(clazz);
@@ -52,7 +53,26 @@ public class ConvertProvider extends Provider<IConvert, Class<?>> {
             throw new EasyDataConvertException("Illegal uniqueKeyByInstance() params");
         }
 
-        return arguments[0] + "_" + arguments[1];
+        final Class<?> sourceClass = (Class<?>) arguments[0], targetClass = (Class<?>) arguments[1];
+
+        final List<Object> keyList = new ArrayList<>();
+
+        keyList.add(buildUniqueKey(sourceClass, targetClass));
+
+        int wrapperCount = 0;
+        if (isPrimitiveWrapper(sourceClass)) {
+            keyList.add(buildUniqueKey(wrapperToPrimitive(sourceClass), targetClass));
+            wrapperCount++;
+        }
+        if (isPrimitiveWrapper(targetClass)) {
+            keyList.add(buildUniqueKey(sourceClass, wrapperToPrimitive(targetClass)));
+            wrapperCount++;
+        }
+        if (wrapperCount == 2) {
+            keyList.add(buildUniqueKey(wrapperToPrimitive(sourceClass), wrapperToPrimitive(targetClass)));
+        }
+
+        return keyList;
     }
 
     @Override
@@ -61,7 +81,7 @@ public class ConvertProvider extends Provider<IConvert, Class<?>> {
             throw new EasyDataConvertException("Illegal uniqueKeyByInstance() params");
         }
 
-        return args[0] + "_" + args[1];
+        return this.buildUniqueKey(args[0], args[1]);
     }
 
     @SuppressWarnings("unchecked")
@@ -80,8 +100,8 @@ public class ConvertProvider extends Provider<IConvert, Class<?>> {
         }
 
         // 统一使用包装类型处理
-        final Class<?> sourceClass = ClassUtils.primitiveToWrapper(source.getClass());
-        targetClass = (Class<T>) ClassUtils.primitiveToWrapper(targetClass);
+        final Class<?> sourceClass = primitiveToWrapper(source.getClass());
+        targetClass = (Class<T>) primitiveToWrapper(targetClass);
 
         // 类型相同，执行返回
         if (sourceClass == targetClass) {
@@ -154,5 +174,9 @@ public class ConvertProvider extends Provider<IConvert, Class<?>> {
         } else {
             return JSONObject.parseObject(json, targetClass);
         }
+    }
+
+    private Object buildUniqueKey(Class<?> type1, Class<?> type2) {
+        return type1 + "_" + type2;
     }
 }

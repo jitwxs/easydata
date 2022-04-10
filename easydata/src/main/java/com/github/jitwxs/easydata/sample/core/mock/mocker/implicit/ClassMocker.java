@@ -4,7 +4,6 @@ import com.github.jitwxs.easydata.sample.common.bean.MockConfig;
 import com.github.jitwxs.easydata.sample.core.mock.mocker.IMocker;
 import com.github.jitwxs.easydata.sample.provider.ExplicitMockerProvider;
 import com.github.jitwxs.easydata.sample.provider.ProviderFactory;
-import org.apache.commons.lang3.ClassUtils;
 
 import java.lang.reflect.Type;
 import java.util.Collection;
@@ -34,7 +33,7 @@ public class ClassMocker implements IMocker<Object> {
         } else if (clazz.isEnum()) {
             mocker = new EnumMocker<>(clazz);
         } else {
-            mocker = explicitProvider.delegate(ClassUtils.primitiveToWrapper(clazz));
+            mocker = explicitProvider.delegate(clazz);
             if (mocker == null) {
                 mocker = new BeanMocker(clazz);
             }
