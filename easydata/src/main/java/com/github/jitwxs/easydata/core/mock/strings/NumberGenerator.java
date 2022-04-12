@@ -5,7 +5,7 @@ import com.github.jitwxs.easydata.common.enums.MockStringEnum;
 import org.apache.commons.lang3.RandomStringUtils;
 
 /**
- * 身份证号生成器
+ * 数字生成器
  *
  * @author jitwxs@foxmail.com
  * @since 2022-03-20 20:05

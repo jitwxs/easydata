@@ -10,6 +10,7 @@ import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
 import org.apache.commons.lang3.ClassUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -243,5 +244,11 @@ public class EasyMockTest {
 
         final LocalDateTime ldt1 = dateToLdt(EasyMock.run(Date.class, dateMockConfig));
         assertTrue(ldt1.isAfter(startLDT) && ldt1.isBefore(endLDT));
+    }
+
+    @Test
+    public void testMockConfigForString() {
+        final String number = EasyMock.run(String.class, new MockConfig().setStringEnum(MockStringEnum.NUMBER));
+        assertTrue(StringUtils.isNumeric(number));
     }
 }
