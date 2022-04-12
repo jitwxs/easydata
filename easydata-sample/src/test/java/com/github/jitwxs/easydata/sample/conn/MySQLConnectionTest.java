@@ -1,6 +1,7 @@
 package com.github.jitwxs.easydata.sample.conn;
 
-import com.github.jitwxs.easydata.sample.core.loader.LoaderProperties;
+import com.github.jitwxs.easydata.conn.MySQLConnection;
+import com.github.jitwxs.easydata.core.loader.LoaderProperties;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.JdbcDatabaseContainer;
 import org.testcontainers.containers.MySQLContainer;

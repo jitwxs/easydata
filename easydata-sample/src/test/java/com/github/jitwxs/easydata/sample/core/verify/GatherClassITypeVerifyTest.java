@@ -1,9 +1,9 @@
 package com.github.jitwxs.easydata.sample.core.verify;
 
+import com.github.jitwxs.easydata.common.bean.MockConfig;
+import com.github.jitwxs.easydata.common.enums.MockStringEnum;
+import com.github.jitwxs.easydata.core.mock.EasyMock;
 import com.github.jitwxs.easydata.sample.LoggerStarter;
-import com.github.jitwxs.easydata.sample.common.bean.MockConfig;
-import com.github.jitwxs.easydata.sample.common.enums.MockStringEnum;
-import com.github.jitwxs.easydata.sample.core.mock.EasyMock;
 import com.github.jitwxs.easydata.sample.sample.bean.UserInfo;
 import com.github.jitwxs.easydata.sample.sample.message.EnumProto;
 import com.google.common.collect.Lists;
@@ -17,7 +17,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static com.github.jitwxs.easydata.sample.core.verify.EasyVerify.go;
+import static com.github.jitwxs.easydata.core.verify.EasyVerify.run;
 
 /**
  * 相同复杂类型的 Equals 比较
@@ -37,7 +37,7 @@ public class GatherClassITypeVerifyTest extends LoggerStarter {
             set2.add(i);
         });
 
-        go(set1, set2).run();
+        run(set1, set2).run();
     }
 
     @Test
@@ -54,8 +54,8 @@ public class GatherClassITypeVerifyTest extends LoggerStarter {
             b.add(str);
         });
 
-        Assertions.assertThrows(AssertionError.class, () -> go(a, b).run());
-        Assertions.assertDoesNotThrow(() -> go(a, b).ignoreClassDiff().run());
+        Assertions.assertThrows(AssertionError.class, () -> run(a, b).run());
+        Assertions.assertDoesNotThrow(() -> run(a, b).ignoreClassDiff().run());
     }
 
     @Test
@@ -75,7 +75,7 @@ public class GatherClassITypeVerifyTest extends LoggerStarter {
         final List scenarios = Arrays.asList(enums1, enums2, enums3, enums4, enums5);
         scenarios.stream().flatMap(i -> scenarios.stream().peek(j -> {
             log.info("testEnumCollection {} Equals {}", i.getClass().getName(), j.getClass().getName());
-            go(i, j).ignoreClassDiff().run();
+            run(i, j).ignoreClassDiff().run();
         })).collect(Collectors.toList());
     }
 
@@ -97,7 +97,7 @@ public class GatherClassITypeVerifyTest extends LoggerStarter {
         final List scenarios = Arrays.asList(map1, map2);
         scenarios.stream().flatMap(i -> scenarios.stream().peek(j -> {
             log.info("testObjectMap {} Equals {}", i.getClass().getName(), j.getClass().getName());
-            go(i, j).ignoreClassDiff().run();
+            run(i, j).ignoreClassDiff().run();
         })).collect(Collectors.toList());
     }
 
@@ -112,7 +112,7 @@ public class GatherClassITypeVerifyTest extends LoggerStarter {
                 .email(EasyMock.run(String.class, new MockConfig().setStringEnum(MockStringEnum.EMAIL)))
                 .build());
 
-        go(list1, list2).ignoredFields("email").ignoreClassDiff().run();
+        run(list1, list2).ignoredFields("email").ignoreClassDiff().run();
     }
 
     @Test
@@ -126,6 +126,6 @@ public class GatherClassITypeVerifyTest extends LoggerStarter {
         final HashMap<String, UserInfo> map2 = new HashMap<>();
         map2.put("1", userInfo.toBuilder().email(EasyMock.run(String.class, new MockConfig().setStringEnum(MockStringEnum.EMAIL))).build());
 
-        go(map1, map2).ignoredFields("email").run();
+        run(map1, map2).ignoredFields("email").run();
     }
 }

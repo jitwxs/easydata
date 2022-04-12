@@ -1,5 +1,7 @@
 package com.github.jitwxs.easydata.sample.provider;
 
+import com.github.jitwxs.easydata.provider.ConvertProvider;
+import com.github.jitwxs.easydata.provider.ProviderFactory;
 import org.junit.jupiter.api.Test;
 
 /**

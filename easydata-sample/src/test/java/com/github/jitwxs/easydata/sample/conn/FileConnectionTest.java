@@ -1,6 +1,7 @@
 package com.github.jitwxs.easydata.sample.conn;
 
-import com.github.jitwxs.easydata.sample.core.loader.LoaderProperties;
+import com.github.jitwxs.easydata.conn.FileConnection;
+import com.github.jitwxs.easydata.core.loader.LoaderProperties;
 import org.junit.jupiter.api.Test;
 
 /**

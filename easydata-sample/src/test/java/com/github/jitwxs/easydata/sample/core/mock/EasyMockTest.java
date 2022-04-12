@@ -1,5 +1,6 @@
 package com.github.jitwxs.easydata.sample.core.mock;
 
+import com.github.jitwxs.easydata.core.mock.EasyMock;
 import com.github.jitwxs.easydata.sample.sample.bean.OrderEvaluate;
 import com.github.jitwxs.easydata.sample.sample.enums.SexEnum;
 import com.github.jitwxs.easydata.sample.sample.message.EnumProto;

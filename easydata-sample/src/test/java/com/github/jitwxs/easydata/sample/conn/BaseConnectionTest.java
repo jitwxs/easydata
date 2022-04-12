@@ -1,10 +1,11 @@
 package com.github.jitwxs.easydata.sample.conn;
 
+import com.github.jitwxs.easydata.conn.IConnection;
 import com.github.jitwxs.easydata.sample.LoggerStarter;
-import com.github.jitwxs.easydata.sample.common.bean.MatrixBean;
-import com.github.jitwxs.easydata.sample.common.enums.DataTypeEnum;
-import com.github.jitwxs.easydata.sample.core.loader.LoaderProperties;
-import com.github.jitwxs.easydata.sample.core.loader.LoadingSource;
+import com.github.jitwxs.easydata.common.bean.MatrixBean;
+import com.github.jitwxs.easydata.common.enums.DataTypeEnum;
+import com.github.jitwxs.easydata.core.loader.LoaderProperties;
+import com.github.jitwxs.easydata.core.loader.LoadingSource;
 
 import java.util.Optional;
 

@@ -1,6 +1,7 @@
 package com.github.jitwxs.easydata.sample.core.loader;
 
-import com.github.jitwxs.easydata.sample.core.mock.EasyMock;
+import com.github.jitwxs.easydata.core.loader.LoaderProperties;
+import com.github.jitwxs.easydata.core.mock.EasyMock;
 import com.github.jitwxs.easydata.sample.sample.bean.OrderEvaluate;
 import com.github.jitwxs.easydata.sample.sample.bean.UserInfo;
 import net.bytebuddy.ByteBuddy;
@@ -12,7 +13,7 @@ import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.github.jitwxs.easydata.sample.core.loader.EasyLoader.FILE_EASY_LOADER;
+import static com.github.jitwxs.easydata.core.loader.EasyLoader.FILE_EASY_LOADER;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class LoaderTest {
