@@ -18,7 +18,7 @@ public class EasyVerify {
 
     public final static CollectionTypeVerify COLLECTION_TYPE_VERIFY = new CollectionTypeVerify();
 
-    public static VerifyInstance run(@NonNull final Object except, @NonNull final Object actual) {
+    public static VerifyInstance with(@NonNull final Object except, @NonNull final Object actual) {
         return new VerifyInstance(except, actual);
     }
 }

@@ -28,6 +28,17 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * @since 2022-03-26 18:02
  */
 public class SameSimpleClassITypeVerifyTest {
+    @Test
+    public void testSimpleType() {
+        assertDoesNotThrow(() -> EasyVerify.with(15, 15).verify());
+
+        assertThrows(AssertionError.class, () -> EasyVerify.with(15.5, 15.4).verify());
+
+        assertDoesNotThrow(() -> EasyVerify.with(true, true).verify());
+
+        assertDoesNotThrow(() -> EasyVerify.with("HHH", "HHH").verify());
+    }
+
     private static Stream<Arguments> classNotMatchScenario() {
         return Stream.of(
                 Arguments.of(emptyList(), emptyMap()), // list和map
@@ -39,7 +50,7 @@ public class SameSimpleClassITypeVerifyTest {
     @MethodSource("classNotMatchScenario")
     @DisplayName("测试类不匹配")
     public void testClassNotMatch(final Object except, final Object actual) {
-        final Executable executable = () -> EasyVerify.run(except, actual).run();
+        final Executable executable = () -> EasyVerify.with(except, actual).verify();
         assertThrows(AssertionError.class, executable);
     }
 
@@ -56,7 +67,7 @@ public class SameSimpleClassITypeVerifyTest {
     @MethodSource("enumScenario")
     @DisplayName("枚举类型比较")
     public void testEnumEquals(final boolean isEquals, final Object except, final Object actual) {
-        final Executable executable = () -> EasyVerify.run(except, actual).run();
+        final Executable executable = () -> EasyVerify.with(except, actual).verify();
         if (isEquals) {
             assertDoesNotThrow(executable);
         } else {
@@ -78,14 +89,13 @@ public class SameSimpleClassITypeVerifyTest {
         student2.setSex(EnumProto.SexEnum.MALE);
         student2.setName(student.getName());
 
-        assertDoesNotThrow(() -> EasyVerify.run(student, student2).run());
+        assertDoesNotThrow(() -> EasyVerify.with(student, student2).verify());
     }
 
     @Test
     @DisplayName("测试Proto对象相等 | 忽略字段")
     public void testProtoEqualsIgnoreField() {
-        final MockConfig mockConfig = new MockConfig();
-        mockConfig.setStringEnum(MockStringEnum.CN_NAME);
+        final MockConfig mockConfig = new MockConfig().setStringEnum(MockStringEnum.CN_NAME);
 
         final Student student = new Student();
         student.setSex(EnumProto.SexEnum.MALE);
@@ -95,7 +105,7 @@ public class SameSimpleClassITypeVerifyTest {
         student2.setSex(EnumProto.SexEnum.MALE);
         student2.setName(run(String.class, mockConfig));
 
-        assertDoesNotThrow(() -> EasyVerify.run(student, student2).ignoredFields("name").run());
+        assertDoesNotThrow(() -> EasyVerify.with(student, student2).ignoredFields("name").verify());
     }
 
     @Test
@@ -113,7 +123,7 @@ public class SameSimpleClassITypeVerifyTest {
                 .email(run(String.class, new MockConfig().setStringEnum(MockStringEnum.EMAIL)))
                 .build();
 
-        assertDoesNotThrow(() -> EasyVerify.run(user1, user2).validateFields("age").run());
+        assertDoesNotThrow(() -> EasyVerify.with(user1, user2).validateFields("age").verify());
     }
 
     @Test
@@ -131,6 +141,6 @@ public class SameSimpleClassITypeVerifyTest {
                 .email(run(String.class, new MockConfig().setStringEnum(MockStringEnum.EMAIL)))
                 .build();
 
-        assertDoesNotThrow(() -> EasyVerify.run(user1, user2).ignoredFields("_id").validateFields("age").run());
+        assertDoesNotThrow(() -> EasyVerify.with(user1, user2).ignoredFields("_id").validateFields("age").verify());
     }
 }

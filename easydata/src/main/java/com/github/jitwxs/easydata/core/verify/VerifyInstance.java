@@ -93,7 +93,7 @@ public class VerifyInstance {
     /**
      * 真正执行 verify 的方法
      */
-    public void run() {
+    public void verify() {
         this.collect();
 
         EasyVerify.BEAN_TYPE_VERIFY.check(except, actual, this);

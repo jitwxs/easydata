@@ -3,6 +3,7 @@ package com.github.jitwxs.easydata.sample.core.verify;
 import com.github.jitwxs.easydata.common.bean.MockConfig;
 import com.github.jitwxs.easydata.common.enums.MockStringEnum;
 import com.github.jitwxs.easydata.core.mock.EasyMock;
+import com.github.jitwxs.easydata.core.verify.EasyVerify;
 import com.github.jitwxs.easydata.sample.LoggerStarter;
 import com.github.jitwxs.easydata.sample.sample.bean.UserInfo;
 import com.github.jitwxs.easydata.sample.sample.message.EnumProto;
@@ -17,7 +18,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static com.github.jitwxs.easydata.core.verify.EasyVerify.run;
+import static com.github.jitwxs.easydata.core.verify.EasyVerify.with;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * 相同复杂类型的 Equals 比较
@@ -37,7 +40,7 @@ public class GatherClassITypeVerifyTest extends LoggerStarter {
             set2.add(i);
         });
 
-        run(set1, set2).run();
+        with(set1, set2).verify();
     }
 
     @Test
@@ -54,8 +57,8 @@ public class GatherClassITypeVerifyTest extends LoggerStarter {
             b.add(str);
         });
 
-        Assertions.assertThrows(AssertionError.class, () -> run(a, b).run());
-        Assertions.assertDoesNotThrow(() -> run(a, b).ignoreClassDiff().run());
+        assertThrows(AssertionError.class, () -> with(a, b).verify());
+        assertDoesNotThrow(() -> with(a, b).ignoreClassDiff().verify());
     }
 
     @Test
@@ -65,17 +68,20 @@ public class GatherClassITypeVerifyTest extends LoggerStarter {
         final Collection<EnumProto.SexEnum> enums1 = Lists.newArrayList(EnumProto.SexEnum.MALE, EnumProto.SexEnum.FEMALE);
         // linkedList
         final Collection<EnumProto.SexEnum> enums2 = new LinkedList<>(Arrays.asList(EnumProto.SexEnum.MALE, EnumProto.SexEnum.FEMALE));
+
+        assertDoesNotThrow(() -> EasyVerify.with(enums1, enums2).ignoreClassDiff().verify());
+
         // hashSet
         final Collection<EnumProto.SexEnum> enums3 = Sets.newHashSet(EnumProto.SexEnum.MALE, EnumProto.SexEnum.FEMALE);
         // linkedSet
         final Collection<EnumProto.SexEnum> enums4 = org.assertj.core.util.Sets.newLinkedHashSet(EnumProto.SexEnum.MALE, EnumProto.SexEnum.FEMALE);
-        // treeSet
+        // tr   eeSet
         final Collection<EnumProto.SexEnum> enums5 = org.assertj.core.util.Sets.newTreeSet(EnumProto.SexEnum.MALE, EnumProto.SexEnum.FEMALE);
 
         final List scenarios = Arrays.asList(enums1, enums2, enums3, enums4, enums5);
         scenarios.stream().flatMap(i -> scenarios.stream().peek(j -> {
             log.info("testEnumCollection {} Equals {}", i.getClass().getName(), j.getClass().getName());
-            run(i, j).ignoreClassDiff().run();
+            with(i, j).ignoreClassDiff().verify();
         })).collect(Collectors.toList());
     }
 
@@ -97,7 +103,7 @@ public class GatherClassITypeVerifyTest extends LoggerStarter {
         final List scenarios = Arrays.asList(map1, map2);
         scenarios.stream().flatMap(i -> scenarios.stream().peek(j -> {
             log.info("testObjectMap {} Equals {}", i.getClass().getName(), j.getClass().getName());
-            run(i, j).ignoreClassDiff().run();
+            with(i, j).ignoreClassDiff().verify();
         })).collect(Collectors.toList());
     }
 
@@ -112,7 +118,7 @@ public class GatherClassITypeVerifyTest extends LoggerStarter {
                 .email(EasyMock.run(String.class, new MockConfig().setStringEnum(MockStringEnum.EMAIL)))
                 .build());
 
-        run(list1, list2).ignoredFields("email").ignoreClassDiff().run();
+        with(list1, list2).ignoredFields("email").ignoreClassDiff().verify();
     }
 
     @Test
@@ -126,6 +132,6 @@ public class GatherClassITypeVerifyTest extends LoggerStarter {
         final HashMap<String, UserInfo> map2 = new HashMap<>();
         map2.put("1", userInfo.toBuilder().email(EasyMock.run(String.class, new MockConfig().setStringEnum(MockStringEnum.EMAIL))).build());
 
-        run(map1, map2).ignoredFields("email").run();
+        with(map1, map2).ignoredFields("email").verify();
     }
 }

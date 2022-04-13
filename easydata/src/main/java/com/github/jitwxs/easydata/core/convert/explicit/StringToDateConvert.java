@@ -2,6 +2,7 @@ package com.github.jitwxs.easydata.core.convert.explicit;
 
 import com.github.jitwxs.easydata.common.exception.EasyDataConvertException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -11,6 +12,12 @@ public class StringToDateConvert implements ExplicitConvert<String, Date> {
     @Override
     public Date convert(String input) {
         try {
+            // 使用 timestamp
+            if (StringUtils.isNumeric(input)) {
+                return new Date(Long.parseLong(input));
+            }
+
+            // 使用 format 转换
             String parse = input.replaceFirst("[0-9]{4}([^0-9]?)", "yyyy$1");
             parse = parse.replaceFirst("^[0-9]{2}([^0-9]?)", "yy$1");
             parse = parse.replaceFirst("([^0-9]?)[0-9]{1,2}([^0-9]?)", "$1MM$2");
