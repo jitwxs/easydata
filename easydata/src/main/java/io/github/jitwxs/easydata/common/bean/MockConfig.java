@@ -82,6 +82,7 @@ public class MockConfig {
     /**
      * @param startInclusive the smallest value that can be returned, must be non-negative
      * @param endExclusive   the upper bound (not included)
+     * @return return mockConfig instance in chain invoke
      */
     public MockConfig setIntRange(int startInclusive, int endExclusive) {
         if (endExclusive < startInclusive) {

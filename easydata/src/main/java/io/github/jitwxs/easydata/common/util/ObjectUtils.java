@@ -50,6 +50,9 @@ public class ObjectUtils {
 
     /**
      * 根据 class 创建 protobuf builder 对象
+     *
+     * @param target create object's class
+     * @return protobuf builder object instance
      */
     public static Object createProtoBuilder(Class<?> target) {
         if (!Message.class.isAssignableFrom(target)) {
@@ -67,6 +70,9 @@ public class ObjectUtils {
 
     /**
      * 将 protobuf builder 对象，构造成 proto 对象
+     *
+     * @param protoBuilder protobuf builder object instance
+     * @return protobuf object instance
      */
     public static Object buildProtoBuilder(Object protoBuilder) {
         final Class<?> target = protoBuilder.getClass();

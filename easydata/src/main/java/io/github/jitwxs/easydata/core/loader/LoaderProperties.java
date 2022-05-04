@@ -26,6 +26,10 @@ public class LoaderProperties {
         return new LoaderPropertiesSelfBuilder();
     }
 
+    // just support javadoc compile
+    public static class LoaderPropertiesBuilder {
+    }
+
     static class LoaderPropertiesSelfBuilder extends LoaderPropertiesBuilder {
         @Override
         public LoaderProperties build() {
