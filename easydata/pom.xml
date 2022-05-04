@@ -10,7 +10,7 @@
     <packaging>jar</packaging>
 
     <name>easydata</name>
-    <description>Easy process data in unit test</description>
+    <description>Easy process data in unit test, load/mock/convert/verify...</description>
 
     <url>https://github.com/jitwxs/easydata</url>
     <inceptionYear>2022</inceptionYear>
@@ -189,7 +189,7 @@
                 <version>1.6</version>
                 <executions>
                     <execution>
-                        <phase>deploy</phase>
+                        <phase>verify</phase>
                         <goals>
                             <goal>sign</goal>
                         </goals>
