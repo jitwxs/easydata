@@ -16,7 +16,7 @@ import java.util.Optional;
  * @since 2022-03-19 19:25
  */
 public class EasyLoader {
-    public static final EasyLoader FILE_EASY_LOADER = new EasyLoader(new FileConnection());
+    public static final EasyLoader FILE_LOADER = new EasyLoader(new FileConnection());
 
     public final IConnection connection;
 

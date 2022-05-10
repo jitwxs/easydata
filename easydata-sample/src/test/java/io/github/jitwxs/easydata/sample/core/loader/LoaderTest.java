@@ -13,7 +13,7 @@ import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.List;
 
-import static io.github.jitwxs.easydata.core.loader.EasyLoader.FILE_EASY_LOADER;
+import static io.github.jitwxs.easydata.core.loader.EasyLoader.FILE_LOADER;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class LoaderTest {
@@ -39,7 +39,7 @@ public class LoaderTest {
                     .extraFields(extraFields)
                     .build();
 
-            final List<? extends OrderEvaluate> evaluates = FILE_EASY_LOADER.loading(target, properties);
+            final List<? extends OrderEvaluate> evaluates = FILE_LOADER.loading(target, properties);
 
             final Object result = evaluates.get(0);
             assertEquals(result.getClass(), target);
@@ -59,7 +59,7 @@ public class LoaderTest {
     public void loadingJsonObject() {
         final LoaderProperties properties = LoaderProperties.builder().url("/easydata/loader/user_info_one.json").build();
 
-        final List<UserInfo> userInfos = FILE_EASY_LOADER.loading(UserInfo.class, properties);
+        final List<UserInfo> userInfos = FILE_LOADER.loading(UserInfo.class, properties);
 
         assertNotNull(userInfos);
         assertEquals(1, userInfos.size());
@@ -87,7 +87,7 @@ public class LoaderTest {
                     .extraFields(extraFields)
                     .build();
 
-            final List<? extends UserInfo> objects = FILE_EASY_LOADER.loading(target, properties);
+            final List<? extends UserInfo> objects = FILE_LOADER.loading(target, properties);
 
             final Object result = objects.get(0);
             assertEquals(result.getClass(), target);

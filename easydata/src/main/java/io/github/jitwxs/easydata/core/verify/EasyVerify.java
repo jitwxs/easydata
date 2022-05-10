@@ -5,6 +5,7 @@ import io.github.jitwxs.easydata.core.verify.impl.CollectionTypeVerify;
 import io.github.jitwxs.easydata.core.verify.impl.MapTypeVerify;
 import lombok.Getter;
 import lombok.NonNull;
+import org.assertj.core.api.Assertions;
 
 /**
  * @author jitwxs@foxmail.com
@@ -17,6 +18,14 @@ public class EasyVerify {
     public final static MapTypeVerify MAP_TYPE_VERIFY = new MapTypeVerify();
 
     public final static CollectionTypeVerify COLLECTION_TYPE_VERIFY = new CollectionTypeVerify();
+
+    public static void isNull(final Object actual) {
+        Assertions.assertThat(actual).isNull();
+    }
+
+    public static void notNull(final Object actual) {
+        Assertions.assertThat(actual).isNotNull();
+    }
 
     public static VerifyInstance with(@NonNull final Object except, @NonNull final Object actual) {
         return new VerifyInstance(except, actual);
