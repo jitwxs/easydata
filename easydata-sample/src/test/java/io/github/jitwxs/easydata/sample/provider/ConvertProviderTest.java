@@ -1,8 +1,12 @@
 package io.github.jitwxs.easydata.sample.provider;
 
+import io.github.jitwxs.easydata.core.verify.EasyVerify;
 import io.github.jitwxs.easydata.provider.ConvertProvider;
-import io.github.jitwxs.easydata.provider.ProviderFactory;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
+import org.powermock.reflect.Whitebox;
+
+import java.lang.reflect.Method;
 
 /**
  * @author jitwxs@foxmail.com
@@ -10,8 +14,11 @@ import org.junit.jupiter.api.Test;
  */
 public class ConvertProviderTest {
     @Test
-    public void convertDb2Proto() {
-        final ConvertProvider convertProvider = ProviderFactory.delegate(ConvertProvider.class);
+    @SneakyThrows
+    public void processFieldValue() {
+        final Method method = Whitebox.getMethod(ConvertProvider.class, "processFieldValue", Object.class, Class.class);
 
+        EasyVerify.with(0, method.invoke(null, null, int.class)).verify();
+        EasyVerify.isNull(method.invoke(null, null, Integer.class));
     }
 }

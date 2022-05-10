@@ -2,7 +2,7 @@
 ![](https://badgen.net/github/license/jitwxs/easydata)
 ![](https://badgen.net/github/stars/jitwxs/easydata)
 ![](https://badgen.net/github/forks/jitwxs/easydata)
-![](https://badgen.net/maven/v/maven-central/io.github.jitwxs/easydata)
+[![](https://badgen.net/maven/v/maven-central/io.github.jitwxs/easydata)](https://mvnrepository.com/artifact/io.github.jitwxs/easydata)
 
 > 使用文档：https://github.com/jitwxs/easydata/wiki
 

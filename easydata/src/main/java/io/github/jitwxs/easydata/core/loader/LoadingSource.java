@@ -1,11 +1,11 @@
 package io.github.jitwxs.easydata.core.loader;
 
+import com.google.common.collect.BiMap;
 import io.github.jitwxs.easydata.common.cache.PropertyCache;
 import io.github.jitwxs.easydata.common.enums.DataTypeEnum;
 import io.github.jitwxs.easydata.common.exception.EasyDataConvertException;
 import io.github.jitwxs.easydata.provider.ConvertProvider;
 import io.github.jitwxs.easydata.provider.ProviderFactory;
-import com.google.common.collect.BiMap;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import org.powermock.reflect.Whitebox;

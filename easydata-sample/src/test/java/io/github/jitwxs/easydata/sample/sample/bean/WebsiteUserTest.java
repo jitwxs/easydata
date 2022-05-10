@@ -18,14 +18,14 @@ public class WebsiteUserTest {
     public void loadCsv() {
         final LoaderProperties properties = LoaderProperties.builder().url("/easydata/loader/website_user.csv").build();
 
-        this.assert0(EasyLoader.FILE_EASY_LOADER, properties);
+        this.assert0(EasyLoader.FILE_LOADER, properties);
     }
 
     @Test
     public void loadJson() {
         final LoaderProperties properties = LoaderProperties.builder().url("/easydata/loader/website_user.json").build();
 
-        this.assert0(EasyLoader.FILE_EASY_LOADER, properties);
+        this.assert0(EasyLoader.FILE_LOADER, properties);
     }
 
     @Container

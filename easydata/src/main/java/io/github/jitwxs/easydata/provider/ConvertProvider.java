@@ -2,6 +2,7 @@ package io.github.jitwxs.easydata.provider;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.base.Defaults;
 import io.github.jitwxs.easydata.common.exception.EasyDataConvertException;
 import io.github.jitwxs.easydata.common.util.ObjectUtils;
 import io.github.jitwxs.easydata.common.util.ProtobufUtils;
@@ -86,6 +87,12 @@ public class ConvertProvider extends Provider<IConvert, Class<?>> {
 
     @SuppressWarnings("unchecked")
     public <T> T convert(Object source, Class<T> targetClass) {
+        final T result = this.convert0(source, targetClass);
+
+        return processFieldValue(result, targetClass);
+    }
+
+    private <T> T convert0(Object source, Class<T> targetClass) {
         // 空对象
         if (source == null) {
             return null;
@@ -111,7 +118,7 @@ public class ConvertProvider extends Provider<IConvert, Class<?>> {
         // 1、直接类型路由
         IConvert iConvert = delegate(sourceClass, targetClass);
         if (iConvert != null) {
-            return convert0(source, targetClass, iConvert);
+            return convert1(source, targetClass, iConvert);
         }
 
         // 2、使用父类型路由
@@ -135,7 +142,7 @@ public class ConvertProvider extends Provider<IConvert, Class<?>> {
 
                 iConvert = delegate(input, target);
                 if (iConvert != null) {
-                    return convert0(source, targetClass, iConvert);
+                    return convert1(source, targetClass, iConvert);
                 }
             }
         }
@@ -145,7 +152,7 @@ public class ConvertProvider extends Provider<IConvert, Class<?>> {
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private static <T> T convert0(Object source, Class<T> targetClass, IConvert convert) {
+    private static <T> T convert1(Object source, Class<T> targetClass, IConvert convert) {
         if (source.getClass() == targetClass) {
             return (T) source;
         }
@@ -174,6 +181,22 @@ public class ConvertProvider extends Provider<IConvert, Class<?>> {
         } else {
             return JSONObject.parseObject(json, targetClass);
         }
+    }
+
+    /**
+     * 对字段值进行处理
+     *
+     * @param fieldValue 字段值
+     * @param fieldClass 字段类型
+     * @return 经过处理后的字段值
+     */
+    private static <T> T processFieldValue(final T fieldValue, final Class<?> fieldClass) {
+        // 对于基本数据类型，当设置为 null 时，需要转成默认值
+        if (fieldClass.isPrimitive() && fieldValue == null) {
+            return (T) Defaults.defaultValue(fieldClass);
+        }
+
+        return fieldValue;
     }
 
     private Object buildUniqueKey(Class<?> type1, Class<?> type2) {
