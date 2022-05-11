@@ -116,6 +116,9 @@ public class PropertyCache {
      * 受限于 java 自省的特性，对于 aB... 类型的字段，实际会处理成 AB...，需要做兼容处理
      * <p>
      * 其中 a 表示任意小写字符，B 表示任意大写字符。例如 "sId" -> "SId"
+     *
+     * @param field 字段名
+     * @return 经过处理后的字段名
      */
     public static String processFieldName(final String field) {
         if (StringUtils.isNotBlank(field) && field.length() >= 2) {
