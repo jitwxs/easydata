@@ -1,8 +1,9 @@
-package io.github.jitwxs.easydata.sample.sample.bean;
+package io.github.jitwxs.easydata.sample.bean;
 
 import io.github.jitwxs.easydata.conn.MySQLConnection;
 import io.github.jitwxs.easydata.core.loader.EasyLoader;
 import io.github.jitwxs.easydata.core.loader.LoaderProperties;
+import io.github.jitwxs.easydata.sample.sample.bean.WebsiteUser;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.JdbcDatabaseContainer;

@@ -1,15 +1,18 @@
 package io.github.jitwxs.easydata.common.cache;
 
-import io.github.jitwxs.easydata.common.exception.EasyDataException;
-import io.github.jitwxs.easydata.common.util.ObjectUtils;
 import com.google.protobuf.Descriptors;
 import com.google.protobuf.Message;
 import com.google.protobuf.MessageOrBuilder;
+import io.github.jitwxs.easydata.common.exception.EasyDataException;
+import io.github.jitwxs.easydata.common.util.ObjectUtils;
 import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
 import org.powermock.reflect.Whitebox;
 import org.powermock.reflect.exceptions.FieldNotFoundException;
 
-import java.beans.*;
+import java.beans.BeanInfo;
+import java.beans.FeatureDescriptor;
+import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -53,7 +56,7 @@ public class PropertyCache {
 
         private final Map<String, Field> fieldMap = new HashMap<>();
 
-        private final BiConsumer<PropertyDescriptor, Map<String, PropertyDescriptor>> put = (e, map) -> map.put(e.getName(), e);
+        private final BiConsumer<PropertyDescriptor, Map<String, PropertyDescriptor>> put = (e, map) -> map.put(processFieldName(e.getName()), e);
 
         public ClassProperty(Class<?> clazz) {
             this.target = clazz;
@@ -81,7 +84,7 @@ public class PropertyCache {
             }
 
             for (Field field : clazz.getDeclaredFields()) {
-                fieldMap.putIfAbsent(field.getName(), field);
+                fieldMap.putIfAbsent(processFieldName(field.getName()), field);
             }
         }
 
@@ -89,7 +92,7 @@ public class PropertyCache {
             put.accept(descriptor, all);
 
             try {
-                fieldMap.put(descriptor.getName(), Whitebox.getField(this.target, descriptor.getName()));
+                fieldMap.put(processFieldName(descriptor.getName()), Whitebox.getField(this.target, descriptor.getName()));
             } catch (FieldNotFoundException ignored) {
             }
 
@@ -106,6 +109,25 @@ public class PropertyCache {
             if (isReadable && isWriteable) {
                 put.accept(descriptor, readAndWriteAble);
             }
+        }
+    }
+
+    /**
+     * 受限于 java 自省的特性，对于 aB... 类型的字段，实际会处理成 AB...，需要做兼容处理
+     * <p>
+     * 其中 a 表示任意小写字符，B 表示任意大写字符。例如 "sId" -> "SId"
+     */
+    public static String processFieldName(final String field) {
+        if (StringUtils.isNotBlank(field) && field.length() >= 2) {
+            final char[] chars = field.toCharArray();
+            if (Character.isLowerCase(chars[0]) && Character.isUpperCase(chars[1])) {
+                chars[0] = Character.toUpperCase(chars[0]);
+                return String.valueOf(chars);
+            } else {
+                return field;
+            }
+        } else {
+            return field;
         }
     }
 }
