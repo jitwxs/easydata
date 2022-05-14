@@ -19,7 +19,7 @@ public class BigDecimalComp extends BaseComp<BigDecimal> {
     }
 
     @Override
-    public int compare(BigDecimal o1, BigDecimal o2) {
+    public int compare0(BigDecimal o1, BigDecimal o2) {
         final int i = o1.compareTo(o2);
 
         if (i == 0) {

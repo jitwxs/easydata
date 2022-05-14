@@ -15,7 +15,7 @@ public class DoubleComp extends BaseComp<Double> {
     }
 
     @Override
-    public int compare(Double o1, Double o2) {
+    public int compare0(Double o1, Double o2) {
         final int i = o1.compareTo(o2);
 
         if (i == 0) {

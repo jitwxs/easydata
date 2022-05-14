@@ -1,6 +1,6 @@
-package io.github.jitwxs.easydata.sample.sample.bean;
+package io.github.jitwxs.easydata.sample.bean;
 
-import io.github.jitwxs.easydata.sample.sample.enums.SexEnum;
+import io.github.jitwxs.easydata.sample.enums.SexEnum;
 import lombok.Data;
 
 import java.time.LocalDateTime;

@@ -15,7 +15,7 @@ public class LongComp extends BaseComp<Long> {
     }
 
     @Override
-    public int compare(Long o1, Long o2) {
+    public int compare0(Long o1, Long o2) {
         final int i = o1.compareTo(o2);
 
         if (i == 0) {

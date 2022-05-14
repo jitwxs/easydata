@@ -1,11 +1,11 @@
 package io.github.jitwxs.easydata.sample.core.mock;
 
 import io.github.jitwxs.easydata.core.mock.EasyMock;
-import io.github.jitwxs.easydata.sample.sample.bean.OrderEvaluate;
-import io.github.jitwxs.easydata.sample.sample.bean.UniqueUser;
-import io.github.jitwxs.easydata.sample.sample.enums.SexEnum;
-import io.github.jitwxs.easydata.sample.sample.message.EnumProto;
-import io.github.jitwxs.easydata.sample.sample.message.MessageProto;
+import io.github.jitwxs.easydata.sample.bean.OrderEvaluate;
+import io.github.jitwxs.easydata.sample.bean.UniqueUser;
+import io.github.jitwxs.easydata.sample.enums.SexEnum;
+import io.github.jitwxs.easydata.sample.message.EnumProto;
+import io.github.jitwxs.easydata.sample.message.MessageProto;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;

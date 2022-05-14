@@ -1,4 +1,4 @@
-package io.github.jitwxs.easydata.sample.sample.bean;
+package io.github.jitwxs.easydata.sample.bean;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderEvaluate {
@@ -58,4 +58,9 @@ public class OrderEvaluate {
     private LocalDateTime courierDate;
 
     private LocalDateTime updateDate;
+
+    /**
+     * 测试单边字段
+     */
+    private BigDecimal javaBeanUnknownFields;
 }

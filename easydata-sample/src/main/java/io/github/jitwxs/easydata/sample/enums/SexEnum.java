@@ -1,4 +1,4 @@
-package io.github.jitwxs.easydata.sample.sample.enums;
+package io.github.jitwxs.easydata.sample.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

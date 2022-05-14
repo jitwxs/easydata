@@ -1,6 +1,6 @@
-package io.github.jitwxs.easydata.sample.sample.bean;
+package io.github.jitwxs.easydata.sample.bean;
 
-import io.github.jitwxs.easydata.sample.sample.message.EnumProto;
+import io.github.jitwxs.easydata.sample.message.EnumProto;
 import lombok.Data;
 
 /**
