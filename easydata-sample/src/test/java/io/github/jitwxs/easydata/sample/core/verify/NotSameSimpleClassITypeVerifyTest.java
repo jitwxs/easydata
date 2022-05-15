@@ -10,6 +10,8 @@ import io.github.jitwxs.easydata.sample.message.EnumProto;
 import io.github.jitwxs.easydata.sample.message.MessageProto;
 import org.junit.jupiter.api.Test;
 
+import static io.github.jitwxs.easydata.common.enums.ClassDiffVerifyStrategyEnum.*;
+import static io.github.jitwxs.easydata.common.enums.ClassDiffVerifyStrategyEnum.VERIFY_SAME_FIELD;
 import static io.github.jitwxs.easydata.core.verify.EasyVerify.with;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -28,7 +30,7 @@ public class NotSameSimpleClassITypeVerifyTest {
     public void testCompareProtoAndBean1() {
         assertThrows(AssertionError.class, () -> with(EnumProto.SexEnum.MALE, SexEnum.MALE).verify());
 
-        assertDoesNotThrow(() -> with(EnumProto.SexEnum.MALE, SexEnum.MALE).ignoreClassDiff().verify());
+        assertDoesNotThrow(() -> with(EnumProto.SexEnum.MALE, SexEnum.MALE).ignoreClassDiff(CONVERT_SAME_CLASS).verify());
     }
 
     /**
@@ -39,8 +41,8 @@ public class NotSameSimpleClassITypeVerifyTest {
         final OrderEvaluate evaluate = EasyMock.run(OrderEvaluate.class);
         final MessageProto.OrderEvaluate evaluate1 = OrderEvaluateConvert.db2Proto(evaluate);
 
-        assertThrows(AssertionError.class, () ->  with(evaluate, evaluate1).ignoreClassDiff().verify());
-        assertDoesNotThrow(() ->  with(evaluate, evaluate1).ignoreClassDiff().ignoredFields("javaBeanUnknownFields").verify());
+        assertThrows(AssertionError.class, () ->  with(evaluate, evaluate1).ignoreClassDiff(CONVERT_SAME_CLASS).verify());
+        assertDoesNotThrow(() ->  with(evaluate, evaluate1).ignoreClassDiff(VERIFY_SAME_FIELD).verify());
     }
 
     /**
@@ -55,7 +57,7 @@ public class NotSameSimpleClassITypeVerifyTest {
         final MessageProto.OrderEvaluate evaluate = EasyMock.run(MessageProto.OrderEvaluate.class, mockConfig);
         final OrderEvaluate evaluate1 = OrderEvaluateConvert.proto2Db(evaluate);
 
-        assertThrows(AssertionError.class, () ->  with(evaluate, evaluate1).ignoreClassDiff().verify());
-        assertDoesNotThrow(() ->  with(evaluate, evaluate1).ignoreClassDiff().ignoredFields("memoizedHashCode", "protoBeanUnknownFields_").verify());
+        assertThrows(AssertionError.class, () ->  with(evaluate, evaluate1).ignoreClassDiff(CONVERT_SAME_CLASS).verify());
+        assertDoesNotThrow(() ->  with(evaluate, evaluate1).ignoreClassDiff(VERIFY_SAME_FIELD).verify());
     }
 }

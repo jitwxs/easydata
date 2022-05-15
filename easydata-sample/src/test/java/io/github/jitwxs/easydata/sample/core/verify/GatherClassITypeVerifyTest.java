@@ -1,12 +1,12 @@
 package io.github.jitwxs.easydata.sample.core.verify;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import io.github.jitwxs.easydata.common.bean.MockConfig;
 import io.github.jitwxs.easydata.common.enums.MockStringEnum;
 import io.github.jitwxs.easydata.core.mock.EasyMock;
 import io.github.jitwxs.easydata.core.verify.EasyVerify;
 import io.github.jitwxs.easydata.sample.LoggerStarter;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import io.github.jitwxs.easydata.sample.bean.UserInfo;
 import io.github.jitwxs.easydata.sample.message.EnumProto;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +17,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static io.github.jitwxs.easydata.common.enums.ClassDiffVerifyStrategyEnum.CONVERT_SAME_CLASS;
+import static io.github.jitwxs.easydata.common.enums.ClassDiffVerifyStrategyEnum.VERIFY_SAME_FIELD;
 import static io.github.jitwxs.easydata.core.verify.EasyVerify.with;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -57,7 +59,9 @@ public class GatherClassITypeVerifyTest extends LoggerStarter {
         });
 
         assertThrows(AssertionError.class, () -> with(a, b).verify());
-        assertDoesNotThrow(() -> with(a, b).ignoreClassDiff().verify());
+
+        assertDoesNotThrow(() -> with(a, b).ignoreClassDiff(VERIFY_SAME_FIELD).verify());
+        assertDoesNotThrow(() -> with(a, b).ignoreClassDiff(CONVERT_SAME_CLASS).verify());
     }
 
     @Test
@@ -68,7 +72,7 @@ public class GatherClassITypeVerifyTest extends LoggerStarter {
         // linkedList
         final Collection<EnumProto.SexEnum> enums2 = new LinkedList<>(Arrays.asList(EnumProto.SexEnum.MALE, EnumProto.SexEnum.FEMALE));
 
-        assertDoesNotThrow(() -> EasyVerify.with(enums1, enums2).ignoreClassDiff().verify());
+        assertDoesNotThrow(() -> EasyVerify.with(enums1, enums2).ignoreClassDiff(CONVERT_SAME_CLASS).verify());
 
         // hashSet
         final Collection<EnumProto.SexEnum> enums3 = Sets.newHashSet(EnumProto.SexEnum.MALE, EnumProto.SexEnum.FEMALE);
@@ -80,7 +84,8 @@ public class GatherClassITypeVerifyTest extends LoggerStarter {
         final List scenarios = Arrays.asList(enums1, enums2, enums3, enums4, enums5);
         scenarios.stream().flatMap(i -> scenarios.stream().peek(j -> {
             log.info("testEnumCollection {} Equals {}", i.getClass().getName(), j.getClass().getName());
-            with(i, j).ignoreClassDiff().verify();
+            with(i, j).ignoreClassDiff(VERIFY_SAME_FIELD).verify();
+            with(i, j).ignoreClassDiff(CONVERT_SAME_CLASS).verify();
         })).collect(Collectors.toList());
     }
 
@@ -102,7 +107,8 @@ public class GatherClassITypeVerifyTest extends LoggerStarter {
         final List scenarios = Arrays.asList(map1, map2);
         scenarios.stream().flatMap(i -> scenarios.stream().peek(j -> {
             log.info("testObjectMap {} Equals {}", i.getClass().getName(), j.getClass().getName());
-            with(i, j).ignoreClassDiff().verify();
+            with(i, j).ignoreClassDiff(VERIFY_SAME_FIELD).verify();
+            with(i, j).ignoreClassDiff(CONVERT_SAME_CLASS).verify();
         })).collect(Collectors.toList());
     }
 
@@ -117,7 +123,8 @@ public class GatherClassITypeVerifyTest extends LoggerStarter {
                 .email(EasyMock.run(String.class, new MockConfig().setStringEnum(MockStringEnum.EMAIL)))
                 .build());
 
-        with(list1, list2).ignoredFields("email").ignoreClassDiff().verify();
+        with(list1, list2).ignoredFields("email").ignoreClassDiff(VERIFY_SAME_FIELD).verify();
+        with(list1, list2).ignoredFields("email").ignoreClassDiff(CONVERT_SAME_CLASS).verify();
     }
 
     @Test

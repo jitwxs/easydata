@@ -110,6 +110,10 @@ public class PropertyCache {
                 put.accept(descriptor, readAndWriteAble);
             }
         }
+
+        public PropertyDescriptor getDescriptor(final String name) {
+            return this.all.get(name);
+        }
     }
 
     /**
