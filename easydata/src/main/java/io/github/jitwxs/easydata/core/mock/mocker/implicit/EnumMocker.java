@@ -4,7 +4,8 @@ import io.github.jitwxs.easydata.common.bean.MockConfig;
 import io.github.jitwxs.easydata.common.cache.EnumCache;
 import io.github.jitwxs.easydata.core.mock.mocker.IMocker;
 import lombok.AllArgsConstructor;
-import org.apache.commons.lang3.RandomUtils;
+
+import java.util.Collection;
 
 @AllArgsConstructor
 public class EnumMocker<T extends Enum<?>> implements IMocker<Object> {
@@ -13,11 +14,8 @@ public class EnumMocker<T extends Enum<?>> implements IMocker<Object> {
 
     @Override
     public T mock(MockConfig mockConfig) {
-        final Enum<?>[] enums = EnumCache.tryGet(clazz);
-        if (enums == null || enums.length == 0) {
-            return null;
-        }
+        final Collection<Enum> enums = EnumCache.tryGet(clazz).getNameMap().values();
 
-        return (T) enums[RandomUtils.nextInt(0, enums.length)];
+        return (T) enums.iterator().next();
     }
 }

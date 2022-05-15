@@ -73,7 +73,7 @@ public class PropertyCache {
                     }
 
                     final List<Descriptors.FieldDescriptor> descriptorList = ((MessageOrBuilder) object).getDescriptorForType().getFields();
-                    descriptorList.stream().map(e -> descriptorMap.get(e.getName())).filter(Objects::nonNull).forEach(this::addDescriptor);
+                    descriptorList.stream().map(e -> descriptorMap.get(processFieldName(e.getName()))).filter(Objects::nonNull).forEach(this::addDescriptor);
                 } else {
                     for (PropertyDescriptor descriptor : descriptorMap.values()) {
                         this.addDescriptor(descriptor);
@@ -109,6 +109,10 @@ public class PropertyCache {
             if (isReadable && isWriteable) {
                 put.accept(descriptor, readAndWriteAble);
             }
+        }
+
+        public PropertyDescriptor getDescriptor(final String name) {
+            return this.all.get(name);
         }
     }
 

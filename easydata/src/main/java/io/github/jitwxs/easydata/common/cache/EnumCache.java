@@ -1,6 +1,7 @@
 package io.github.jitwxs.easydata.common.cache;
 
 import com.google.protobuf.ProtocolMessageEnum;
+import lombok.Getter;
 import org.powermock.reflect.Whitebox;
 
 import java.util.HashMap;
@@ -11,33 +12,53 @@ import java.util.Map;
  * @since 2022-03-20 13:16
  */
 public class EnumCache {
-    private static final Map<Class<?>, Enum<?>[]> cache = new HashMap<>();
+    private static final Map<Class<?>, EnumProperty> cache = new HashMap<>();
 
-    public static Enum<?>[] tryGet(final Class<?> clazz) {
-        return cache.computeIfAbsent(clazz, i -> {
-            if (!clazz.isEnum()) {
-                return null;
-            }
+    public static EnumProperty tryGet(final Class<?> target) {
+        if (!target.isEnum()) {
+            return null;
+        }
 
-            Enum<?>[] enums = Whitebox.getInternalState(clazz, "$VALUES");
+        return cache.computeIfAbsent(target, i -> new EnumProperty(target));
+    }
 
-            // 对 proto 支持，忽略无效属性
-            if (ProtocolMessageEnum.class.isAssignableFrom(clazz)) {
-                final Enum<?>[] protoEnums = new Enum<?>[enums.length - 1];
-                int k = 0;
+    public static Enum tryGet(final Class<?> target, final String name, final int faultId) {
+        final EnumProperty property = tryGet(target);
+        if (property == null) {
+            return null;
+        }
 
-                for (Enum<?> one : enums) {
+        return property.getNameMap().getOrDefault(name, property.getIdMap().get(faultId));
+    }
+
+    @Getter
+    public static class EnumProperty {
+        private final Class<?> target;
+
+        private final boolean isProto;
+
+        private final Map<String, Enum> nameMap = new HashMap<>();
+
+        private final Map<Integer, Enum> idMap = new HashMap<>();
+
+        public EnumProperty(Class<?> target) {
+            this.target = target;
+            this.isProto = ProtocolMessageEnum.class.isAssignableFrom(target);
+
+            final Enum<?>[] enums = Whitebox.getInternalState(target, "$VALUES");
+
+            for (Enum<?> one : enums) {
+                if (isProto) {
                     if ("UNRECOGNIZED".equals(one.name())) {
                         continue;
                     }
-
-                    protoEnums[k++] = one;
+                    this.idMap.put(((ProtocolMessageEnum) one).getNumber(), one);
+                } else {
+                    this.idMap.put(one.ordinal(), one);
                 }
 
-                enums = protoEnums;
+                this.nameMap.put(one.name(), one);
             }
-
-            return enums;
-        });
+        }
     }
 }

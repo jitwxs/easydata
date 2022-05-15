@@ -1,4 +1,4 @@
-package io.github.jitwxs.easydata.sample.sample.bean;
+package io.github.jitwxs.easydata.sample.bean;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option java_package = "com.github.jitwxs.easydata.sample.message";
+option java_package = "io.github.jitwxs.easydata.sample.message";
 option java_outer_classname = "MessageProto";
 
 message OrderEvaluate {
@@ -16,4 +16,5 @@ message OrderEvaluate {
   int32 version = 10;
   int64 courierDate = 11;
   int64 updateDate = 12;
+  string protoBeanUnknownFields = 13;
 }

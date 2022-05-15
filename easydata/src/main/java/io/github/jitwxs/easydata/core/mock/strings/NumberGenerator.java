@@ -2,7 +2,6 @@ package io.github.jitwxs.easydata.core.mock.strings;
 
 import io.github.jitwxs.easydata.common.bean.MockConfig;
 import io.github.jitwxs.easydata.common.enums.MockStringEnum;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
 
 /**
@@ -17,14 +16,13 @@ public class NumberGenerator implements IStringGenerator {
     public String generator(MockConfig mockConfig) {
         final int count = mockConfig.nexSize();
 
-        String numeric = RandomStringUtils.randomNumeric(count);
+        final StringBuilder sb = new StringBuilder();
 
-        // 多位数避免生成首位为0
-        if (count > 1 && numeric.startsWith("0")) {
-            numeric = numeric.substring(1) + RandomUtils.nextInt(1, 10);
+        for (int i = 0; i < count; i++) {
+            sb.append(RandomUtils.nextInt(i == 0 ? 1 : 0, 10));
         }
 
-        return numeric;
+        return sb.toString();
     }
 
     @Override

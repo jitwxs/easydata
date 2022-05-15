@@ -1,7 +1,7 @@
 package io.github.jitwxs.easydata.sample.core.verify;
 
 import io.github.jitwxs.easydata.core.verify.EasyVerify;
-import io.github.jitwxs.easydata.sample.sample.bean.OrderEvaluate;
+import io.github.jitwxs.easydata.sample.bean.OrderEvaluate;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

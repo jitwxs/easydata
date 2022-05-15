@@ -2,7 +2,6 @@ package io.github.jitwxs.easydata.common.util;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.util.Date;
 
 /**
@@ -11,10 +10,22 @@ import java.util.Date;
  */
 public class TimeUtils {
     public static long ldtToMs(final LocalDateTime localDateTime) {
-        return localDateTime.toInstant(ZoneOffset.of("+8")).getEpochSecond() * 1000;
+        if (localDateTime == null) {
+            return 0L;
+        }
+
+        return localDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
     }
 
     public static LocalDateTime dateToLdt(final Date date) {
+        if (date == null) {
+            return null;
+        }
+
         return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+    }
+
+    public static LocalDateTime msToLdt(final long ms) {
+        return dateToLdt(new Date(ms));
     }
 }

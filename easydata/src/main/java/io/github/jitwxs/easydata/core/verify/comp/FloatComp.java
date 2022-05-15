@@ -15,7 +15,7 @@ public class FloatComp extends BaseComp<Float> {
     }
 
     @Override
-    public int compare(Float o1, Float o2) {
+    public int compare0(Float o1, Float o2) {
         final int i = o1.compareTo(o2);
 
         if (i == 0) {

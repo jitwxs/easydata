@@ -2,8 +2,8 @@ package io.github.jitwxs.easydata.sample.core.loader;
 
 import io.github.jitwxs.easydata.core.loader.LoaderProperties;
 import io.github.jitwxs.easydata.core.mock.EasyMock;
-import io.github.jitwxs.easydata.sample.sample.bean.OrderEvaluate;
-import io.github.jitwxs.easydata.sample.sample.bean.UserInfo;
+import io.github.jitwxs.easydata.sample.bean.OrderEvaluate;
+import io.github.jitwxs.easydata.sample.bean.UserInfo;
 import net.bytebuddy.ByteBuddy;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

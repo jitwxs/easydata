@@ -15,13 +15,25 @@ import java.util.function.Function;
 @Getter
 @AllArgsConstructor
 public enum GatherEnum {
+    /**
+     * 集合类型
+     */
     COLLECTION(Collection.class::isAssignableFrom),
 
+    /**
+     * map 类型
+     */
     MAP(Map.class::isAssignableFrom),
 
+    /**
+     * 数组类型
+     */
     ARRAY(Class::isArray)
     ;
 
+    /**
+     * 判断表达式
+     */
     private final Function<Class<?>, Boolean> judgeFuc;
 
     public static Optional<GatherEnum> delegate(final Class<?> clazz) {

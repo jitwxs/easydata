@@ -1,17 +1,28 @@
-package io.github.jitwxs.easydata.core.convert.explicit;
+package io.github.jitwxs.easydata.core.convert;
 
 import io.github.jitwxs.easydata.common.exception.EasyDataConvertException;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-@Slf4j
-public class StringToDateConvert implements ExplicitConvert<String, Date> {
+/**
+ * @author jitwxs@foxmail.com
+ * @since 2022-05-14 14:52
+ */
+public class DateConvert implements IConvert<Date> {
     @Override
-    public Date convert(String input) {
-        try {
+    public Date convert(Object source) throws EasyDataConvertException {
+        final Class<?> sourceClass = source.getClass();
+
+        if (sourceClass == Long.class) {
+            return new Date((Long) source);
+        }
+
+        if (sourceClass == String.class) {
+            final String input = (String) source;
+
             // 使用 timestamp
             if (StringUtils.isNumeric(input)) {
                 return new Date(Long.parseLong(input));
@@ -25,9 +36,19 @@ public class StringToDateConvert implements ExplicitConvert<String, Date> {
             parse = parse.replaceFirst("( )[0-9]{1,2}([^0-9]?)", "$1HH$2");
             parse = parse.replaceFirst("([^0-9]?)[0-9]{1,2}([^0-9]?)", "$1mm$2");
             parse = parse.replaceFirst("([^0-9]?)[0-9]{1,2}([^0-9]?)", "$1ss$2");
-            return new SimpleDateFormat(parse).parse(input);
-        } catch (Exception e) {
-            throw new EasyDataConvertException(e);
+
+            try {
+                return new SimpleDateFormat(parse).parse(input);
+            } catch (ParseException e) {
+                throw new EasyDataConvertException(e);
+            }
         }
+
+        return null;
+    }
+
+    @Override
+    public Date convert(Object source, Class<?> target) {
+        return null;
     }
 }

@@ -15,7 +15,7 @@ public class IntegerComp extends BaseComp<Integer> {
     }
 
     @Override
-    public int compare(Integer o1, Integer o2) {
+    public int compare0(Integer o1, Integer o2) {
         final int i = o1.compareTo(o2);
 
         if (i == 0) {

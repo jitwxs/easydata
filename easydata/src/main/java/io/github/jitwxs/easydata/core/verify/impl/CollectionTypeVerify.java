@@ -21,18 +21,22 @@ public class CollectionTypeVerify {
         // 数量比较
         assertThat(a).hasSameSizeAs(b);
 
+        final Class<?> targetClass;
+
         // 类型统一
         if (a.getClass() != b.getClass()) {
             // 如果存在 set，就使用 set 进行统一
             final boolean usingSet = Stream.of(a.getClass(), b.getClass()).anyMatch(Set.class::isAssignableFrom);
 
-            final Class<?> clazz = usingSet ? HashSet.class : ArrayList.class;
+            targetClass = usingSet ? HashSet.class : ArrayList.class;
 
-            a = alignmentClass(clazz, a);
-            b = alignmentClass(clazz, b);
+            a = alignmentClass(targetClass, a);
+            b = alignmentClass(targetClass, b);
+        } else {
+            targetClass = a.getClass();
         }
 
-        BEAN_TYPE_VERIFY.doOneEquals(a, b, instance);
+        BEAN_TYPE_VERIFY.doOneEquals(a, targetClass, b, targetClass, instance);
     }
 
     private Collection alignmentClass(Class<?> target, Collection value) {

@@ -1,5 +1,6 @@
 package io.github.jitwxs.easydata.core.verify;
 
+import io.github.jitwxs.easydata.common.enums.ClassDiffVerifyStrategyEnum;
 import io.github.jitwxs.easydata.common.util.ObjectUtils;
 import io.github.jitwxs.easydata.common.util.ReflectionUtils;
 import io.github.jitwxs.easydata.core.verify.comp.BaseComp;
@@ -34,7 +35,7 @@ public class VerifyInstance {
      * 忽略类型的差异
      */
     @Getter
-    private boolean ignoreClassDiff = false;
+    private ClassDiffVerifyStrategyEnum classDiffVerifyStrategy = null;
 
     public VerifyInstance(Object except, Object actual) {
         this.except = except;
@@ -68,14 +69,16 @@ public class VerifyInstance {
     }
 
     /**
-     * 忽略不同类型直接的差异
+     * 忽略不同类型之间的差异
      * <p>
      * 例如 {@link Set} 和 {@link List}，{@link HashMap} 和 {@link TreeMap} 等
      *
+     * @param classDiffVerifyStrategy 比较策略，传 null 时表示不忽略类型差异
+     *
      * @return this
      */
-    public VerifyInstance ignoreClassDiff() {
-        this.ignoreClassDiff = true;
+    public VerifyInstance ignoreClassDiff(ClassDiffVerifyStrategyEnum classDiffVerifyStrategy) {
+        this.classDiffVerifyStrategy = classDiffVerifyStrategy;
         return this;
     }
 
