@@ -215,7 +215,9 @@ public class BeanTypeVerify {
                         anAssert = anAssert.usingComparator(comp);
                     }
 
-                    anAssert.isEqualTo(bValue);
+                    anAssert
+                            .as("fieldName: %s", fieldName)
+                            .isEqualTo(bValue);
 
                 } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
                     throw new EasyVerifyEqualsException(e);
