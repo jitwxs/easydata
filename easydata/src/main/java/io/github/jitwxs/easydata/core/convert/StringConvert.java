@@ -9,6 +9,9 @@ public class StringConvert implements IConvert<String> {
     public String convert(Object source) {
         final Class<?> sourceClass = source.getClass();
 
+        if (sourceClass.isEnum()) {
+            return ((Enum) source).name();
+        }
 
         return String.valueOf(source);
     }

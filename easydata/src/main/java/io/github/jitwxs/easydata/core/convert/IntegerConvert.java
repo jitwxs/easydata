@@ -9,6 +9,10 @@ public class IntegerConvert implements IConvert<Integer> {
     public Integer convert(Object source) {
         final Class<?> sourceClass = source.getClass();
 
+        if (sourceClass.isEnum()) {
+            return ((Enum) source).ordinal();
+        }
+
         if (sourceClass == String.class) {
             return fromString((String) source);
         }
