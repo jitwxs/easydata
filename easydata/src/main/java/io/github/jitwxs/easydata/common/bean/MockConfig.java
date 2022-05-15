@@ -17,6 +17,34 @@ import java.util.Map;
  */
 @Getter
 public class MockConfig {
+    /**
+     * 对于对象类型，mock 其中的字段时，可以通过 {@code contrastClass} 的字段类型来指定 mock 出什么类型的数据，常用于通信协议的转换
+     * <p>
+     * 例如: 对于 string 类型字段的 mock，可能是 double，也可能是 timestamp，默认情况下只能根据 {@link #stringEnum} 来生成，
+     * 如果该字段在 {@code contrastClass} 中也存在，那么就可以使用 {@code contrastClass} 中的类型进行生成。
+     * <p>
+     * 例如：
+     * <p>
+     * 存在 student 对象的通信协议如下，所有字段使用 string 类型传输。使用 {@link #stringEnum} 生成的数据类型都是一致的（数字 or 时间戳）。
+     *
+     * <pre>
+     *     message Student {
+     *         string age = 0;
+     *         string name = 1;
+     *         string createTime = 2;
+     *     }
+     * </pre>
+     *
+     * <pre>
+     *     class Student {
+     *         int age;
+     *         string name;
+     *         long createTime;
+     *     }
+     * </pre>
+     */
+    private Class<?> contrastClass;
+
     private byte[] byteRange = {0, 127};
 
     private short[] shortRange = {0, 1000};
@@ -54,6 +82,11 @@ public class MockConfig {
 
     public int nexSize() {
         return sizeRange[0] + RandomUtils.nextInt(0, sizeRange[1] - sizeRange[0] + 1);
+    }
+
+    public MockConfig contrastClass(final Class<?> contrast) {
+        this.contrastClass = contrast;
+        return this;
     }
 
     public MockConfig setStringEnum(final MockStringEnum stringEnum) {

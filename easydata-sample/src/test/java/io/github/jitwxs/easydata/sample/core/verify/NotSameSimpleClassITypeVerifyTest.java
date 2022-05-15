@@ -50,11 +50,7 @@ public class NotSameSimpleClassITypeVerifyTest {
      */
     @Test
     public void testCompareProtoAndBean3() {
-        final MockConfig mockConfig = new MockConfig()
-                .setStringEnum(MockStringEnum.NUMBER)
-                .setLongRange(1652504444572L, 1852504444572L);
-
-        final MessageProto.OrderEvaluate evaluate = EasyMock.run(MessageProto.OrderEvaluate.class, mockConfig);
+        final MessageProto.OrderEvaluate evaluate = EasyMock.run(MessageProto.OrderEvaluate.class, new MockConfig().contrastClass(OrderEvaluate.class));
         final OrderEvaluate evaluate1 = OrderEvaluateConvert.proto2Db(evaluate);
 
         assertThrows(AssertionError.class, () ->  with(evaluate, evaluate1).ignoreClassDiff(CONVERT_SAME_CLASS).verify());
