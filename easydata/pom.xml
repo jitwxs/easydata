@@ -6,7 +6,7 @@
 
     <groupId>io.github.jitwxs</groupId>
     <artifactId>easydata</artifactId>
-    <version>1.4-RELEASE</version>
+    <version>1.5-RELEASE</version>
     <packaging>jar</packaging>
 
     <name>easydata</name>
@@ -107,7 +107,7 @@
         <dependency>
             <groupId>net.bytebuddy</groupId>
             <artifactId>byte-buddy</artifactId>
-            <version>1.12.9</version>
+            <version>1.12.10</version>
         </dependency>
 
         <!-- Protobuf 支持 -->
