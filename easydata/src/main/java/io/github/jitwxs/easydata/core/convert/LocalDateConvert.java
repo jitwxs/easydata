@@ -18,11 +18,9 @@ public class LocalDateConvert implements IConvert<LocalDate> {
             return fromLong((Long) source);
         }
 
-        if (sourceClass == LocalDateTime.class) {
-            return fromLocalDateTime((LocalDateTime) source);
-        }
+        final LocalDateTime ldt = provider().convert(source, LocalDateTime.class);
 
-        return null;
+        return ldt.toLocalDate();
     }
 
     @Override

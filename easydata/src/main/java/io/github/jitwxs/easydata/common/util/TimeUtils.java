@@ -1,6 +1,8 @@
 package io.github.jitwxs.easydata.common.util;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.Date;
 
@@ -17,6 +19,10 @@ public class TimeUtils {
         return localDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
     }
 
+    public static LocalDateTime msToLdt(final long ms) {
+        return dateToLdt(new Date(ms));
+    }
+
     public static LocalDateTime dateToLdt(final Date date) {
         if (date == null) {
             return null;
@@ -25,7 +31,11 @@ public class TimeUtils {
         return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
     }
 
-    public static LocalDateTime msToLdt(final long ms) {
-        return dateToLdt(new Date(ms));
+    public static Date ldtToDate(final LocalDateTime ldt) {
+        return new Date(ldtToMs(ldt));
+    }
+
+    public static LocalDateTime ldToLdt(final LocalDate ld) {
+        return LocalDateTime.of(ld, LocalTime.MIN);
     }
 }
