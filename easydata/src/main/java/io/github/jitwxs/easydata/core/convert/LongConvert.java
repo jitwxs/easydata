@@ -1,11 +1,9 @@
 package io.github.jitwxs.easydata.core.convert;
 
 import io.github.jitwxs.easydata.common.util.TimeUtils;
+import org.apache.commons.lang3.StringUtils;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.Date;
 
 /**
  * @author jitwxs@foxmail.com
@@ -17,22 +15,16 @@ public class LongConvert implements IConvert<Long> {
         final Class<?> sourceClass = source.getClass();
 
         if (sourceClass == String.class) {
-            return Long.parseLong((String) source);
+            final String target = (String) source;
+
+            if (StringUtils.isNumeric(target)) {
+                return Long.parseLong(target);
+            }
         }
 
-        if (sourceClass == Date.class) {
-            return ((Date) source).getTime();
-        }
+        final LocalDateTime ldt = provider().convert(source, LocalDateTime.class);
 
-        if (sourceClass == LocalDate.class) {
-            return TimeUtils.ldtToMs(LocalDateTime.of(((LocalDate) source), LocalTime.MIN));
-        }
-
-        if (sourceClass == LocalDateTime.class) {
-            return TimeUtils.ldtToMs((LocalDateTime) source);
-        }
-
-        return null;
+        return TimeUtils.ldtToMs(ldt);
     }
 
     @Override

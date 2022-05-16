@@ -1,10 +1,12 @@
 package io.github.jitwxs.easydata.core.convert;
 
 import io.github.jitwxs.easydata.common.exception.EasyDataConvertException;
+import io.github.jitwxs.easydata.common.util.TimeUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -44,7 +46,9 @@ public class DateConvert implements IConvert<Date> {
             }
         }
 
-        return null;
+        final LocalDateTime ldt = provider().convert(source, LocalDateTime.class);
+
+        return TimeUtils.ldtToDate(ldt);
     }
 
     @Override
