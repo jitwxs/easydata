@@ -33,7 +33,7 @@ public class LoadingUtils {
     public static List<String[]> loadCsv(final String path) throws IOException, CsvException {
         try (final InputStream inputStream = CLAZZ.getResourceAsStream(path)) {
             if (inputStream == null) {
-                throw new IOException("InputStream Not Exist");
+                throw new IOException("inputStream not exist for: " + path);
             }
 
             try (CSVReader reader = new CSVReader(new InputStreamReader(inputStream))) {
@@ -53,7 +53,7 @@ public class LoadingUtils {
     public static List<String> loadJson(final String path, final Charset charset) throws IOException {
         try (final InputStream inputStream = CLAZZ.getResourceAsStream(path)) {
             if (inputStream == null) {
-                throw new IOException("InputStream Not Exist");
+                throw new IOException("inputStream not exist for: " + path);
             }
 
             final String string = IOUtils.toString(inputStream, charset);
