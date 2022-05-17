@@ -28,7 +28,7 @@ public class FileConnection implements IConnection {
 
             switch (fileFormatEnum) {
                 case CSV:
-                    final MatrixBean matrixBean = new MatrixBean(LoadingUtils.loadCsv(queryUrl));
+                    final MatrixBean matrixBean = MatrixBean.newInstance(LoadingUtils.loadCsv(queryUrl));
                     return Optional.of(new MatrixLoadingSource(properties, matrixBean));
                 case JSON:
                     final List<String> json = LoadingUtils.loadJson(queryUrl, Charset.defaultCharset());

@@ -37,7 +37,7 @@ public class MySQLConnection implements IConnection {
     public Optional<LoadingSource<?>> loading(LoaderProperties properties) {
         try {
             final List<String[]> list = LoadingUtils.loadSql(this, properties.getUrl());
-            return Optional.of(new MatrixLoadingSource(properties, new MatrixBean(list)));
+            return Optional.of(new MatrixLoadingSource(properties, MatrixBean.newInstance(list)));
         } catch (ClassNotFoundException | SQLException e) {
             throw new EasyDataLoaderException(e);
         }
