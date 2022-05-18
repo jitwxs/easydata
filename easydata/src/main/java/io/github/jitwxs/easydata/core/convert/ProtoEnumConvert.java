@@ -3,7 +3,7 @@ package io.github.jitwxs.easydata.core.convert;
 import com.google.protobuf.ProtocolMessageEnum;
 import io.github.jitwxs.easydata.common.cache.EnumCache;
 import io.github.jitwxs.easydata.common.exception.EasyDataConvertException;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 
 /**
  * @author jitwxs@foxmail.com
@@ -28,7 +28,7 @@ public class ProtoEnumConvert implements IConvert<ProtocolMessageEnum> {
         if (sourceClass == String.class) {
             final String input = (String) source;
 
-            if (StringUtils.isNumeric(input)) {
+            if (NumberUtils.isParsable(input)) {
                 final Integer number = provider().convert(input, Integer.class);
 
                 return (ProtocolMessageEnum) EnumCache.tryGet(target).getIdMap().get(number);

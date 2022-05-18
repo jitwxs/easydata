@@ -28,10 +28,10 @@ public class FileConnection implements IConnection {
 
             switch (fileFormatEnum) {
                 case CSV:
-                    final MatrixBean matrixBean = new MatrixBean(LoadingUtils.loadCsv(queryUrl));
+                    final MatrixBean matrixBean = MatrixBean.newInstance(LoadingUtils.loadCsv(queryUrl));
                     return Optional.of(new MatrixLoadingSource(properties, matrixBean));
                 case JSON:
-                    final List<String> json = LoadingUtils.loadJson(queryUrl, Charset.defaultCharset());
+                    final List<String> json = LoadingUtils.loadJsonFromPath(queryUrl, Charset.defaultCharset());
                     return Optional.of(new JsonLoadingSource(properties, json));
                 default:
                     throw new EasyDataLoaderException("Not Support File Format To Load: " + queryUrl);

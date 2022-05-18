@@ -2,7 +2,7 @@ package io.github.jitwxs.easydata.core.convert;
 
 import io.github.jitwxs.easydata.common.exception.EasyDataConvertException;
 import io.github.jitwxs.easydata.common.util.TimeUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -26,7 +26,7 @@ public class DateConvert implements IConvert<Date> {
             final String input = (String) source;
 
             // 使用 timestamp
-            if (StringUtils.isNumeric(input)) {
+                if (NumberUtils.isParsable(input)) {
                 return new Date(Long.parseLong(input));
             }
 

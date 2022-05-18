@@ -1,7 +1,7 @@
 package io.github.jitwxs.easydata.core.convert;
 
 import io.github.jitwxs.easydata.common.util.TimeUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 
 import java.time.LocalDateTime;
 
@@ -17,7 +17,7 @@ public class LongConvert implements IConvert<Long> {
         if (sourceClass == String.class) {
             final String target = (String) source;
 
-            if (StringUtils.isNumeric(target)) {
+            if (NumberUtils.isParsable(target)) {
                 return Long.parseLong(target);
             }
         }
