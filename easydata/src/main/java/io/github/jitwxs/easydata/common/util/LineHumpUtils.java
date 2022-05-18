@@ -22,6 +22,10 @@ public class LineHumpUtils {
      * @return hump type string, such as lowerCase
      */
     public static String lineToHump(String str) {
+        if (!str.contains("_")) {
+            return str;
+        }
+
         str = str.toLowerCase();
         Matcher matcher = linePattern.matcher(str);
         StringBuffer sb = new StringBuffer();

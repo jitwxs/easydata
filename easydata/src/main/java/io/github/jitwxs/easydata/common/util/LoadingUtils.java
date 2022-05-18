@@ -50,53 +50,62 @@ public class LoadingUtils {
      * @return json string list, each string is json object, not json array
      * @throws IOException when read file in path error
      */
-    public static List<String> loadJson(final String path, final Charset charset) throws IOException {
+    public static List<String> loadJsonFromPath(final String path, final Charset charset) throws IOException {
         try (final InputStream inputStream = CLAZZ.getResourceAsStream(path)) {
             if (inputStream == null) {
                 throw new IOException("inputStream not exist for: " + path);
             }
 
-            final String string = IOUtils.toString(inputStream, charset);
+            return loadJsonFromContent(IOUtils.toString(inputStream, charset));
+        }
+    }
 
-            // single one
-            if (string.startsWith("{")) {
-                return Collections.singletonList(string);
+    /**
+     * load json content
+     *
+     * @param string json content
+     * @return json string list, each string is json object, not json array
+     * @throws IOException when read file in path error
+     */
+    public static List<String> loadJsonFromContent(final String string) throws IOException {
+        // single one
+        if (string.startsWith("{")) {
+            return Collections.singletonList(string);
+        }
+
+        final List<String> resultList = new ArrayList<>();
+        final char[] chars = string.toCharArray();
+        final StringBuilder sb = new StringBuilder();
+
+        int brace = 0;
+        boolean isIncremented = false;
+
+        for (final char c : chars) {
+            if (c == '{') {
+                ++brace;
+                isIncremented = true;
+            } else if (c == '}') {
+                --brace;
             }
+            sb.append(c);
 
-            final List<String> resultList = new ArrayList<>();
-            final char[] chars = string.toCharArray();
-            final StringBuilder sb = new StringBuilder();
-
-            int brace = 0;
-            boolean isIncremented = false;
-
-            for (final char c : chars) {
-                if (c == '{') {
-                    ++brace;
-                    isIncremented = true;
-                } else if (c == '}') {
-                    --brace;
-                }
-                sb.append(c);
-
-                if (brace < 0) {
-                    throw new IOException("Illegal JSON Content");
-                }
-                if (brace == 0) {
-                    if (isIncremented) {
-                        resultList.add(sb.toString());
-                    }
-                    sb.setLength(0);
-                    isIncremented = false;
-                }
-            }
-
-            if (brace != 0 || sb.length() > 0) {
+            if (brace < 0) {
                 throw new IOException("Illegal JSON Content");
             }
-
-            return resultList;
+            if (brace == 0) {
+                if (isIncremented) {
+                    resultList.add(sb.toString());
+                }
+                sb.setLength(0);
+                isIncremented = false;
+            }
         }
+
+        if (brace != 0 || sb.length() > 0) {
+            throw new IOException("Illegal JSON Content");
+        }
+
+        return resultList;
     }
 
     /**
