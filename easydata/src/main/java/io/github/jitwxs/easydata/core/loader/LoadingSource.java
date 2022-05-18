@@ -1,6 +1,7 @@
 package io.github.jitwxs.easydata.core.loader;
 
 import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import io.github.jitwxs.easydata.common.cache.PropertyCache;
 import io.github.jitwxs.easydata.common.enums.DataTypeEnum;
 import io.github.jitwxs.easydata.common.exception.EasyDataConvertException;
@@ -35,7 +36,20 @@ public abstract class LoadingSource<T> {
         this.source = source;
     }
 
-    public abstract <K> List<K> toBean(final Class<K> target, final BiMap<String, String> extraFiledMap);
+    public abstract <K> List<K> toBean(final Class<K> target, final LoaderProperties properties);
+
+    protected BiMap<String, String> initialExtraFields(final LoaderProperties properties) {
+        final BiMap<String, String> extraFiledMap = HashBiMap.create();
+
+        final String[] fields = properties.getExtraFields();
+        if (fields != null) {
+            for (int i = 0; i < fields.length; i += 2) {
+                extraFiledMap.put(fields[i], fields[i + 1]);
+            }
+        }
+
+        return extraFiledMap;
+    }
 
     /**
      * 填充字段
@@ -44,7 +58,7 @@ public abstract class LoadingSource<T> {
      * @param fieldValue 字段值
      * @param fieldName  字段名
      */
-    public void fillingField(final Object object, final Object fieldValue, final String[] fieldName) {
+    protected void fillingField(final Object object, final Object fieldValue, final String[] fieldName) {
         if (fieldName == null) {
             return;
         }

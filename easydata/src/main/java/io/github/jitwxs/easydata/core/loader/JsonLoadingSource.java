@@ -14,6 +14,7 @@ import org.powermock.reflect.Whitebox;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -27,21 +28,27 @@ public class JsonLoadingSource extends LoadingSource<List<String>> {
     }
 
     @Override
-    public <K> List<K> toBean(Class<K> target, BiMap<String, String> extraFiledMap) {
+    public <K> List<K> toBean(Class<K> target, LoaderProperties properties) {
         if (source.size() == 0) {
             return Collections.emptyList();
         }
 
-        final HashBiMap<String, String> cloneExtraFieldMap = HashBiMap.create(extraFiledMap);
+        final HashBiMap<String, String> extraFieldMap = HashBiMap.create(super.initialExtraFields(properties));
 
-        // json字段 > 实体字段
-        final ExtraResolve extraResolve = new ExtraResolve(target, cloneExtraFieldMap, this);
+        // json > bean
+        final Function<String, K> deserializeFunc;
+        if (properties.getJsonDeserializeFunc() != null) {
+            deserializeFunc = (Function<String, K>) properties.getJsonDeserializeFunc();
+        } else {
+            final ExtraResolve extraResolve = new ExtraResolve(target, extraFieldMap, this);
+            deserializeFunc = e -> JSON.parseObject(e, target, extraResolve);
+        }
 
-        final List<K> resultList = this.source.stream().map(e -> JSON.parseObject(e, target, extraResolve)).collect(Collectors.toList());
+        final List<K> resultList = this.source.stream().map(deserializeFunc).collect(Collectors.toList());
 
         // 实体字段 > json字段
-        if (!cloneExtraFieldMap.isEmpty()) {
-            final Iterator<Map.Entry<String, String>> iterator = cloneExtraFieldMap.entrySet().iterator();
+        if (!extraFieldMap.isEmpty()) {
+            final Iterator<Map.Entry<String, String>> iterator = extraFieldMap.entrySet().iterator();
             while (iterator.hasNext()) {
                 final Map.Entry<String, String> entry = iterator.next();
 

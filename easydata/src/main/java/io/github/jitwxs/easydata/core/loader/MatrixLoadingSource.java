@@ -20,11 +20,12 @@ public class MatrixLoadingSource extends LoadingSource<MatrixBean> {
     }
 
     @Override
-    public <K> List<K> toBean(Class<K> target, BiMap<String, String> extraFiledMap) {
+    public <K> List<K> toBean(Class<K> target, LoaderProperties properties) {
         if (MatrixBean.ignore(source)) {
             return Collections.emptyList();
         }
 
+        final BiMap<String, String> extraFiledMap = super.initialExtraFields(properties);
         final BiMap<String, String> extraFiledMap2 = extraFiledMap.inverse();
 
         final List<K> results = new ArrayList<>();

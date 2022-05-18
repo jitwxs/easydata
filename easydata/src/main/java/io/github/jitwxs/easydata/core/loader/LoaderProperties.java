@@ -3,6 +3,8 @@ package io.github.jitwxs.easydata.core.loader;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.function.Function;
+
 /**
  * @author jitwxs@foxmail.com
  * @since 2022-03-19 17:44
@@ -21,6 +23,11 @@ public class LoaderProperties {
      * 额外指定的字段映射
      */
     private String[] extraFields;
+
+    /**
+     * 指定 JSON 类型反序列化策略
+     */
+    private Function<String, ?> jsonDeserializeFunc;
 
     public static LoaderPropertiesBuilder builder() {
         return new LoaderPropertiesSelfBuilder();

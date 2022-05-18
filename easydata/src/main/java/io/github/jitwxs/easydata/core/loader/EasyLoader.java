@@ -2,10 +2,9 @@ package io.github.jitwxs.easydata.core.loader;
 
 import io.github.jitwxs.easydata.conn.FileConnection;
 import io.github.jitwxs.easydata.conn.IConnection;
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
 import lombok.NonNull;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,21 +26,6 @@ public class EasyLoader {
     public <T> List<T> loading(@NonNull final Class<T> types, @NonNull final LoaderProperties properties) {
         final Optional<LoadingSource<?>> data = this.connection.loading(properties);
 
-        final BiMap<String, String> extraFiledMap = this.initialExtraFields(properties);
-
-        return data.map(loadingSource -> loadingSource.toBean(types, extraFiledMap)).orElse(null);
-    }
-
-    private BiMap<String, String> initialExtraFields(final LoaderProperties properties) {
-        final BiMap<String, String> extraFiledMap = HashBiMap.create();
-
-        final String[] fields = properties.getExtraFields();
-        if (fields != null) {
-            for (int i = 0; i < fields.length; i += 2) {
-                extraFiledMap.put(fields[i], fields[i + 1]);
-            }
-        }
-
-        return extraFiledMap;
+        return data.map(loadingSource -> loadingSource.toBean(types, properties)).orElse(Collections.emptyList());
     }
 }
