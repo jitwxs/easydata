@@ -3,6 +3,7 @@ package io.github.jitwxs.easydata.core.loader;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Arrays;
 import java.util.function.Function;
 
 /**
@@ -53,5 +54,13 @@ public class LoaderProperties {
 
             return properties;
         }
+    }
+
+    @Override
+    public String toString() {
+        return "LoaderProperties{" +
+                "url='" + url + '\'' +
+                ", extraFields=" + Arrays.toString(extraFields) +
+                '}';
     }
 }
