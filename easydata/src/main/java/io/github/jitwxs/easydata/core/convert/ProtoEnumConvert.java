@@ -22,7 +22,12 @@ public class ProtoEnumConvert implements IConvert<ProtocolMessageEnum> {
         if (source instanceof Enum) {
             final Enum input = (Enum) source;
 
-            return (ProtocolMessageEnum) EnumCache.tryGet(target, input.name(), input.ordinal());
+            final EnumCache.EnumProperty property = EnumCache.tryGet(target);
+            if (property == null) {
+                return null;
+            }
+
+            return (ProtocolMessageEnum) property.getNameMap().getOrDefault(input.name(), property.getIdMap().get(input.ordinal()));
         }
 
         if (sourceClass == String.class) {

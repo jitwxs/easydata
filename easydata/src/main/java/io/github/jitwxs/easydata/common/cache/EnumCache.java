@@ -6,29 +6,27 @@ import org.powermock.reflect.Whitebox;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 /**
  * @author jitwxs@foxmail.com
  * @since 2022-03-20 13:16
  */
 public class EnumCache {
+    private static final Function<Enum<?>, Integer> DEFAULT_GET_ID_FUNC = Enum::ordinal;
+
     private static final Map<Class<?>, EnumProperty> cache = new HashMap<>();
 
     public static EnumProperty tryGet(final Class<?> target) {
+        return tryGet(target, DEFAULT_GET_ID_FUNC);
+    }
+
+    public static EnumProperty tryGet(final Class<?> target, final Function<Enum<?>, Integer> getIdFunc) {
         if (!target.isEnum()) {
             return null;
         }
 
-        return cache.computeIfAbsent(target, i -> new EnumProperty(target));
-    }
-
-    public static Enum tryGet(final Class<?> target, final String name, final int faultId) {
-        final EnumProperty property = tryGet(target);
-        if (property == null) {
-            return null;
-        }
-
-        return property.getNameMap().getOrDefault(name, property.getIdMap().get(faultId));
+        return cache.computeIfAbsent(target, i -> new EnumProperty(target, getIdFunc));
     }
 
     @Getter
@@ -41,7 +39,7 @@ public class EnumCache {
 
         private final Map<Integer, Enum> idMap = new HashMap<>();
 
-        public EnumProperty(Class<?> target) {
+        public EnumProperty(final Class<?> target, final Function<Enum<?>, Integer> getIdFunc) {
             this.target = target;
             this.isProto = ProtocolMessageEnum.class.isAssignableFrom(target);
 
@@ -54,7 +52,7 @@ public class EnumCache {
                     }
                     this.idMap.put(((ProtocolMessageEnum) one).getNumber(), one);
                 } else {
-                    this.idMap.put(one.ordinal(), one);
+                    this.idMap.put(getIdFunc.apply(one), one);
                 }
 
                 this.nameMap.put(one.name(), one);
