@@ -25,7 +25,7 @@ public class IntegerComp extends BaseComp<Integer> {
 
         final int remaining = Math.abs(diff) - this.precisionConfig;
 
-        if (Integer.compare(remaining, 0) <= 0) {
+        if (remaining <= 0) {
             return 0;
         }
 

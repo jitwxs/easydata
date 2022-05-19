@@ -25,7 +25,7 @@ public class LongComp extends BaseComp<Long> {
 
         final long remaining = Math.abs(diff) - this.precisionConfig;
 
-        if (Long.compare(remaining, 0L) <= 0) {
+        if (remaining <= 0L) {
             return 0;
         }
 

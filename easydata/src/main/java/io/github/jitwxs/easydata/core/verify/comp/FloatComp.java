@@ -18,14 +18,14 @@ public class FloatComp extends BaseComp<Float> {
     public int compare0(Float o1, Float o2) {
         final float diff = o1 - o2;
 
-        final int compareTo = Double.compare(diff, 0F);
+        final int compareTo = Float.compare(diff, 0F);
         if (compareTo == 0) {
             return 0;
         }
 
         final float remaining = Math.abs(diff) - this.precisionConfig;
 
-        if (Double.compare(remaining, 0F) <= 0) {
+        if (Float.compare(remaining, 0F) <= 0) {
             return 0;
         }
 
