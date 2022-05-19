@@ -20,18 +20,19 @@ public class BigDecimalComp extends BaseComp<BigDecimal> {
 
     @Override
     public int compare0(BigDecimal o1, BigDecimal o2) {
-        final int i = o1.compareTo(o2);
+        final BigDecimal diff = o1.subtract(o2);
 
-        if (i == 0) {
-            return i;
+        final int compareTo = diff.compareTo(BigDecimal.ZERO);
+        if (compareTo == 0) {
+            return 0;
         }
 
-        if (i < 0) {
-            o1 = o1.add(precisionConfig);
-        } else {
-            o2 = o2.add(precisionConfig);
+        final BigDecimal remaining = diff.abs().subtract(this.precisionConfig);
+
+        if (remaining.compareTo(BigDecimal.ZERO) <= 0) {
+            return 0;
         }
 
-        return o1.compareTo(o2);
+        return compareTo;
     }
 }

@@ -16,18 +16,19 @@ public class IntegerComp extends BaseComp<Integer> {
 
     @Override
     public int compare0(Integer o1, Integer o2) {
-        final int i = o1.compareTo(o2);
+        final int diff = o1 - o2;
 
-        if (i == 0) {
-            return i;
+        final int compareTo = Integer.compare(diff, 0);
+        if (compareTo == 0) {
+            return 0;
         }
 
-        if (i < 0) {
-            o1 = o1 + precisionConfig;
-        } else {
-            o2 = o2 + precisionConfig;
+        final int remaining = Math.abs(diff) - this.precisionConfig;
+
+        if (Integer.compare(remaining, 0) <= 0) {
+            return 0;
         }
 
-        return o1.compareTo(o2);
+        return compareTo;
     }
 }

@@ -16,18 +16,19 @@ public class DoubleComp extends BaseComp<Double> {
 
     @Override
     public int compare0(Double o1, Double o2) {
-        final int i = o1.compareTo(o2);
+        final double diff = o1 - o2;
 
-        if (i == 0) {
-            return i;
+        final int compareTo = Double.compare(diff, 0D);
+        if (compareTo == 0) {
+            return 0;
         }
 
-        if (i < 0) {
-            o1 = o1 + precisionConfig;
-        } else {
-            o2 = o2 + precisionConfig;
+        final double remaining = Math.abs(diff) - this.precisionConfig;
+
+        if (Double.compare(remaining, 0D) <= 0) {
+            return 0;
         }
 
-        return o1.compareTo(o2);
+        return compareTo;
     }
 }
