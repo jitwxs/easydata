@@ -1,6 +1,7 @@
 package io.github.jitwxs.easydata.common.util;
 
 import com.google.protobuf.Message;
+import io.github.jitwxs.easydata.common.bean.FieldProperty;
 import io.github.jitwxs.easydata.common.cache.PropertyCache;
 import io.github.jitwxs.easydata.common.exception.EasyDataException;
 import io.github.jitwxs.easydata.common.function.ThrowableBiFunction;
@@ -11,7 +12,6 @@ import org.apache.ibatis.reflection.factory.DefaultObjectFactory;
 import org.apache.ibatis.reflection.factory.ObjectFactory;
 import org.powermock.reflect.Whitebox;
 
-import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -107,21 +107,25 @@ public class ObjectUtils {
      * @throws InvocationTargetException if the underlying method throws an exception.
      * @throws Throwable                 内部流程处理异常
      */
-    public static <T> T createJava(final Class<T> target, ThrowableFunction<Field, Boolean> fieldIgnoreGeneratorFunc, ThrowableBiFunction<String, Type, Object> fieldGeneratorFunc) throws Throwable {
+    public static <T> T createJava(final Class<T> target,
+                                   final ThrowableFunction<Field, Boolean> fieldIgnoreGeneratorFunc,
+                                   final ThrowableBiFunction<String, Type, Object> fieldGeneratorFunc) throws Throwable {
         final Object result = ObjectUtils.create(target);
 
-        for (Map.Entry<String, PropertyDescriptor> entry : PropertyCache.tryGet(target).getWriteAble().entrySet()) {
+        for (Map.Entry<String, FieldProperty> entry : PropertyCache.tryGet(target).getWriteAble().entrySet()) {
             final String fieldName = entry.getKey();
 
-            final Field field = PropertyCache.tryGetField(target, fieldName);
+            final FieldProperty property = entry.getValue();
 
-            if (fieldIgnoreGeneratorFunc.apply(field)) {
+            final Field field = property.getField();
+
+            if (field == null || fieldIgnoreGeneratorFunc.apply(field)) {
                 continue;
             }
 
             final Object fieldValue = fieldGeneratorFunc.apply(fieldName, field.getGenericType());
             if (fieldValue != null) {
-                entry.getValue().getWriteMethod().invoke(result, fieldValue);
+                property.getWriteFunc().apply(result, fieldValue);
             }
         }
 
@@ -139,28 +143,27 @@ public class ObjectUtils {
      *                                   and the underlying method is inaccessible.
      * @throws InvocationTargetException if the underlying method throws an exception.
      */
-    public static <T> T createProto(final Class<T> target, ThrowableBiFunction<String, Type, Object> fieldGeneratorFunc) throws Throwable {
+    public static <T> T createProto(final Class<T> target,
+                                    final ThrowableBiFunction<String, Type, Object> fieldGeneratorFunc) throws Throwable {
         final Object invoke = ObjectUtils.createProtoBuilder(target);
         if (invoke == null) {
             return null;
         }
 
-        for (Map.Entry<String, PropertyDescriptor> entry : PropertyCache.tryGet(target).getReadable().entrySet()) {
+        for (Map.Entry<String, FieldProperty> entry : PropertyCache.tryGet(target).getReadable().entrySet()) {
             final String fieldName = entry.getKey();
-            final PropertyDescriptor descriptor = entry.getValue();
 
-            final Class<?> paramType = descriptor.getPropertyType();
             final String writeMethodName = "set" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
 
             Method method = null;
             try {
-                method = invoke.getClass().getDeclaredMethod(writeMethodName, paramType);
+                method = invoke.getClass().getDeclaredMethod(writeMethodName, entry.getValue().getTarget());
             } catch (NoSuchMethodException e) {
                 log.error("ObjectUtils createProto error, class: {}, field: {}", target, fieldName);
             }
 
             if (method != null) {
-                final Object fieldValue = fieldGeneratorFunc.apply(fieldName, paramType);
+                final Object fieldValue = fieldGeneratorFunc.apply(fieldName, entry.getValue().getType());
                 if (fieldValue != null) {
                     method.invoke(invoke, fieldValue);
                 }

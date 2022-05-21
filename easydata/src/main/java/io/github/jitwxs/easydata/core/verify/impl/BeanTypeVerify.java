@@ -1,6 +1,7 @@
 package io.github.jitwxs.easydata.core.verify.impl;
 
 import com.google.common.collect.Sets;
+import io.github.jitwxs.easydata.common.bean.FieldProperty;
 import io.github.jitwxs.easydata.common.cache.PropertyCache;
 import io.github.jitwxs.easydata.common.enums.GatherEnum;
 import io.github.jitwxs.easydata.common.exception.EasyVerifyEqualsException;
@@ -13,8 +14,6 @@ import org.apache.commons.lang3.ClassUtils;
 import org.assertj.core.api.ObjectAssert;
 import org.assertj.core.api.RecursiveComparisonAssert;
 
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
@@ -22,7 +21,8 @@ import java.util.Set;
 
 import static io.github.jitwxs.easydata.core.verify.EasyVerify.COLLECTION_TYPE_VERIFY;
 import static io.github.jitwxs.easydata.core.verify.EasyVerify.MAP_TYPE_VERIFY;
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 /**
  * @author jitwxs@foxmail.com
@@ -197,20 +197,20 @@ public class BeanTypeVerify {
              */
             for (String fieldName : doValidFields) {
                 try {
-                    final PropertyDescriptor aDescriptor = PropertyCache.tryGet(aClass).getDescriptor(fieldName);
-                    final PropertyDescriptor bDescriptor = PropertyCache.tryGet(bClass).getDescriptor(fieldName);
+                    final FieldProperty aProperty = PropertyCache.tryGet(aClass, fieldName);
+                    final FieldProperty bProperty = PropertyCache.tryGet(bClass, fieldName);
 
-                    final Class<?> propertyType = aDescriptor.getPropertyType();
-                    final Object aValue = aDescriptor.getReadMethod().invoke(a);
+                    final Class<?> propertyClass = aProperty.getTarget();
+                    final Object aValue = aProperty.getReadFunc().apply(a);
 
-                    Object bValue = bDescriptor.getReadMethod().invoke(b);
-                    if (bDescriptor.getPropertyType() != propertyType) {
-                        bValue = ProviderFactory.delegate(ConvertProvider.class).convert(bValue, propertyType);
+                    Object bValue = bProperty.getReadFunc().apply(b);
+                    if (bProperty.getTarget() != propertyClass) {
+                        bValue = ProviderFactory.delegate(ConvertProvider.class).convert(bValue, propertyClass);
                     }
 
                     ObjectAssert<Object> anAssert = assertThat(aValue);
 
-                    final BaseComp comp = instance.getCompConfigs().get(propertyType);
+                    final BaseComp comp = instance.getCompConfigs().get(propertyClass);
                     if (comp != null) {
                         anAssert = anAssert.usingComparator(comp);
                     }
@@ -219,7 +219,7 @@ public class BeanTypeVerify {
                             .as("fieldName: %s", fieldName)
                             .isEqualTo(bValue);
 
-                } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+                } catch (Throwable e) {
                     throw new EasyVerifyEqualsException(e);
                 }
             }

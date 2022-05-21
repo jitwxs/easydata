@@ -1,15 +1,14 @@
 package io.github.jitwxs.easydata.core.convert;
 
 import com.google.protobuf.Message;
+import io.github.jitwxs.easydata.common.bean.FieldProperty;
 import io.github.jitwxs.easydata.common.cache.PropertyCache;
 import io.github.jitwxs.easydata.common.exception.EasyDataConvertException;
 import io.github.jitwxs.easydata.common.exception.EasyDataMockException;
 import io.github.jitwxs.easydata.common.function.ThrowableBiFunction;
 import io.github.jitwxs.easydata.common.util.ObjectUtils;
 
-import java.beans.PropertyDescriptor;
 import java.lang.reflect.Type;
-import java.util.Map;
 
 /**
  * @author jitwxs@foxmail.com
@@ -25,17 +24,16 @@ public class ObjectConvert implements IConvert<Object> {
     @Override
     public Object convert(Object source, Class<?> target) throws EasyDataConvertException {
         try {
-            final Map<String, PropertyDescriptor> descriptorMap = PropertyCache.tryGet(source.getClass()).getReadable();
-
             final ThrowableBiFunction<String, Type, Object> fieldGeneratorFunc = (name, type) -> {
-                final PropertyDescriptor descriptor = descriptorMap.get(name);
+                final FieldProperty property = PropertyCache.tryGet(source.getClass(), name);
 
-                if (descriptor == null) {
-                    return null;
+                if (property != null && property.isReadable()) {
+                    final Object fieldValue = property.getReadFunc().apply(source);
+                    final Object value = provider().convert(fieldValue, (Class) type);
+
+                    return value;
                 } else {
-                    final Object fieldValue = descriptor.getReadMethod().invoke(source);
-
-                    return provider().convert(fieldValue, (Class) type);
+                    return null;
                 }
             };
 

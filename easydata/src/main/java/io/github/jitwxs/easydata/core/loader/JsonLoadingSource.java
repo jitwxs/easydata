@@ -3,17 +3,20 @@ package io.github.jitwxs.easydata.core.loader;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.parser.deserializer.ExtraProcessor;
 import com.alibaba.fastjson.parser.deserializer.ExtraTypeProvider;
-import io.github.jitwxs.easydata.common.cache.PropertyCache;
-import io.github.jitwxs.easydata.common.enums.DataTypeEnum;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import io.github.jitwxs.easydata.common.bean.FieldProperty;
+import io.github.jitwxs.easydata.common.cache.PropertyCache;
+import io.github.jitwxs.easydata.common.enums.DataTypeEnum;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.powermock.reflect.Whitebox;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -53,7 +56,8 @@ public class JsonLoadingSource extends LoadingSource<List<String>> {
                 final Map.Entry<String, String> entry = iterator.next();
 
                 // 存在无效的字段
-                if (PropertyCache.tryGetField(target, entry.getKey()) == null || PropertyCache.tryGetField(target, entry.getValue()) == null) {
+                final Map<String, FieldProperty> propertyMap = PropertyCache.tryGet(target).getAll();
+                if (propertyMap.get(entry.getKey()) == null || propertyMap.get(entry.getValue()) == null) {
                     iterator.remove();
                     continue;
                 }
@@ -128,12 +132,12 @@ public class JsonLoadingSource extends LoadingSource<List<String>> {
                 return null;
             }
 
-            final Field field = PropertyCache.tryGetField(target, mappingField);
-            if (field == null) {
+            final FieldProperty property = PropertyCache.tryGet(target, mappingField);
+            if (property == null) {
                 return null;
             }
 
-            return field.getGenericType();
+            return property.getType();
         }
     }
 }

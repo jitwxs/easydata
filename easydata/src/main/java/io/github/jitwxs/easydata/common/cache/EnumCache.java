@@ -29,14 +29,16 @@ public class EnumCache {
         return cache.computeIfAbsent(target, i -> new EnumProperty(target, getIdFunc));
     }
 
-    @Getter
     public static class EnumProperty {
+        @Getter
         private final Class<?> target;
 
+        @Getter
         private final boolean isProto;
 
         private final Map<String, Enum> nameMap = new HashMap<>();
 
+        @Getter
         private final Map<Integer, Enum> idMap = new HashMap<>();
 
         public EnumProperty(final Class<?> target, final Function<Enum<?>, Integer> getIdFunc) {
@@ -55,8 +57,16 @@ public class EnumCache {
                     this.idMap.put(getIdFunc.apply(one), one);
                 }
 
-                this.nameMap.put(one.name(), one);
+                this.nameMap.put(one.name().toUpperCase(), one);
             }
+        }
+
+        public Enum getByName(final String name) {
+            return this.nameMap.get(name.toUpperCase());
+        }
+
+        public Enum random() {
+            return this.idMap.values().iterator().next();
         }
     }
 }

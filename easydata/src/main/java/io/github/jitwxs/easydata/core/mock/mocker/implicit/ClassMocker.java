@@ -23,6 +23,10 @@ public class ClassMocker implements IMocker<Object> {
 
     @Override
     public Object mock(MockConfig mockConfig) {
+        if (clazz == Class.class) {
+            return Object.class;
+        }
+
         IMocker<?> mocker;
         if (clazz.isArray()) {
             mocker = new ArrayMocker(clazz);

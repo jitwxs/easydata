@@ -26,6 +26,10 @@ public class OrderEvaluate {
      */
     private String userId;
     /**
+     * sub id
+     */
+    private Long sId;
+    /**
      * 用户评分
      */
     private BigDecimal userScore;
