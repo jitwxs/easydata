@@ -67,9 +67,9 @@ public class FieldProperty {
         final ClassGroupEnum classGroupEnum = ClassGroupEnum.delegate(target);
         switch (classGroupEnum.getGroup()) {
             case PROTOBUF:
-                return creatByProtoBean(target, classGroupEnum, descriptorMap);
+                return createByProtoBean(target, classGroupEnum, descriptorMap);
             case NATIVE:
-                return creatByJavaBean(target, descriptorMap);
+                return createByJavaBean(target, descriptorMap);
             default:
                 throw new UnsupportedOperationException();
         }
@@ -84,7 +84,7 @@ public class FieldProperty {
      * @param descriptorMap 基于自省机制的属性描述
      * @return (field_name, field_property)
      */
-    private static Map<String, FieldProperty> creatByJavaBean(final Class<?> target, final Map<String, PropertyDescriptor> descriptorMap) {
+    private static Map<String, FieldProperty> createByJavaBean(final Class<?> target, final Map<String, PropertyDescriptor> descriptorMap) {
         final Map<String, FieldProperty> resultMap = new HashMap<>();
 
         for (Field field : ReflectionUtils.getFieldsUpTo(target, Object.class)) {
@@ -116,9 +116,9 @@ public class FieldProperty {
      * @param descriptorMap 基于自省机制的属性描述
      * @return (field_name, field_property)
      */
-    private static Map<String, FieldProperty> creatByProtoBean(final Class<?> baseTarget,
-                                                               final ClassGroupEnum classGroup,
-                                                               final Map<String, PropertyDescriptor> descriptorMap) {
+    private static Map<String, FieldProperty> createByProtoBean(final Class<?> baseTarget,
+                                                                final ClassGroupEnum classGroup,
+                                                                final Map<String, PropertyDescriptor> descriptorMap) {
         final Class<?> messageClass;
         final Message.Builder builder;
         if (classGroup == ClassGroupEnum.PROTOBUF_MESSAGE) {
@@ -148,7 +148,7 @@ public class FieldProperty {
 
             resultMap.put(fieldName, FieldProperty.builder()
                     .name(fieldName)
-                    .type(ReflectionUtils.getFieldType(field, descriptor))
+                    .type(descriptor.getPropertyType())
                     .target(descriptor.getPropertyType())
                     .field(field)
                     .readFunc(ReflectionUtils.getReadFunc(fieldName, descriptor, null))
