@@ -6,7 +6,6 @@ import io.github.jitwxs.easydata.common.cache.PropertyCache;
 import io.github.jitwxs.easydata.common.enums.ClassGroupEnum;
 import io.github.jitwxs.easydata.common.enums.GatherEnum;
 import io.github.jitwxs.easydata.common.exception.EasyVerifyEqualsException;
-import io.github.jitwxs.easydata.common.util.ReflectionUtils;
 import io.github.jitwxs.easydata.core.verify.VerifyInstance;
 import io.github.jitwxs.easydata.core.verify.comp.BaseComp;
 import io.github.jitwxs.easydata.provider.ConvertProvider;
@@ -129,11 +128,9 @@ public class BeanTypeVerify {
 
             // proto 对象比较特殊，不建议使用 assertj 原生的比较，因为比较的字段是含 _ 的
             if (classGroup.getGroup() == ClassGroupEnum.Group.PROTOBUF) {
-                final Class<?> protoTarget = classGroup == ClassGroupEnum.PROTOBUF_MESSAGE ? target : ReflectionUtils.getProtoMessageClassByBuilder(target);
+                final Set<String> doValidFields = this.initialValidFields(e -> PropertyCache.tryGet(target).getReadable().keySet(), instance);
 
-                final Set<String> doValidFields = this.initialValidFields(e -> PropertyCache.tryGet(protoTarget).getReadable().keySet(), instance);
-
-                this.doVerifyByEachField(doValidFields, a, protoTarget, b, protoTarget, instance);
+                this.doVerifyByEachField(doValidFields, a, target, b, target, instance);
             } else {
                 RecursiveComparisonAssert<?> anAssert = assertThat(a).usingRecursiveComparison();
 

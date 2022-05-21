@@ -1,9 +1,8 @@
 package io.github.jitwxs.easydata.common.bean;
 
 import com.google.protobuf.Descriptors;
-import com.google.protobuf.MessageOrBuilder;
+import com.google.protobuf.Message;
 import io.github.jitwxs.easydata.common.enums.ClassGroupEnum;
-import io.github.jitwxs.easydata.common.exception.EasyDataException;
 import io.github.jitwxs.easydata.common.function.ThrowableBiFunction;
 import io.github.jitwxs.easydata.common.function.ThrowableFunction;
 import io.github.jitwxs.easydata.common.util.ObjectUtils;
@@ -65,11 +64,10 @@ public class FieldProperty {
         final Map<String, PropertyDescriptor> descriptorMap = Arrays.stream(beanInfo.getPropertyDescriptors())
                 .collect(Collectors.toMap(e -> deCapitalize(e.getName()), Function.identity()));
 
-        switch (ClassGroupEnum.delegate(target)) {
-            case PROTOBUF_MESSAGE:
-                return creatByProtoBean(target, descriptorMap);
-            case PROTOBUF_BUILDER:
-                return creatByProtoBean(ReflectionUtils.getProtoMessageClassByBuilder(target), descriptorMap);
+        final ClassGroupEnum classGroupEnum = ClassGroupEnum.delegate(target);
+        switch (classGroupEnum.getGroup()) {
+            case PROTOBUF:
+                return creatByProtoBean(target, classGroupEnum, descriptorMap);
             case NATIVE:
                 return creatByJavaBean(target, descriptorMap);
             default:
@@ -113,17 +111,27 @@ public class FieldProperty {
      * <p>
      * 使用 {@link BeanInfo#getPropertyDescriptors()} 为数据源，搭配 {@link Class#getDeclaredFields()} 获取字段
      *
-     * @param target        class 对象
+     * @param baseTarget    class 对象
+     * @param classGroup    {@link ClassGroupEnum}
      * @param descriptorMap 基于自省机制的属性描述
      * @return (field_name, field_property)
      */
-    private static Map<String, FieldProperty> creatByProtoBean(final Class<?> target, final Map<String, PropertyDescriptor> descriptorMap) {
-        final MessageOrBuilder builder = (MessageOrBuilder) ObjectUtils.createProtoBuilder(target);
-        if (builder == null) {
-            throw new EasyDataException("FieldProperty create proto builder failed for " + target);
+    private static Map<String, FieldProperty> creatByProtoBean(final Class<?> baseTarget,
+                                                               final ClassGroupEnum classGroup,
+                                                               final Map<String, PropertyDescriptor> descriptorMap) {
+        final Class<?> messageClass;
+        final Message.Builder builder;
+        if (classGroup == ClassGroupEnum.PROTOBUF_MESSAGE) {
+            messageClass = baseTarget;
+
+            builder = (Message.Builder) ObjectUtils.createProtoBuilder(messageClass);
+        } else {
+            builder = (Message.Builder) ObjectUtils.create(baseTarget);
+
+            messageClass = ObjectUtils.buildProtoBuilder(builder).getClass();
         }
 
-        final Map<String, Field> fieldMap = Arrays.stream(target.getDeclaredFields())
+        final Map<String, Field> fieldMap = Arrays.stream(messageClass.getDeclaredFields())
                 .collect(Collectors.toMap(e -> processProtoFieldName(e.getName()), Function.identity()));
 
         final Map<String, FieldProperty> resultMap = new HashMap<>();
