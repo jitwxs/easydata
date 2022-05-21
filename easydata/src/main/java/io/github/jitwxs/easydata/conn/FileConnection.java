@@ -37,7 +37,7 @@ public class FileConnection implements IConnection {
                     throw new EasyDataLoaderException("Not Support File Format To Load: " + queryUrl);
             }
         } catch (Exception e) {
-            log.error("FileConnection loading error, properties: {}", properties, e);
+            log.error("FileConnection loading error, properties: {}, message: {}", properties, e.getMessage());
             return Optional.empty();
         }
     }

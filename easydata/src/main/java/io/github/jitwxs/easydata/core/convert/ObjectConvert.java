@@ -1,8 +1,8 @@
 package io.github.jitwxs.easydata.core.convert;
 
-import com.google.protobuf.Message;
 import io.github.jitwxs.easydata.common.bean.FieldProperty;
 import io.github.jitwxs.easydata.common.cache.PropertyCache;
+import io.github.jitwxs.easydata.common.enums.ClassGroupEnum;
 import io.github.jitwxs.easydata.common.exception.EasyDataConvertException;
 import io.github.jitwxs.easydata.common.exception.EasyDataMockException;
 import io.github.jitwxs.easydata.common.function.ThrowableBiFunction;
@@ -37,10 +37,13 @@ public class ObjectConvert implements IConvert<Object> {
                 }
             };
 
-            if (Message.class.isAssignableFrom(target)) {
-                return ObjectUtils.createProto(target, fieldGeneratorFunc);
-            } else {
-                return ObjectUtils.createJava(target, field -> false, fieldGeneratorFunc);
+            switch (ClassGroupEnum.delegate(target)) {
+                case PROTOBUF:
+                    return ObjectUtils.createProto(target, fieldGeneratorFunc);
+                case NATIVE:
+                    return ObjectUtils.createJava(target, field -> false, fieldGeneratorFunc);
+                default:
+                    throw new UnsupportedOperationException();
             }
         } catch (Throwable e) {
             throw new EasyDataMockException(e);

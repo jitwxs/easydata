@@ -1,8 +1,8 @@
 package io.github.jitwxs.easydata.common.bean;
 
 import com.google.protobuf.Descriptors;
-import com.google.protobuf.Message;
 import com.google.protobuf.MessageOrBuilder;
+import io.github.jitwxs.easydata.common.enums.ClassGroupEnum;
 import io.github.jitwxs.easydata.common.exception.EasyDataException;
 import io.github.jitwxs.easydata.common.function.ThrowableBiFunction;
 import io.github.jitwxs.easydata.common.function.ThrowableFunction;
@@ -65,10 +65,13 @@ public class FieldProperty {
         final Map<String, PropertyDescriptor> descriptorMap = Arrays.stream(beanInfo.getPropertyDescriptors())
                 .collect(Collectors.toMap(e -> deCapitalize(e.getName()), Function.identity()));
 
-        if (Message.class.isAssignableFrom(target)) {
-            return creatByProtoBean(target, descriptorMap);
-        } else {
-            return creatByJavaBean(target, descriptorMap);
+        switch (ClassGroupEnum.delegate(target)) {
+            case PROTOBUF:
+                return creatByProtoBean(target, descriptorMap);
+            case NATIVE:
+                return creatByJavaBean(target, descriptorMap);
+            default:
+                throw new UnsupportedOperationException();
         }
     }
 

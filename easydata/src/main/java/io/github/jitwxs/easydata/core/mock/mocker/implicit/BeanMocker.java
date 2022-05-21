@@ -1,10 +1,10 @@
 package io.github.jitwxs.easydata.core.mock.mocker.implicit;
 
-import com.google.protobuf.Message;
 import io.github.jitwxs.easydata.common.annotation.EasyMockIgnore;
 import io.github.jitwxs.easydata.common.bean.FieldProperty;
 import io.github.jitwxs.easydata.common.bean.MockConfig;
 import io.github.jitwxs.easydata.common.cache.PropertyCache;
+import io.github.jitwxs.easydata.common.enums.ClassGroupEnum;
 import io.github.jitwxs.easydata.common.exception.EasyDataMockException;
 import io.github.jitwxs.easydata.common.function.ThrowableBiFunction;
 import io.github.jitwxs.easydata.common.util.ObjectUtils;
@@ -42,10 +42,13 @@ public class BeanMocker implements IMocker<Object> {
                 return new BaseMocker<>(type).mock(mockConfig);
             };
 
-            if (Message.class.isAssignableFrom(target)) {
-                return ObjectUtils.createProto(target, fieldGeneratorFunc);
-            } else {
-                return ObjectUtils.createJava(target, field -> field.isAnnotationPresent(EasyMockIgnore.class), fieldGeneratorFunc);
+            switch (ClassGroupEnum.delegate(target)) {
+                case PROTOBUF:
+                    return ObjectUtils.createProto(target, fieldGeneratorFunc);
+                case NATIVE:
+                    return ObjectUtils.createJava(target, field -> field.isAnnotationPresent(EasyMockIgnore.class), fieldGeneratorFunc);
+                default:
+                    throw new UnsupportedOperationException();
             }
         } catch (Throwable e) {
             throw new EasyDataMockException(e);

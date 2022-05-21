@@ -1,9 +1,7 @@
 package io.github.jitwxs.easydata.common.util;
 
-import com.google.protobuf.Message;
 import io.github.jitwxs.easydata.common.bean.FieldProperty;
 import io.github.jitwxs.easydata.common.cache.PropertyCache;
-import io.github.jitwxs.easydata.common.exception.EasyDataException;
 import io.github.jitwxs.easydata.common.function.ThrowableBiFunction;
 import io.github.jitwxs.easydata.common.function.ThrowableFunction;
 import lombok.extern.slf4j.Slf4j;
@@ -63,10 +61,6 @@ public class ObjectUtils {
      * @return protobuf builder object instance
      */
     public static Object createProtoBuilder(Class<?> target) {
-        if (!Message.class.isAssignableFrom(target)) {
-            throw new EasyDataException("ObjectUtils not allow createProto for " + target);
-        }
-
         try {
             final Method builder = Whitebox.getMethod(target, "newBuilder");
             return builder.invoke(null);
