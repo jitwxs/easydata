@@ -7,14 +7,15 @@ message OrderEvaluate {
   string id = 1;
   bool hasOpen = 2;
   string userId = 3;
-  string userScore = 4;
-  string userEvaluate = 5;
-  int64 userDate = 6;
-  string courierId = 7;
-  string courierScore = 8;
-  string courierEvaluate = 9;
-  int32 version = 10;
-  int64 courierDate = 11;
-  int64 updateDate = 12;
-  string protoBeanUnknownFields = 13;
+  int64 sId = 4;
+  string userScore = 5;
+  string userEvaluate = 6;
+  int64 userDate = 7;
+  string courierId = 8;
+  string courierScore = 9;
+  string courierEvaluate = 10;
+  int32 version = 11;
+  int64 courierDate = 12;
+  int64 updateDate = 13;
+  string protoBeanUnknownFields = 14;
 }

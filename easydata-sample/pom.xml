@@ -42,7 +42,7 @@
         <dependency>
             <groupId>io.github.jitwxs</groupId>
             <artifactId>easydata</artifactId>
-            <version>1.6-RELEASE</version>
+            <version>1.7-RELEASE</version>
         </dependency>
         <dependency>
             <groupId>mysql</groupId>

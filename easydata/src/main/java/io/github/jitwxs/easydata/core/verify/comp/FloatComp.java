@@ -16,18 +16,19 @@ public class FloatComp extends BaseComp<Float> {
 
     @Override
     public int compare0(Float o1, Float o2) {
-        final int i = o1.compareTo(o2);
+        final float diff = o1 - o2;
 
-        if (i == 0) {
-            return i;
+        final int compareTo = Float.compare(diff, 0F);
+        if (compareTo == 0) {
+            return 0;
         }
 
-        if (i < 0) {
-            o1 = o1 + precisionConfig;
-        } else {
-            o2 = o2 + precisionConfig;
+        final float remaining = Math.abs(diff) - this.precisionConfig;
+
+        if (Float.compare(remaining, 0F) <= 0) {
+            return 0;
         }
 
-        return o1.compareTo(o2);
+        return compareTo;
     }
 }

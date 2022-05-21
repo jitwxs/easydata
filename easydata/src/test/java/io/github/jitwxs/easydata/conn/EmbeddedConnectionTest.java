@@ -26,7 +26,7 @@ public class EmbeddedConnectionTest {
         final EmbeddedConnection connection = new EmbeddedConnection(FileFormatEnum.JSON);
 
         final LoaderProperties properties = LoaderProperties.builder()
-                .url("{\"name\": \"zhangsan\", \"age\":  20, \"isMale\":  true}")
+                .url("{\"name\": \"zhangsan\", \"age\":  20, \"hasMale\":  true}")
                 .build();
 
         final EasyLoader loader = new EasyLoader(connection);
@@ -34,7 +34,7 @@ public class EmbeddedConnectionTest {
         final List<TestBean> beanList = loader.loading(TestBean.class, properties);
 
         assertEquals(1, beanList.size());
-        EasyVerify.with(TestBean.builder().name("zhangsan").age(20).isMale(true).build(), beanList.get(0)).verify();
+        EasyVerify.with(TestBean.builder().name("zhangsan").age(20).hasMale(true).build(), beanList.get(0)).verify();
     }
 
     @Test
@@ -46,7 +46,7 @@ public class EmbeddedConnectionTest {
                 .url("{\"n\": \"zhangsan\", \"a\":  20, \"s\":  true}")
                 .jsonDeserializeFunc(e -> {
                     final JSONObject object = JSON.parseObject(e);
-                    return TestBean.builder().name(object.getString("n")).age(object.getInteger("a")).isMale(object.getBoolean("s")).build();
+                    return TestBean.builder().name(object.getString("n")).age(object.getInteger("a")).hasMale(object.getBoolean("s")).build();
                 })
                 .build();
 
@@ -55,7 +55,7 @@ public class EmbeddedConnectionTest {
         final List<TestBean> beanList = loader.loading(TestBean.class, properties);
 
         assertEquals(1, beanList.size());
-        EasyVerify.with(TestBean.builder().name("zhangsan").age(20).isMale(true).build(), beanList.get(0)).verify();
+        EasyVerify.with(TestBean.builder().name("zhangsan").age(20).hasMale(true).build(), beanList.get(0)).verify();
     }
 
     @Test
@@ -64,7 +64,7 @@ public class EmbeddedConnectionTest {
         final EmbeddedConnection connection = new EmbeddedConnection(FileFormatEnum.CSV);
 
         final LoaderProperties properties = LoaderProperties.builder()
-                .url("name,age,isMale\n" +
+                .url("name,age,hasMale\n" +
                         "Pepito,18,true\n" +
                         "MacShane,25,false")
                 .build();
@@ -75,8 +75,8 @@ public class EmbeddedConnectionTest {
 
         assertEquals(2, beanList.size());
         EasyVerify.with(Sets.newHashSet(
-                TestBean.builder().name("Pepito").age(18).isMale(true).build(),
-                TestBean.builder().name("MacShane").age(25).isMale(false).build()
+                TestBean.builder().name("Pepito").age(18).hasMale(true).build(),
+                TestBean.builder().name("MacShane").age(25).hasMale(false).build()
         ), new HashSet<>(beanList)).verify();
     }
 
@@ -89,6 +89,6 @@ public class EmbeddedConnectionTest {
 
         private int age;
 
-        private boolean isMale;
+        private boolean hasMale;
     }
 }

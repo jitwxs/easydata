@@ -1,7 +1,9 @@
 package io.github.jitwxs.easydata.core.verify.impl;
 
 import com.google.common.collect.Sets;
+import io.github.jitwxs.easydata.common.bean.FieldProperty;
 import io.github.jitwxs.easydata.common.cache.PropertyCache;
+import io.github.jitwxs.easydata.common.enums.ClassGroupEnum;
 import io.github.jitwxs.easydata.common.enums.GatherEnum;
 import io.github.jitwxs.easydata.common.exception.EasyVerifyEqualsException;
 import io.github.jitwxs.easydata.core.verify.VerifyInstance;
@@ -13,16 +15,16 @@ import org.apache.commons.lang3.ClassUtils;
 import org.assertj.core.api.ObjectAssert;
 import org.assertj.core.api.RecursiveComparisonAssert;
 
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 
 import static io.github.jitwxs.easydata.core.verify.EasyVerify.COLLECTION_TYPE_VERIFY;
 import static io.github.jitwxs.easydata.core.verify.EasyVerify.MAP_TYPE_VERIFY;
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 /**
  * @author jitwxs@foxmail.com
@@ -84,7 +86,7 @@ public class BeanTypeVerify {
             return true;
         }
 
-        // 其他 java 原生对象，无需递归
+        // 其他 jdk 原生对象，无需递归
         if (target.getPackage().getName().startsWith("java.")) {
             return false;
         }
@@ -121,23 +123,33 @@ public class BeanTypeVerify {
      */
     private void doOneEqualsWithSameClass(Object a, Object b, Class<?> target, VerifyInstance instance) {
         if (isEnableRecursiveCompare(target)) {
-            RecursiveComparisonAssert<?> anAssert = assertThat(a).usingRecursiveComparison();
 
-            final String[] ignoreFields = instance.toIgnoreFields();
-            if (ignoreFields.length > 0) {
-                anAssert = anAssert.ignoringFields(ignoreFields);
+            final ClassGroupEnum classGroup = ClassGroupEnum.delegate(target);
+
+            // proto 对象比较特殊，不建议使用 assertj 原生的比较，因为比较的字段是含 _ 的
+            if (classGroup.getGroup() == ClassGroupEnum.Group.PROTOBUF) {
+                final Set<String> doValidFields = this.initialValidFields(e -> PropertyCache.tryGet(target).getReadable().keySet(), instance);
+
+                this.doVerifyByEachField(doValidFields, a, target, b, target, instance);
+            } else {
+                RecursiveComparisonAssert<?> anAssert = assertThat(a).usingRecursiveComparison();
+
+                final String[] ignoreFields = instance.toIgnoreFields();
+                if (ignoreFields.length > 0) {
+                    anAssert = anAssert.ignoringFields(ignoreFields);
+                }
+
+                final String[] validateFields = instance.toValidateFields();
+                if (validateFields.length > 0) {
+                    anAssert = anAssert.comparingOnlyFields(validateFields);
+                }
+
+                for (Map.Entry<Class<?>, BaseComp> entry : instance.getCompConfigs().entrySet()) {
+                    anAssert = anAssert.withComparatorForType(entry.getValue(), entry.getKey());
+                }
+
+                anAssert.isEqualTo(b);
             }
-
-            final String[] validateFields = instance.toValidateFields();
-            if (validateFields.length > 0) {
-                anAssert = anAssert.comparingOnlyFields(validateFields);
-            }
-
-            for (Map.Entry<Class<?>, BaseComp> entry : instance.getCompConfigs().entrySet()) {
-                anAssert = anAssert.withComparatorForType(entry.getValue(), entry.getKey());
-            }
-
-            anAssert.isEqualTo(b);
         } else {
             ObjectAssert<Object> anAssert = assertThat(a);
 
@@ -171,58 +183,14 @@ public class BeanTypeVerify {
         }
 
         if (aEnableRecursiveCompare) {
-            /*
-             * 计算需要比较的字段
-             * 1.1 上下文有指定比较字段，使用指定字段
-             * 1.2 如果没有指定，使用对象字段交集
-             * 2. 上下文有指定忽略字段，将其排除
-             */
-            final Set<String> doValidFields = Sets.newHashSet(instance.toValidateFields());
-
-            if (CollectionUtils.isEmpty(doValidFields)) {
+            final Set<String> doValidFields = this.initialValidFields(e -> {
                 final Set<String> aSet = PropertyCache.tryGet(aClass).getReadable().keySet();
                 final Set<String> bSet = PropertyCache.tryGet(bClass).getReadable().keySet();
 
-                doValidFields.addAll(CollectionUtils.intersection(aSet, bSet));
-            }
+                return CollectionUtils.intersection(aSet, bSet);
+            }, instance);
 
-            doValidFields.removeAll(Sets.newHashSet(instance.toIgnoreFields()));
-
-            if (CollectionUtils.isEmpty(doValidFields)) {
-                return;
-            }
-
-            /*
-             * 逐个字段调用比较方法
-             */
-            for (String fieldName : doValidFields) {
-                try {
-                    final PropertyDescriptor aDescriptor = PropertyCache.tryGet(aClass).getDescriptor(fieldName);
-                    final PropertyDescriptor bDescriptor = PropertyCache.tryGet(bClass).getDescriptor(fieldName);
-
-                    final Class<?> propertyType = aDescriptor.getPropertyType();
-                    final Object aValue = aDescriptor.getReadMethod().invoke(a);
-
-                    Object bValue = bDescriptor.getReadMethod().invoke(b);
-                    if (bDescriptor.getPropertyType() != propertyType) {
-                        bValue = ProviderFactory.delegate(ConvertProvider.class).convert(bValue, propertyType);
-                    }
-
-                    ObjectAssert<Object> anAssert = assertThat(aValue);
-
-                    final BaseComp comp = instance.getCompConfigs().get(propertyType);
-                    if (comp != null) {
-                        anAssert = anAssert.usingComparator(comp);
-                    }
-
-                    anAssert
-                            .as("fieldName: %s", fieldName)
-                            .isEqualTo(bValue);
-
-                } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-                    throw new EasyVerifyEqualsException(e);
-                }
-            }
+            this.doVerifyByEachField(doValidFields, a, aClass, b, bClass, instance);
         } else {
             ObjectAssert<Object> anAssert = assertThat(a);
 
@@ -234,6 +202,66 @@ public class BeanTypeVerify {
             }
 
             anAssert.isEqualTo(bValue);
+        }
+    }
+
+    /**
+     * 初始化需要比对的字段列表
+     * <p>
+     * 1.1 有指定比较字段，使用指定字段
+     * 1.2 如果没有指定，使用对象字段交集
+     * 2. 有指定忽略字段，将其排除
+     *
+     * @param instance          {@link VerifyInstance}
+     * @param pendingFieldsFunc 当没有指定比较字段时，需要提供待处理的字段列表
+     * @return 需要比对的字段列表
+     */
+    private Set<String> initialValidFields(Function<Object, Collection<String>> pendingFieldsFunc, VerifyInstance instance) {
+        final Set<String> doValidFields = Sets.newHashSet(instance.toValidateFields());
+
+        if (CollectionUtils.isEmpty(doValidFields)) {
+            final Collection<String> pendingFields = pendingFieldsFunc.apply(null);
+
+            if (CollectionUtils.isNotEmpty(pendingFields)) {
+                doValidFields.addAll(pendingFields);
+            }
+        }
+
+        doValidFields.removeAll(Sets.newHashSet(instance.toIgnoreFields()));
+
+        return doValidFields;
+    }
+
+    private void doVerifyByEachField(final Set<String> validFields, Object a, Class<?> aClass, Object b, Class<?> bClass, VerifyInstance instance) {
+        for (String fieldName : validFields) {
+            try {
+                final FieldProperty aProperty = PropertyCache.tryGet(aClass, fieldName);
+                final FieldProperty bProperty = PropertyCache.tryGet(bClass, fieldName);
+
+                final Class<?> propertyClass = aProperty.getTarget();
+                final Object aValue = aProperty.getReadFunc().apply(a);
+
+                Object bValue = bProperty.getReadFunc().apply(b);
+                if (bProperty.getTarget() != propertyClass) {
+                    bValue = ProviderFactory.delegate(ConvertProvider.class).convert(bValue, propertyClass);
+                }
+
+                ObjectAssert<Object> anAssert = assertThat(aValue);
+
+                final BaseComp comp = instance.getCompConfigs().get(propertyClass);
+                if (comp != null) {
+                    anAssert = anAssert.usingComparator(comp);
+                }
+
+                anAssert
+                        .as("fieldName: %s", fieldName)
+                        .isEqualTo(bValue);
+
+            } catch (AssertionError assertionError) {
+                throw assertionError;
+            } catch (Throwable throwable) {
+                throw new EasyVerifyEqualsException(throwable);
+            }
         }
     }
 }

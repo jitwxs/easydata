@@ -40,11 +40,11 @@ public class PrecisionVerifyTest {
 
         // 支持精度误差，包装类型
         final Double a = 1D, b = 1.1D;
-        EasyVerify.with(a, b).withPrecision(0.1D).verify();
+        EasyVerify.with(a, b).withPrecision(0.2D).verify();
 
         // 支持精度误差，基本类型
         final double c = 1D, d = 1.1D;
-        EasyVerify.with(c, d).withPrecision(0.1D).verify();
+        EasyVerify.with(c, d).withPrecision(0.2D).verify();
 
         // 精度误差配置类型错误
         assertThrows(AssertionError.class, () -> EasyVerify.with(c, d).withPrecision(0.1F).verify());

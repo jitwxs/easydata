@@ -2,19 +2,15 @@ package io.github.jitwxs.easydata.core.loader;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import io.github.jitwxs.easydata.common.bean.FieldProperty;
 import io.github.jitwxs.easydata.common.cache.PropertyCache;
 import io.github.jitwxs.easydata.common.enums.DataTypeEnum;
-import io.github.jitwxs.easydata.common.exception.EasyDataConvertException;
+import io.github.jitwxs.easydata.common.exception.EasyDataLoaderException;
 import io.github.jitwxs.easydata.provider.ConvertProvider;
 import io.github.jitwxs.easydata.provider.ProviderFactory;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
-import org.powermock.reflect.Whitebox;
 
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
@@ -66,31 +62,22 @@ public abstract class LoadingSource<T> {
         final Class<?> target = object.getClass();
 
         final ConvertProvider provider = ProviderFactory.delegate(ConvertProvider.class);
-        final Map<String, PropertyDescriptor> descriptorsMap = PropertyCache.tryGet(target).getWriteAble();
 
         for (String name : fieldName) {
-            if (StringUtils.isBlank(name)) {
-                continue;
-            }
+            try {
+                if (StringUtils.isBlank(name)) {
+                    continue;
+                }
 
-            final PropertyDescriptor descriptor = descriptorsMap.get(name);
-            // 优先使用自省
-            if (descriptor != null) {
-                final Object value = provider.convert(fieldValue, descriptor.getPropertyType());
-                try {
-                    final Method method = descriptor.getWriteMethod();
-                    method.setAccessible(true);
-                    method.invoke(object, value);
-                } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-                    throw new EasyDataConvertException(e);
+                final FieldProperty property = PropertyCache.tryGet(target, name);
+
+                if (property != null && property.isWriteable()) {
+                    final Object value = provider.convert(fieldValue, property.getTarget());
+
+                    property.getWriteFunc().apply(object, value);
                 }
-            } else {
-                // 字段反射兜底
-                final Field field = PropertyCache.tryGetField(target, name);
-                if (field != null) {
-                    final Object value = provider.convert(fieldValue, field.getType());
-                    Whitebox.setInternalState(object, name, value);
-                }
+            } catch (Throwable e) {
+                throw new EasyDataLoaderException(e);
             }
         }
     }

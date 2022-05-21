@@ -6,42 +6,42 @@ import org.powermock.reflect.Whitebox;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 /**
  * @author jitwxs@foxmail.com
  * @since 2022-03-20 13:16
  */
 public class EnumCache {
+    private static final Function<Enum<?>, Integer> DEFAULT_GET_ID_FUNC = Enum::ordinal;
+
     private static final Map<Class<?>, EnumProperty> cache = new HashMap<>();
 
     public static EnumProperty tryGet(final Class<?> target) {
+        return tryGet(target, DEFAULT_GET_ID_FUNC);
+    }
+
+    public static EnumProperty tryGet(final Class<?> target, final Function<Enum<?>, Integer> getIdFunc) {
         if (!target.isEnum()) {
             return null;
         }
 
-        return cache.computeIfAbsent(target, i -> new EnumProperty(target));
+        return cache.computeIfAbsent(target, i -> new EnumProperty(target, getIdFunc));
     }
 
-    public static Enum tryGet(final Class<?> target, final String name, final int faultId) {
-        final EnumProperty property = tryGet(target);
-        if (property == null) {
-            return null;
-        }
-
-        return property.getNameMap().getOrDefault(name, property.getIdMap().get(faultId));
-    }
-
-    @Getter
     public static class EnumProperty {
+        @Getter
         private final Class<?> target;
 
+        @Getter
         private final boolean isProto;
 
         private final Map<String, Enum> nameMap = new HashMap<>();
 
+        @Getter
         private final Map<Integer, Enum> idMap = new HashMap<>();
 
-        public EnumProperty(Class<?> target) {
+        public EnumProperty(final Class<?> target, final Function<Enum<?>, Integer> getIdFunc) {
             this.target = target;
             this.isProto = ProtocolMessageEnum.class.isAssignableFrom(target);
 
@@ -54,11 +54,19 @@ public class EnumCache {
                     }
                     this.idMap.put(((ProtocolMessageEnum) one).getNumber(), one);
                 } else {
-                    this.idMap.put(one.ordinal(), one);
+                    this.idMap.put(getIdFunc.apply(one), one);
                 }
 
-                this.nameMap.put(one.name(), one);
+                this.nameMap.put(one.name().toUpperCase(), one);
             }
+        }
+
+        public Enum getByName(final String name) {
+            return this.nameMap.get(name.toUpperCase());
+        }
+
+        public Enum random() {
+            return this.idMap.values().iterator().next();
         }
     }
 }

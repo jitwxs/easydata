@@ -31,6 +31,9 @@ public class EasyMockTest {
 
         final MessageProto.OrderEvaluate orderEvaluate2 = EasyMock.run(MessageProto.OrderEvaluate.class);
         assertNotNull(orderEvaluate2);
+
+        final MessageProto.OrderEvaluate.Builder orderEvaluate3 = EasyMock.run(MessageProto.OrderEvaluate.Builder.class);
+        assertNotNull(orderEvaluate3);
     }
 
     @Test

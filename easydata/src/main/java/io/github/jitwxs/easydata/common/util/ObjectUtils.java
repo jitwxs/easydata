@@ -1,8 +1,7 @@
 package io.github.jitwxs.easydata.common.util;
 
-import com.google.protobuf.Message;
+import io.github.jitwxs.easydata.common.bean.FieldProperty;
 import io.github.jitwxs.easydata.common.cache.PropertyCache;
-import io.github.jitwxs.easydata.common.exception.EasyDataException;
 import io.github.jitwxs.easydata.common.function.ThrowableBiFunction;
 import io.github.jitwxs.easydata.common.function.ThrowableFunction;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +10,6 @@ import org.apache.ibatis.reflection.factory.DefaultObjectFactory;
 import org.apache.ibatis.reflection.factory.ObjectFactory;
 import org.powermock.reflect.Whitebox;
 
-import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -63,10 +61,6 @@ public class ObjectUtils {
      * @return protobuf builder object instance
      */
     public static Object createProtoBuilder(Class<?> target) {
-        if (!Message.class.isAssignableFrom(target)) {
-            throw new EasyDataException("ObjectUtils not allow createProto for " + target);
-        }
-
         try {
             final Method builder = Whitebox.getMethod(target, "newBuilder");
             return builder.invoke(null);
@@ -107,21 +101,25 @@ public class ObjectUtils {
      * @throws InvocationTargetException if the underlying method throws an exception.
      * @throws Throwable                 内部流程处理异常
      */
-    public static <T> T createJava(final Class<T> target, ThrowableFunction<Field, Boolean> fieldIgnoreGeneratorFunc, ThrowableBiFunction<String, Type, Object> fieldGeneratorFunc) throws Throwable {
+    public static <T> T createJava(final Class<T> target,
+                                   final ThrowableFunction<Field, Boolean> fieldIgnoreGeneratorFunc,
+                                   final ThrowableBiFunction<String, Type, Object> fieldGeneratorFunc) throws Throwable {
         final Object result = ObjectUtils.create(target);
 
-        for (Map.Entry<String, PropertyDescriptor> entry : PropertyCache.tryGet(target).getWriteAble().entrySet()) {
+        for (Map.Entry<String, FieldProperty> entry : PropertyCache.tryGet(target).getWriteAble().entrySet()) {
             final String fieldName = entry.getKey();
 
-            final Field field = PropertyCache.tryGetField(target, fieldName);
+            final FieldProperty property = entry.getValue();
 
-            if (fieldIgnoreGeneratorFunc.apply(field)) {
+            final Field field = property.getField();
+
+            if (field == null || fieldIgnoreGeneratorFunc.apply(field)) {
                 continue;
             }
 
             final Object fieldValue = fieldGeneratorFunc.apply(fieldName, field.getGenericType());
             if (fieldValue != null) {
-                entry.getValue().getWriteMethod().invoke(result, fieldValue);
+                property.getWriteFunc().apply(result, fieldValue);
             }
         }
 
@@ -129,44 +127,76 @@ public class ObjectUtils {
     }
 
     /**
-     * 构造 proto 对象，并填充属性
+     * 构造 proto message 对象，并填充属性
      *
-     * @param target             proto 对象类型
+     * @param target             proto message 对象类型
      * @param fieldGeneratorFunc 属性生成方法
-     * @param <T>                proto 对象类型
-     * @return proto 对象
+     * @param <T>                proto message 对象类型
+     * @return proto message 对象
      * @throws IllegalAccessException    if this {@code Method} object is enforcing Java language access control
      *                                   and the underlying method is inaccessible.
      * @throws InvocationTargetException if the underlying method throws an exception.
      */
-    public static <T> T createProto(final Class<T> target, ThrowableBiFunction<String, Type, Object> fieldGeneratorFunc) throws Throwable {
+    public static <T> T createProtoMessage(final Class<T> target,
+                                           final ThrowableBiFunction<String, Type, Object> fieldGeneratorFunc) throws Throwable {
         final Object invoke = ObjectUtils.createProtoBuilder(target);
         if (invoke == null) {
             return null;
         }
 
-        for (Map.Entry<String, PropertyDescriptor> entry : PropertyCache.tryGet(target).getReadable().entrySet()) {
-            final String fieldName = entry.getKey();
-            final PropertyDescriptor descriptor = entry.getValue();
+        fillingProtoBuilderField(target, invoke, fieldGeneratorFunc);
 
-            final Class<?> paramType = descriptor.getPropertyType();
+        return (T) ObjectUtils.buildProtoBuilder(invoke);
+    }
+
+    /**
+     * 构造 proto builder 对象，并填充属性
+     *
+     * @param target             proto builder 对象类型
+     * @param fieldGeneratorFunc 属性生成方法
+     * @param <T>                proto builder 对象类型
+     * @return proto builder 对象
+     * @throws IllegalAccessException    if this {@code Method} object is enforcing Java language access control
+     *                                   and the underlying method is inaccessible.
+     * @throws InvocationTargetException if the underlying method throws an exception.
+     */
+    public static <T> T createProtoBuilder(final Class<T> target,
+                                           final ThrowableBiFunction<String, Type, Object> fieldGeneratorFunc) throws Throwable {
+        final T invoke = ObjectUtils.create(target);
+        if (invoke == null) {
+            return null;
+        }
+
+        final Class<?> protoMessageClass = ReflectionUtils.getProtoMessageClassByBuilder(target);
+
+        fillingProtoBuilderField(protoMessageClass, invoke, fieldGeneratorFunc);
+
+        return invoke;
+    }
+
+    private static void fillingProtoBuilderField(final Class<?> protoMessageClass,
+                                                 final Object protoBuilder,
+                                                 final ThrowableBiFunction<String, Type, Object> fieldGeneratorFunc) throws Throwable {
+        final Class<?> protoBuilderClass = protoBuilder.getClass();
+
+        for (Map.Entry<String, FieldProperty> entry : PropertyCache.tryGet(protoMessageClass).getReadable().entrySet()) {
+            final String fieldName = entry.getKey();
+
             final String writeMethodName = "set" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
 
             Method method = null;
             try {
-                method = invoke.getClass().getDeclaredMethod(writeMethodName, paramType);
+                method = protoBuilderClass.getDeclaredMethod(writeMethodName, entry.getValue().getTarget());
             } catch (NoSuchMethodException e) {
-                log.error("ObjectUtils createProto error, class: {}, field: {}", target, fieldName);
+                log.error("ObjectUtils fillingProtoBuilderField error, protoMessageClass: {}, field: {}", protoMessageClass, fieldName);
             }
 
             if (method != null) {
-                final Object fieldValue = fieldGeneratorFunc.apply(fieldName, paramType);
+                final Object fieldValue = fieldGeneratorFunc.apply(fieldName, entry.getValue().getType());
                 if (fieldValue != null) {
-                    method.invoke(invoke, fieldValue);
+                    method.invoke(protoBuilder, fieldValue);
                 }
             }
         }
-
-        return (T) ObjectUtils.buildProtoBuilder(invoke);
     }
 }

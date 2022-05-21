@@ -12,10 +12,15 @@ import java.math.BigDecimal;
  */
 public class OrderEvaluateConvert {
     public static MessageProto.OrderEvaluate db2Proto(final OrderEvaluate orderEvaluate) {
+        return db2ProtoBuilder(orderEvaluate).build();
+    }
+
+    public static MessageProto.OrderEvaluate.Builder db2ProtoBuilder(final OrderEvaluate orderEvaluate) {
         return MessageProto.OrderEvaluate.newBuilder()
                 .setId(orderEvaluate.getId())
                 .setHasOpen(orderEvaluate.getHasOpen())
                 .setUserId(orderEvaluate.getUserId())
+                .setSId(orderEvaluate.getSId())
                 .setUserScore(orderEvaluate.getUserScore().toPlainString())
                 .setUserEvaluate(orderEvaluate.getUserEvaluate())
                 .setUserDate(TimeUtils.ldtToMs(orderEvaluate.getUserDate()))
@@ -24,8 +29,7 @@ public class OrderEvaluateConvert {
                 .setCourierEvaluate(orderEvaluate.getCourierEvaluate())
                 .setVersion(orderEvaluate.getVersion())
                 .setCourierDate(TimeUtils.ldtToMs(orderEvaluate.getCourierDate()))
-                .setUpdateDate(TimeUtils.ldtToMs(orderEvaluate.getUpdateDate()))
-                .build();
+                .setUpdateDate(TimeUtils.ldtToMs(orderEvaluate.getUpdateDate()));
     }
 
     public static OrderEvaluate proto2Db(final MessageProto.OrderEvaluate orderEvaluate) {
@@ -33,6 +37,7 @@ public class OrderEvaluateConvert {
                 .id(orderEvaluate.getId())
                 .hasOpen(orderEvaluate.getHasOpen())
                 .userId(orderEvaluate.getUserId())
+                .sId(orderEvaluate.getSId())
                 .userScore(new BigDecimal(orderEvaluate.getUserScore()))
                 .userEvaluate(orderEvaluate.getUserEvaluate())
                 .userDate(TimeUtils.msToLdt(orderEvaluate.getUserDate()))

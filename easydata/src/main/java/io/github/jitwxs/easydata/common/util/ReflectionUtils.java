@@ -1,5 +1,14 @@
 package io.github.jitwxs.easydata.common.util;
 
+import com.google.common.collect.ObjectArrays;
+import io.github.jitwxs.easydata.common.exception.EasyDataException;
+import io.github.jitwxs.easydata.common.function.ThrowableBiFunction;
+import io.github.jitwxs.easydata.common.function.ThrowableFunction;
+import org.powermock.reflect.Whitebox;
+
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
@@ -64,6 +73,111 @@ public class ReflectionUtils {
                 loadSuperAndInterfaceClass(actualClass, resultList);
             }
         }
+    }
+
+    public static Field[] getFieldsUpTo(Class<?> target, Class<?> exclusiveParent) {
+        Field[] result = target.getDeclaredFields();
+
+        Class<?> parentClass = target.getSuperclass();
+        if (parentClass != null && (exclusiveParent == null || !parentClass.equals(exclusiveParent))) {
+            Field[] parentClassFields = getFieldsUpTo(parentClass, exclusiveParent);
+            result = ObjectArrays.concat(result, parentClassFields, Field.class);
+        }
+
+        return result;
+    }
+
+    /**
+     * 获取字段的读方法
+     * <p>
+     * 优先通过自省获取读方法，使用反射兜底
+     *
+     * @param fieldName  字段名
+     * @param descriptor 基于自省机制的字段描述
+     * @param field      字段
+     * @return 读方法 (object, result)
+     */
+    public static ThrowableFunction<Object, ?> getReadFunc(final String fieldName, final PropertyDescriptor descriptor, final Field field) {
+        if (descriptor != null) {
+            final Method method = descriptor.getReadMethod();
+
+            if (method != null) {
+                return bean -> {
+                    method.setAccessible(true);
+                    return method.invoke(bean);
+                };
+            }
+        }
+
+        if (field != null) {
+            return bean -> Whitebox.getInternalState(bean, fieldName);
+        }
+
+        return null;
+    }
+
+    /**
+     * 获取字段的写方法
+     * <p>
+     * 优先通过自省获取写方法，使用反射兜底
+     *
+     * @param fieldName  字段名
+     * @param descriptor 基于自省机制的字段描述
+     * @param field      字段
+     * @return 写方法 (object, field_value, result)
+     */
+    public static ThrowableBiFunction<Object, Object, ?> getWriteFunc(final String fieldName, final PropertyDescriptor descriptor, final Field field) {
+        if (descriptor != null) {
+            final Method method = descriptor.getWriteMethod();
+            if (method != null) {
+                return (bean, fieldValue) -> {
+                    method.setAccessible(true);
+                    return method.invoke(bean, fieldValue);
+                };
+            }
+        }
+
+        if (field != null) {
+            return (bean, fieldValue) -> {
+                Whitebox.setInternalState(bean, fieldName, fieldValue);
+                return bean;
+            };
+        }
+
+        return null;
+    }
+
+    /**
+     * 获取字段的 {@link Type}
+     *
+     * @param field      字段
+     * @param descriptor 基于自省机制的字段描述
+     * @return {@link Type}
+     */
+    public static Type getFieldType(final Field field, final PropertyDescriptor descriptor) {
+        if (field != null) {
+            final Type type = field.getGenericType();
+
+            if (type != Object.class) {
+                return type;
+            }
+        }
+
+        return descriptor.getPropertyType();
+    }
+
+    public static Class<?> getProtoMessageClassByBuilder(final Class<?> protoBuilderClass) {
+        final Object emptyBuilder = ObjectUtils.create(protoBuilderClass);
+        if (emptyBuilder == null) {
+            throw new EasyDataException("newInstance protobuf builder error: " + protoBuilderClass);
+        }
+
+        final Object protoMessage = ObjectUtils.buildProtoBuilder(emptyBuilder);
+        if (protoMessage == null) {
+            throw new EasyDataException("newInstance protobuf message error: " + protoBuilderClass);
+        }
+
+        return protoMessage.getClass();
     }
 
     private static Class<?> resolveActualClass(final Type type) {

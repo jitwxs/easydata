@@ -16,18 +16,19 @@ public class LongComp extends BaseComp<Long> {
 
     @Override
     public int compare0(Long o1, Long o2) {
-        final int i = o1.compareTo(o2);
+        final long diff = o1 - o2;
 
-        if (i == 0) {
-            return i;
+        final int compareTo = Long.compare(diff, 0L);
+        if (compareTo == 0) {
+            return 0;
         }
 
-        if (i < 0) {
-            o1 = o1 + precisionConfig;
-        } else {
-            o2 = o2 + precisionConfig;
+        final long remaining = Math.abs(diff) - this.precisionConfig;
+
+        if (remaining <= 0L) {
+            return 0;
         }
 
-        return o1.compareTo(o2);
+        return compareTo;
     }
 }
