@@ -56,4 +56,16 @@ public class NotSameSimpleClassITypeVerifyTest {
         assertThrows(AssertionError.class, () ->  with(evaluate, evaluate1).ignoreClassDiff(CONVERT_SAME_CLASS).verify());
         assertDoesNotThrow(() ->  with(evaluate, evaluate1).ignoreClassDiff(VERIFY_SAME_FIELD).verify());
     }
+
+    /**
+     * java 对象 vs proto builder 对象，两边字段有缺失
+     */
+    @Test
+    public void testCompareProtoAndBean4() {
+        final OrderEvaluate evaluate = EasyMock.run(OrderEvaluate.class);
+        final MessageProto.OrderEvaluate.Builder evaluate1 = OrderEvaluateConvert.db2ProtoBuilder(evaluate);
+
+        assertThrows(AssertionError.class, () ->  with(evaluate, evaluate1).ignoreClassDiff(CONVERT_SAME_CLASS).verify());
+        assertDoesNotThrow(() ->  with(evaluate, evaluate1).ignoreClassDiff(VERIFY_SAME_FIELD).verify());
+    }
 }

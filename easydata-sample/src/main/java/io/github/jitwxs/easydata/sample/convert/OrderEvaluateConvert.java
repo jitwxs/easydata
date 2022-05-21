@@ -12,6 +12,10 @@ import java.math.BigDecimal;
  */
 public class OrderEvaluateConvert {
     public static MessageProto.OrderEvaluate db2Proto(final OrderEvaluate orderEvaluate) {
+        return db2ProtoBuilder(orderEvaluate).build();
+    }
+
+    public static MessageProto.OrderEvaluate.Builder db2ProtoBuilder(final OrderEvaluate orderEvaluate) {
         return MessageProto.OrderEvaluate.newBuilder()
                 .setId(orderEvaluate.getId())
                 .setHasOpen(orderEvaluate.getHasOpen())
@@ -25,8 +29,7 @@ public class OrderEvaluateConvert {
                 .setCourierEvaluate(orderEvaluate.getCourierEvaluate())
                 .setVersion(orderEvaluate.getVersion())
                 .setCourierDate(TimeUtils.ldtToMs(orderEvaluate.getCourierDate()))
-                .setUpdateDate(TimeUtils.ldtToMs(orderEvaluate.getUpdateDate()))
-                .build();
+                .setUpdateDate(TimeUtils.ldtToMs(orderEvaluate.getUpdateDate()));
     }
 
     public static OrderEvaluate proto2Db(final MessageProto.OrderEvaluate orderEvaluate) {

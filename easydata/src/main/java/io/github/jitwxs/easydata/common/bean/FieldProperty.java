@@ -66,8 +66,10 @@ public class FieldProperty {
                 .collect(Collectors.toMap(e -> deCapitalize(e.getName()), Function.identity()));
 
         switch (ClassGroupEnum.delegate(target)) {
-            case PROTOBUF:
+            case PROTOBUF_MESSAGE:
                 return creatByProtoBean(target, descriptorMap);
+            case PROTOBUF_BUILDER:
+                return creatByProtoBean(ReflectionUtils.getProtoMessageClassByBuilder(target), descriptorMap);
             case NATIVE:
                 return creatByJavaBean(target, descriptorMap);
             default:

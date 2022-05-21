@@ -38,8 +38,10 @@ public class ObjectConvert implements IConvert<Object> {
             };
 
             switch (ClassGroupEnum.delegate(target)) {
-                case PROTOBUF:
-                    return ObjectUtils.createProto(target, fieldGeneratorFunc);
+                case PROTOBUF_MESSAGE:
+                    return ObjectUtils.createProtoMessage(target, fieldGeneratorFunc);
+                case PROTOBUF_BUILDER:
+                    return ObjectUtils.createProtoBuilder(target, fieldGeneratorFunc);
                 case NATIVE:
                     return ObjectUtils.createJava(target, field -> false, fieldGeneratorFunc);
                 default:

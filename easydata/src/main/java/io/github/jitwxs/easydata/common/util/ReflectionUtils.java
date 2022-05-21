@@ -1,6 +1,7 @@
 package io.github.jitwxs.easydata.common.util;
 
 import com.google.common.collect.ObjectArrays;
+import io.github.jitwxs.easydata.common.exception.EasyDataException;
 import io.github.jitwxs.easydata.common.function.ThrowableBiFunction;
 import io.github.jitwxs.easydata.common.function.ThrowableFunction;
 import org.powermock.reflect.Whitebox;
@@ -163,6 +164,20 @@ public class ReflectionUtils {
         }
 
         return descriptor.getPropertyType();
+    }
+
+    public static Class<?> getProtoMessageClassByBuilder(final Class<?> protoBuilderClass) {
+        final Object emptyBuilder = ObjectUtils.create(protoBuilderClass);
+        if (emptyBuilder == null) {
+            throw new EasyDataException("newInstance protobuf builder error: " + protoBuilderClass);
+        }
+
+        final Object protoMessage = ObjectUtils.buildProtoBuilder(emptyBuilder);
+        if (protoMessage == null) {
+            throw new EasyDataException("newInstance protobuf message error: " + protoBuilderClass);
+        }
+
+        return protoMessage.getClass();
     }
 
     private static Class<?> resolveActualClass(final Type type) {

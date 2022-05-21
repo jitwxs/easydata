@@ -127,43 +127,76 @@ public class ObjectUtils {
     }
 
     /**
-     * 构造 proto 对象，并填充属性
+     * 构造 proto message 对象，并填充属性
      *
-     * @param target             proto 对象类型
+     * @param target             proto message 对象类型
      * @param fieldGeneratorFunc 属性生成方法
-     * @param <T>                proto 对象类型
-     * @return proto 对象
+     * @param <T>                proto message 对象类型
+     * @return proto message 对象
      * @throws IllegalAccessException    if this {@code Method} object is enforcing Java language access control
      *                                   and the underlying method is inaccessible.
      * @throws InvocationTargetException if the underlying method throws an exception.
      */
-    public static <T> T createProto(final Class<T> target,
-                                    final ThrowableBiFunction<String, Type, Object> fieldGeneratorFunc) throws Throwable {
+    public static <T> T createProtoMessage(final Class<T> target,
+                                           final ThrowableBiFunction<String, Type, Object> fieldGeneratorFunc) throws Throwable {
         final Object invoke = ObjectUtils.createProtoBuilder(target);
         if (invoke == null) {
             return null;
         }
 
-        for (Map.Entry<String, FieldProperty> entry : PropertyCache.tryGet(target).getReadable().entrySet()) {
+        fillingProtoBuilderField(target, invoke, fieldGeneratorFunc);
+
+        return (T) ObjectUtils.buildProtoBuilder(invoke);
+    }
+
+    /**
+     * 构造 proto builder 对象，并填充属性
+     *
+     * @param target             proto builder 对象类型
+     * @param fieldGeneratorFunc 属性生成方法
+     * @param <T>                proto builder 对象类型
+     * @return proto builder 对象
+     * @throws IllegalAccessException    if this {@code Method} object is enforcing Java language access control
+     *                                   and the underlying method is inaccessible.
+     * @throws InvocationTargetException if the underlying method throws an exception.
+     */
+    public static <T> T createProtoBuilder(final Class<T> target,
+                                           final ThrowableBiFunction<String, Type, Object> fieldGeneratorFunc) throws Throwable {
+        final T invoke = ObjectUtils.create(target);
+        if (invoke == null) {
+            return null;
+        }
+
+        final Class<?> protoMessageClass = ReflectionUtils.getProtoMessageClassByBuilder(target);
+
+        fillingProtoBuilderField(protoMessageClass, invoke, fieldGeneratorFunc);
+
+        return invoke;
+    }
+
+    private static void fillingProtoBuilderField(final Class<?> protoMessageClass,
+                                                 final Object protoBuilder,
+                                                 final ThrowableBiFunction<String, Type, Object> fieldGeneratorFunc) throws Throwable {
+        final Class<?> protoBuilderClass = protoBuilder.getClass();
+
+        for (Map.Entry<String, FieldProperty> entry : PropertyCache.tryGet(protoMessageClass).getReadable().entrySet()) {
             final String fieldName = entry.getKey();
 
             final String writeMethodName = "set" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
 
             Method method = null;
             try {
-                method = invoke.getClass().getDeclaredMethod(writeMethodName, entry.getValue().getTarget());
+                method = protoBuilderClass.getDeclaredMethod(writeMethodName, entry.getValue().getTarget());
             } catch (NoSuchMethodException e) {
-                log.error("ObjectUtils createProto error, class: {}, field: {}", target, fieldName);
+                log.error("ObjectUtils fillingProtoBuilderField error, protoMessageClass: {}, field: {}", protoMessageClass, fieldName);
             }
 
             if (method != null) {
                 final Object fieldValue = fieldGeneratorFunc.apply(fieldName, entry.getValue().getType());
                 if (fieldValue != null) {
-                    method.invoke(invoke, fieldValue);
+                    method.invoke(protoBuilder, fieldValue);
                 }
             }
         }
-
-        return (T) ObjectUtils.buildProtoBuilder(invoke);
     }
 }
