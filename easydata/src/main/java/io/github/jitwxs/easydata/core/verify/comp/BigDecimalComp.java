@@ -1,6 +1,6 @@
 package io.github.jitwxs.easydata.core.verify.comp;
 
-import io.github.jitwxs.easydata.common.util.BigDecimalUtil;
+import io.github.jitwxs.easydata.common.util.BigDecimalUtils;
 
 import java.math.BigDecimal;
 
@@ -15,7 +15,7 @@ public class BigDecimalComp extends BaseComp<BigDecimal> {
     }
 
     protected BigDecimalComp(BigDecimal precisionConfig) {
-        super(BigDecimalUtil.zeroIfNull(precisionConfig));
+        super(BigDecimalUtils.zeroIfNull(precisionConfig));
     }
 
     @Override

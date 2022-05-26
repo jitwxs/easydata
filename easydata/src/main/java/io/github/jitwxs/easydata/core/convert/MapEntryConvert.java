@@ -3,6 +3,7 @@ package io.github.jitwxs.easydata.core.convert;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import io.github.jitwxs.easydata.common.exception.EasyDataConvertException;
+import io.github.jitwxs.easydata.common.util.CollectionUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.powermock.reflect.Whitebox;
 
@@ -49,13 +50,13 @@ public class MapEntryConvert implements IConvert<Map.Entry> {
     private Map.Entry fromString(final String string) {
         final JSONObject jsonObject = JSON.parseObject(string);
 
-        final String key = jsonObject.keySet().iterator().next();
+        final String key = CollectionUtils.randomElement(jsonObject.keySet());
         final String value = jsonObject.getString(key);
 
         final HashMap<String, String> map = new HashMap<String, String>() {{
             put(key, value);
         }};
 
-        return map.entrySet().iterator().next();
+        return CollectionUtils.randomElement(map.entrySet());
     }
 }

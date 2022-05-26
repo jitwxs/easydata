@@ -6,7 +6,7 @@ import java.math.BigDecimal;
  * @author jitwxs@foxmail.com
  * @since 2022-03-27 21:31
  */
-public class BigDecimalUtil {
+public class BigDecimalUtils {
     public static BigDecimal zeroIfNull(BigDecimal val) {
         return val == null ? BigDecimal.ZERO : val;
     }

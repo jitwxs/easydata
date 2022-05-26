@@ -1,6 +1,7 @@
 package io.github.jitwxs.easydata.core.mock.mocker.implicit;
 
 import io.github.jitwxs.easydata.common.bean.MockConfig;
+import io.github.jitwxs.easydata.common.util.CollectionUtils;
 import io.github.jitwxs.easydata.core.mock.mocker.BaseMocker;
 import io.github.jitwxs.easydata.core.mock.mocker.IMocker;
 import io.github.jitwxs.easydata.provider.ConvertProvider;
@@ -40,7 +41,7 @@ public class MapEntryMocker implements IMocker<Object> {
             put(new BaseMocker(types[0]).mock(mockConfig), new BaseMocker(types[1]).mock(mockConfig));
         }};
 
-        final Map.Entry<Object, Object> result = map.entrySet().iterator().next();
+        final Map.Entry<Object, Object> result = CollectionUtils.randomElement(map.entrySet());
 
         final ConvertProvider provider = ProviderFactory.delegate(ConvertProvider.class);
 

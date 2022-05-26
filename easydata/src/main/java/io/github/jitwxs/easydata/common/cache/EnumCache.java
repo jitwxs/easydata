@@ -1,6 +1,7 @@
 package io.github.jitwxs.easydata.common.cache;
 
 import com.google.protobuf.ProtocolMessageEnum;
+import io.github.jitwxs.easydata.common.util.CollectionUtils;
 import lombok.Getter;
 import org.powermock.reflect.Whitebox;
 
@@ -66,7 +67,7 @@ public class EnumCache {
         }
 
         public Enum random() {
-            return this.idMap.values().iterator().next();
+            return CollectionUtils.randomElement(this.idMap.values());
         }
     }
 }
