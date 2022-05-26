@@ -16,6 +16,7 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -213,6 +214,11 @@ public class FieldProperty {
         // ignore process synthetic
         if (field.isSynthetic()) {
             log.info("FieldProperty createByJavaBean ignore field by synthetic: {}", fieldName);
+            return true;
+        }
+
+        // ignore static field
+        if (Modifier.isStatic(field.getModifiers())) {
             return true;
         }
 
