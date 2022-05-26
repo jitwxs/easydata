@@ -9,6 +9,7 @@ import io.github.jitwxs.easydata.common.util.ObjectUtils;
 import io.github.jitwxs.easydata.common.util.ReflectionUtils;
 import lombok.Builder;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
  * @since 2022-05-19 23:32
  */
 @Data
+@Slf4j
 @Builder
 public class FieldProperty {
     /**
@@ -89,6 +91,12 @@ public class FieldProperty {
 
         for (Field field : ReflectionUtils.getFieldsUpTo(target, Object.class)) {
             final String fieldName = field.getName();
+
+            // ignore process synthetic
+            if (field.isSynthetic()) {
+                log.info("FieldProperty createByJavaBean ignore field by synthetic: {} in {}", fieldName, target);
+                continue;
+            }
 
             final PropertyDescriptor descriptor = descriptorMap.get(fieldName);
 

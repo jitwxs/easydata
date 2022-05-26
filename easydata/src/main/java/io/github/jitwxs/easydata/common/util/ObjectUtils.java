@@ -92,9 +92,10 @@ public class ObjectUtils {
     /**
      * 构造 proto 对象，并填充属性
      *
-     * @param target             proto 对象类型
-     * @param fieldGeneratorFunc 属性生成方法
-     * @param <T>                proto 对象类型
+     * @param target                   proto 对象类型
+     * @param fieldIgnoreGeneratorFunc 属性是否忽略判断
+     * @param fieldGeneratorFunc       属性生成方法
+     * @param <T>                      proto 对象类型
      * @return proto 对象
      * @throws IllegalAccessException    if this {@code Method} object is enforcing Java language access control
      *                                   and the underlying method is inaccessible.
