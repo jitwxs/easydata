@@ -64,7 +64,15 @@ public class MockConfig {
 
     private MockStringEnum stringEnum = MockStringEnum.ENGLISH;
 
+    /**
+     * TypeVariable缓存
+     */
     private final Map<String, Type> typeVariableCache = new HashMap<>();
+
+    /**
+     * Bean缓存
+     */
+    private final Map<String, Object> beanCache = new HashMap<>();
 
     public MockConfig init(Type type) {
         if (type instanceof ParameterizedType) {

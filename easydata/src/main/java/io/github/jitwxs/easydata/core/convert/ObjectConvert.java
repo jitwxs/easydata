@@ -39,11 +39,11 @@ public class ObjectConvert implements IConvert<Object> {
 
             switch (ClassGroupEnum.delegate(target)) {
                 case PROTOBUF_MESSAGE:
-                    return ObjectUtils.createProtoMessage(target, fieldGeneratorFunc);
+                    return ObjectUtils.createProtoMessage(target, null, fieldGeneratorFunc);
                 case PROTOBUF_BUILDER:
-                    return ObjectUtils.createProtoBuilder(target, fieldGeneratorFunc);
+                    return ObjectUtils.createProtoBuilder(target, null, fieldGeneratorFunc);
                 case NATIVE:
-                    return ObjectUtils.createJava(target, field -> false, fieldGeneratorFunc);
+                    return ObjectUtils.createJava(target, field -> false, null, fieldGeneratorFunc);
                 default:
                     throw new UnsupportedOperationException();
             }

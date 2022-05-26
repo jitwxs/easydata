@@ -12,7 +12,6 @@ import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author jitwxs@foxmail.com
@@ -54,7 +53,7 @@ public abstract class LoadingSource<T> {
      * @param fieldValue 字段值
      * @param fieldName  字段名
      */
-    protected void fillingField(final Object object, final Object fieldValue, final String[] fieldName) {
+    public void fillingField(final Object object, final Object fieldValue, final String[] fieldName) {
         if (fieldName == null) {
             return;
         }

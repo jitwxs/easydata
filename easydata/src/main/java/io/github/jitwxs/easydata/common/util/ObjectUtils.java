@@ -16,6 +16,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * @author jitwxs@foxmail.com
@@ -94,6 +95,7 @@ public class ObjectUtils {
      *
      * @param target                   proto 对象类型
      * @param fieldIgnoreGeneratorFunc 属性是否忽略判断
+     * @param newInstanceConsume       当对象构造完毕后，回调消费方法
      * @param fieldGeneratorFunc       属性生成方法
      * @param <T>                      proto 对象类型
      * @return proto 对象
@@ -104,8 +106,13 @@ public class ObjectUtils {
      */
     public static <T> T createJava(final Class<T> target,
                                    final ThrowableFunction<Field, Boolean> fieldIgnoreGeneratorFunc,
+                                   final Consumer<Object> newInstanceConsume,
                                    final ThrowableBiFunction<String, Type, Object> fieldGeneratorFunc) throws Throwable {
-        final Object result = ObjectUtils.create(target);
+        final Object invoke = ObjectUtils.create(target);
+
+        if (newInstanceConsume != null) {
+            newInstanceConsume.accept(invoke);
+        }
 
         for (Map.Entry<String, FieldProperty> entry : PropertyCache.tryGet(target).getWriteAble().entrySet()) {
             final String fieldName = entry.getKey();
@@ -120,17 +127,18 @@ public class ObjectUtils {
 
             final Object fieldValue = fieldGeneratorFunc.apply(fieldName, field.getGenericType());
             if (fieldValue != null) {
-                property.getWriteFunc().apply(result, fieldValue);
+                property.getWriteFunc().apply(invoke, fieldValue);
             }
         }
 
-        return (T) result;
+        return (T) invoke;
     }
 
     /**
      * 构造 proto message 对象，并填充属性
      *
      * @param target             proto message 对象类型
+     * @param newInstanceConsume 当对象构造完毕后，回调消费方法
      * @param fieldGeneratorFunc 属性生成方法
      * @param <T>                proto message 对象类型
      * @return proto message 对象
@@ -139,10 +147,15 @@ public class ObjectUtils {
      * @throws InvocationTargetException if the underlying method throws an exception.
      */
     public static <T> T createProtoMessage(final Class<T> target,
+                                           final Consumer<Object> newInstanceConsume,
                                            final ThrowableBiFunction<String, Type, Object> fieldGeneratorFunc) throws Throwable {
         final Object invoke = ObjectUtils.createProtoBuilder(target);
         if (invoke == null) {
             return null;
+        }
+
+        if (newInstanceConsume != null) {
+            newInstanceConsume.accept(invoke);
         }
 
         fillingProtoBuilderField(target, invoke, fieldGeneratorFunc);
@@ -154,6 +167,7 @@ public class ObjectUtils {
      * 构造 proto builder 对象，并填充属性
      *
      * @param target             proto builder 对象类型
+     * @param newInstanceConsume 当对象构造完毕后，回调消费方法
      * @param fieldGeneratorFunc 属性生成方法
      * @param <T>                proto builder 对象类型
      * @return proto builder 对象
@@ -162,10 +176,15 @@ public class ObjectUtils {
      * @throws InvocationTargetException if the underlying method throws an exception.
      */
     public static <T> T createProtoBuilder(final Class<T> target,
+                                           final Consumer<Object> newInstanceConsume,
                                            final ThrowableBiFunction<String, Type, Object> fieldGeneratorFunc) throws Throwable {
         final T invoke = ObjectUtils.create(target);
         if (invoke == null) {
             return null;
+        }
+
+        if (newInstanceConsume != null) {
+            newInstanceConsume.accept(invoke);
         }
 
         final Class<?> protoMessageClass = ReflectionUtils.getProtoMessageClassByBuilder(target);

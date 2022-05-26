@@ -90,13 +90,11 @@ public class FieldProperty {
         final Map<String, FieldProperty> resultMap = new HashMap<>();
 
         for (Field field : ReflectionUtils.getFieldsUpTo(target, Object.class)) {
-            final String fieldName = field.getName();
-
-            // ignore process synthetic
-            if (field.isSynthetic()) {
-                log.info("FieldProperty createByJavaBean ignore field by synthetic: {} in {}", fieldName, target);
+            if (isSkipField(field)) {
                 continue;
             }
+
+            final String fieldName = field.getName();
 
             final PropertyDescriptor descriptor = descriptorMap.get(fieldName);
 
@@ -154,6 +152,10 @@ public class FieldProperty {
 
             final Field field = fieldMap.get(fieldName);
 
+            if (isSkipField(field)) {
+                continue;
+            }
+
             resultMap.put(fieldName, FieldProperty.builder()
                     .name(fieldName)
                     .type(descriptor.getPropertyType())
@@ -199,5 +201,21 @@ public class FieldProperty {
         } else {
             return name;
         }
+    }
+
+    private static boolean isSkipField(final Field field) {
+        final String fieldName = field.getName();
+
+        if ("serialVersionUID".equals(fieldName)) {
+            return true;
+        }
+
+        // ignore process synthetic
+        if (field.isSynthetic()) {
+            log.info("FieldProperty createByJavaBean ignore field by synthetic: {}", fieldName);
+            return true;
+        }
+
+        return false;
     }
 }
