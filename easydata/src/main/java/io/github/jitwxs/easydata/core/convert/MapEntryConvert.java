@@ -6,7 +6,6 @@ import io.github.jitwxs.easydata.common.exception.EasyDataConvertException;
 import lombok.extern.slf4j.Slf4j;
 import org.powermock.reflect.Whitebox;
 
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,18 +34,12 @@ public class MapEntryConvert implements IConvert<Map.Entry> {
         }
 
         try {
-            final Method method = Whitebox.getMethod(target, "of", Map.Entry.class);
-            if (method != null) {
-                return Whitebox.invokeMethod(target, method, entry);
-            }
+            return Whitebox.invokeMethod(target, "of", entry);
         } catch (Exception ignored) {
         }
 
         try {
-            final Method method = Whitebox.getMethod(target, "of", Object.class, Object.class);
-            if (method != null) {
-                return Whitebox.invokeMethod(target, method, entry.getKey(), entry.getValue());
-            }
+            return Whitebox.invokeMethod(target, "of", entry.getKey(), entry.getValue());
         } catch (Exception ignored) {
         }
 
