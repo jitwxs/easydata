@@ -36,6 +36,8 @@ public class ClassMocker implements IMocker<Object> {
             mocker = new CollectionMocker(clazz, genericTypes[0]);
         } else if (clazz.isEnum()) {
             mocker = new EnumMocker<>(clazz);
+        } else if (Map.Entry.class.isAssignableFrom(clazz)) {
+            mocker = new MapEntryMocker(clazz, genericTypes);
         } else {
             mocker = explicitProvider.delegate(clazz);
             if (mocker == null) {

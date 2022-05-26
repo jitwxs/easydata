@@ -15,6 +15,7 @@ import io.github.jitwxs.easydata.provider.ProviderFactory;
 import lombok.AllArgsConstructor;
 
 import java.lang.reflect.Type;
+import java.util.function.Consumer;
 
 /**
  * java bean
@@ -26,6 +27,11 @@ public class BeanMocker implements IMocker<Object> {
 
     @Override
     public Object mock(MockConfig mockConfig) {
+        final Object cacheBean = mockConfig.getBeanCache().get(target.getName());
+        if (cacheBean != null) {
+            return cacheBean;
+        }
+
         try {
             final ThrowableBiFunction<String, Type, Object> fieldGeneratorFunc = (name, type) -> {
                 // contrastClass 支持
@@ -42,13 +48,15 @@ public class BeanMocker implements IMocker<Object> {
                 return new BaseMocker<>(type).mock(mockConfig);
             };
 
+            final Consumer<Object> newInstanceConsume = bean -> mockConfig.getBeanCache().put(target.getName(), bean);
+
             switch (ClassGroupEnum.delegate(target)) {
                 case PROTOBUF_MESSAGE:
-                    return ObjectUtils.createProtoMessage(target, fieldGeneratorFunc);
+                    return ObjectUtils.createProtoMessage(target, newInstanceConsume, fieldGeneratorFunc);
                 case PROTOBUF_BUILDER:
-                    return ObjectUtils.createProtoBuilder(target, fieldGeneratorFunc);
+                    return ObjectUtils.createProtoBuilder(target, newInstanceConsume, fieldGeneratorFunc);
                 case NATIVE:
-                    return ObjectUtils.createJava(target, field -> field.isAnnotationPresent(EasyMockIgnore.class), fieldGeneratorFunc);
+                    return ObjectUtils.createJava(target, field -> field.isAnnotationPresent(EasyMockIgnore.class), newInstanceConsume, fieldGeneratorFunc);
                 default:
                     throw new UnsupportedOperationException();
             }

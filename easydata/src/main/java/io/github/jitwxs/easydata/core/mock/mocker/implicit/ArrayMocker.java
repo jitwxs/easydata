@@ -1,6 +1,7 @@
 package io.github.jitwxs.easydata.core.mock.mocker.implicit;
 
 import io.github.jitwxs.easydata.common.bean.MockConfig;
+import io.github.jitwxs.easydata.common.util.CollectionUtils;
 import io.github.jitwxs.easydata.core.mock.mocker.BaseMocker;
 import io.github.jitwxs.easydata.core.mock.mocker.IMocker;
 import lombok.AllArgsConstructor;
@@ -49,8 +50,8 @@ public class ArrayMocker implements IMocker<Object> {
         GenericArrayType genericArrayType = (GenericArrayType) this.type;
         // 递归获取该数组的维数，以及最后的Class类型
         Map<Integer, Map<Class, Type[]>> map = map(mockConfig, genericArrayType, 0);
-        Entry<Integer, Map<Class, Type[]>> entry = map.entrySet().iterator().next();
-        Entry<Class, Type[]> baseEntry = entry.getValue().entrySet().iterator().next();
+        Entry<Integer, Map<Class, Type[]>> entry = CollectionUtils.randomElement(map.entrySet());
+        Entry<Class, Type[]> baseEntry = CollectionUtils.randomElement(entry.getValue().entrySet());
         int[] dimensions = new int[entry.getKey()];
         for (int index = 0; index < dimensions.length; index++) {
             dimensions[index] = mockConfig.nexSize();

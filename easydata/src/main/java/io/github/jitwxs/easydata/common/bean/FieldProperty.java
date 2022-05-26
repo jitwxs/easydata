@@ -9,12 +9,14 @@ import io.github.jitwxs.easydata.common.util.ObjectUtils;
 import io.github.jitwxs.easydata.common.util.ReflectionUtils;
 import lombok.Builder;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -27,6 +29,7 @@ import java.util.stream.Collectors;
  * @since 2022-05-19 23:32
  */
 @Data
+@Slf4j
 @Builder
 public class FieldProperty {
     /**
@@ -88,6 +91,10 @@ public class FieldProperty {
         final Map<String, FieldProperty> resultMap = new HashMap<>();
 
         for (Field field : ReflectionUtils.getFieldsUpTo(target, Object.class)) {
+            if (isSkipField(field)) {
+                continue;
+            }
+
             final String fieldName = field.getName();
 
             final PropertyDescriptor descriptor = descriptorMap.get(fieldName);
@@ -146,6 +153,10 @@ public class FieldProperty {
 
             final Field field = fieldMap.get(fieldName);
 
+            if (isSkipField(field)) {
+                continue;
+            }
+
             resultMap.put(fieldName, FieldProperty.builder()
                     .name(fieldName)
                     .type(descriptor.getPropertyType())
@@ -191,5 +202,26 @@ public class FieldProperty {
         } else {
             return name;
         }
+    }
+
+    private static boolean isSkipField(final Field field) {
+        final String fieldName = field.getName();
+
+        if ("serialVersionUID".equals(fieldName)) {
+            return true;
+        }
+
+        // ignore process synthetic
+        if (field.isSynthetic()) {
+            log.info("FieldProperty createByJavaBean ignore field by synthetic: {}", fieldName);
+            return true;
+        }
+
+        // ignore static field
+        if (Modifier.isStatic(field.getModifiers())) {
+            return true;
+        }
+
+        return false;
     }
 }

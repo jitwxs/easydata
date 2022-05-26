@@ -6,7 +6,7 @@
 
     <groupId>io.github.jitwxs</groupId>
     <artifactId>easydata</artifactId>
-    <version>1.7-RELEASE</version>
+    <version>1.8-RELEASE</version>
     <packaging>jar</packaging>
 
     <name>easydata</name>
@@ -178,6 +178,26 @@
                         <id>attach-javadocs</id>
                         <goals>
                             <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- jacoco -->
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.6</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>generate-code-coverage-report</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
                         </goals>
                     </execution>
                 </executions>
