@@ -20,7 +20,7 @@
 </p>
 <hr/>
 
-[快速开始 Quick start](https://github.com/jitwxs/easydata/wiki) | [文档 Documentation](https://github.com/jitwxs/easydata/wiki) | [变更记录 Changelog](https://github.com/jitwxs/easydata/releases) | [代码示例 Code examples](https://github.com/jitwxs/easydata/tree/master/easydata-sample) | | [报告问题 Report an issue](https://github.com/jitwxs/easydata/issues/new)
+[快速开始 Quick start](https://github.com/jitwxs/easydata/wiki/Quick-Start) | [文档 Documentation](https://github.com/jitwxs/easydata/wiki) | [变更记录 Changelog](https://github.com/jitwxs/easydata/releases) | [代码示例 Code examples](https://github.com/jitwxs/easydata/tree/master/easydata-sample) | [报告问题 Report an issue](https://github.com/jitwxs/easydata/issues/new)
 
 ## Feature
 
