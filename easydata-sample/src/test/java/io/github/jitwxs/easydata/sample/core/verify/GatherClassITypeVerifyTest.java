@@ -72,6 +72,7 @@ public class GatherClassITypeVerifyTest extends LoggerStarter {
         // linkedList
         final Collection<EnumProto.SexEnum> enums2 = new LinkedList<>(Arrays.asList(EnumProto.SexEnum.MALE, EnumProto.SexEnum.FEMALE));
 
+        assertThrows(AssertionError.class, () -> EasyVerify.with(enums1, enums2).verify());
         assertDoesNotThrow(() -> EasyVerify.with(enums1, enums2).ignoreClassDiff(CONVERT_SAME_CLASS).verify());
 
         // hashSet
