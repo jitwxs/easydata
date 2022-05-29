@@ -1,12 +1,43 @@
-![](https://badgen.net/github/release/jitwxs/easydata)
-![](https://badgen.net/github/license/jitwxs/easydata)
-![](https://badgen.net/github/stars/jitwxs/easydata)
-![](https://badgen.net/github/forks/jitwxs/easydata)
-[![](https://badgen.net/maven/v/maven-central/io.github.jitwxs/easydata)](https://mvnrepository.com/artifact/io.github.jitwxs/easydata)
+<h1 align="center">easydata</h1>
+<p align="center">在单元测试中更容易的处理数据，加载 / Mock / 转换 / 验证全流程覆盖...</p>
+<p align="center">Easy process data in unit test, load/mock/convert/verify...</p>
+<p align="center">
+  <a href="https://github.com/jitwxs/easydata/actions">
+    <img src="https://github.com/jitwxs/easydata/actions/workflows/build.yml/badge.svg?branch=master" />
+  </a>
+  <a href="https://mvnrepository.com/artifact/io.github.jitwxs/easydata">
+    <img alt="mvnrepository" src="https://badgen.net/maven/v/maven-central/io.github.jitwxs/easydata" />
+  </a>
+  <a href="#">
+    <img alt="license" src="https://badgen.net/github/license/jitwxs/easydata" />
+  </a>
+  <a href="#">
+    <img alt="star" src="https://badgen.net/github/stars/jitwxs/easydata" />
+  </a>
+  <a href="#">
+    <img alt="forks" src="https://badgen.net/github/forks/jitwxs/easydata" />
+  </a>
+</p>
+<hr/>
 
-> 使用文档：https://github.com/jitwxs/easydata/wiki
+[快速开始 Quick start](https://github.com/jitwxs/easydata/wiki) | [文档 Documentation](https://github.com/jitwxs/easydata/wiki) | [变更记录 Changelog](https://github.com/jitwxs/easydata/releases) | [代码示例 Code examples](https://github.com/jitwxs/easydata/tree/master/easydata-sample) | | [报告问题 Report an issue](https://github.com/jitwxs/easydata/issues/new)
 
-### 前言
+## Feature
+
+- [x] 本地 CSV, JSON 文件解析
+- [x] 内存字符串数据解析
+- [x] 远程 MySQL SELECT 查询结果解析
+- [x] 任意类型对象生成
+- [x] Map, List 等集合、泛型类型对象生成
+- [x] 个性化字符串数据生成【邮箱、身份证号、姓名等】
+- [x] 任意两个对象（支持异构）的对象比较
+- [x] 数值类型对象比较，支持自定义精度误差
+- [x] 支持任意对象的类型转换
+- [ ] 支持校验 ResultMap 和查询字段是否完全匹配
+- [ ] 支持校验 ResultMap 与对应 POJO 实体字段是否完全匹配
+- [ ] 支持简单的 SQL 语句静态校验
+
+## Design Background
 
 在日常工作中，不知道你有没有遇到过这些场景：
 
@@ -20,42 +51,40 @@
 
 如果有的话，是不是已经血压升高了，毕竟写需求就已经很痛苦了，还得做这些劳心却没有技术含量的重复工作。为了解决这些问题，`easydata` 应运而生。花点时间往下了解一下，欢迎 Star 或 Issue 来一起支持和改进它吧。
 
-### 主要功能
+## Contribution
 
-**数据加载模块**
+当您遇到问题，请在 issuse 中提问，如果您有意愿贡献代码，也十分欢迎。
 
-- [x] 本地 CSV, JSON 文件解析
-- [x] MySQL SELECT 查询结果解析
-- [x] 本地 INSERT SQL 解析
+When you encounter a problem, please ask questions in ISSUSE, if you want to contribute the code, that also very welcome.
 
-**数据生成模块**
+step1: 拷贝仓库 Fork repositary.
 
-- [x] 基本数据类型、自定义对象，数据生成
-- [x] Map、List 等集合、泛型类型数据生成
-- [x] 支持生成 protobuf 类型数据
-- [x] 个性化字符串数据生成【邮箱、身份证号、姓名等】
+step2: 贡献代码，需要包括单元测试 Contrubution code, with unit test.
 
-**数据验证模块**
+```bash
+mvn clean package -Dmaven.test.skip=false -Pdevelop -B --file easydata/pom.xml
+```
 
-- [x] 支持基本数据类型比较，自定义指定精度误差
-- [x] 支持相同类型对象（普通 Java 对象、protobuf 对象）间比较
-- [x] 支持不同类型的对象间比较
-- [x] 支持 Map、List 等集合类型对象比较
+step3: 提交 PR 到 master 分支，等待管理员审批 Pull request to master branch, wating administrator approval.
 
-**Mybatis 验证模块**
+## Reference
 
-- [ ] 支持校验 ResultMap 和查询字段是否完全匹配
-- [ ] 支持校验 ResultMap 与对应 POJO 实体字段是否完全匹配
-- [ ] 支持简单的 SQL 语句静态校验
-
-**数据转换模块**
-
-- [x] 支持 String 类型与基本数据类型、普通对象的转换
-- [x] 对 protobuf 对象的支持
-
-#### 项目参考
-
-easydata 参考了以下项目的代码:
+本项目部分功能借鉴以下项目 Some feature of this project reference other projects:
 
 - https://github.com/jsonzou/jmockdata
 - https://github.com/binarywang/java-testdata-generator
+
+## Donate
+
+如果本项目为您带来方便，欢迎 Star 来让更多人发现和使用它。本项目为个人维护项目，如果您愿意请作者喝一瓶可乐的话，欢迎打赏。
+
+If this project brings you convenience, welcome to star to let more people discover and use it. This project is a personal maintenance project. If you are willing to ask the author to drink a bottle of cola, welcome to donate.
+
+>如您选择打赏，记得备注您的昵称，我将为您登记到本页面中。
+>
+>If you choose to donate, remember to note your nickname, I will register to this page.
+
+<div align="center">
+    <img src="https://cdn.jsdelivr.net/gh/jitwxs/cdn/blog/configuration/alipay_donate_full.jpg" height="200" style="float:left;margin-right:20px;margin-left: 310px">
+    <img src="https://cdn.jsdelivr.net/gh/jitwxs/cdn/blog/configuration/wechat_donate_full.jpg" height="200" style="float:left">
+</div> 
