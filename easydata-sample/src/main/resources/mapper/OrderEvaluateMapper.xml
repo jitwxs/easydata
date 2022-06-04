@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.github.jitwxs.easydata.sample.mapper.OrderEvaluateMapper">
+    <resultMap id="ResultMap" type="io.github.jitwxs.easydata.sample.bean.OrderEvaluate">
+        <result column="id" jdbcType="VARCHAR" property="id"/>
+        <result column="has_open" jdbcType="VARCHAR" property="hasOpen"/>
+        <result column="user_id" jdbcType="VARCHAR" property="userId"/>
+        <result column="user_score" jdbcType="DECIMAL" property="userScore"/>
+        <result column="user_evaluate" jdbcType="VARCHAR" property="userEvaluate"/>
+        <result column="user_date" jdbcType="TIMESTAMP" property="userDate"/>
+        <result column="courier_id" jdbcType="VARCHAR" property="courierId"/>
+        <result column="courier_score" jdbcType="DECIMAL" property="courierScore"/>
+        <result column="courier_evaluate" jdbcType="VARCHAR" property="courierEvaluate"/>
+        <result column="version" jdbcType="INTEGER" property="version"/>
+        <result column="courier_date" jdbcType="TIMESTAMP" property="courierDate"/>
+        <result column="update_date" jdbcType="TIMESTAMP" property="updateDate"/>
+    </resultMap>
+
+    <sql id="columns">
+        `id`, `has_open`, `user_id`, `user_score`, `user_evaluate`, `user_date`, `courier_id`, `courier_score`,
+            `courier_evaluate`, `version`, `courier_date`, `update_date`
+    </sql>
+
+    <sql id="table_name">order_evaluate</sql>
+
+    <select id="selectAll" resultMap="ResultMap">
+        SELECT
+        <include refid="columns" />
+        FROM
+        <include refid="table_name"/>
+    </select>
+
+    <select id="selectById" resultMap="ResultMap">
+        SELECT
+        <include refid="columns" />
+        FROM
+        <include refid="table_name"/>
+        WHERE
+        `id` = #{id}
+    </select>
+</mapper>

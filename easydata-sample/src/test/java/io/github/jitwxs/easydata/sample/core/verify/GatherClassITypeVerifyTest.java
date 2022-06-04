@@ -6,7 +6,6 @@ import io.github.jitwxs.easydata.common.bean.MockConfig;
 import io.github.jitwxs.easydata.common.enums.MockStringEnum;
 import io.github.jitwxs.easydata.core.mock.EasyMock;
 import io.github.jitwxs.easydata.core.verify.EasyVerify;
-import io.github.jitwxs.easydata.sample.LoggerStarter;
 import io.github.jitwxs.easydata.sample.bean.UserInfo;
 import io.github.jitwxs.easydata.sample.message.EnumProto;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * @since 2022-03-26 18:46
  */
 @Slf4j
-public class GatherClassITypeVerifyTest extends LoggerStarter {
+public class GatherClassITypeVerifyTest {
     @Test
     @DisplayName("Set集合")
     public void testSet() {
