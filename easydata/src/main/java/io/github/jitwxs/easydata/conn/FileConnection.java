@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Optional;
 
 /**
+ * 基于文件的连接
+ *
  * @author jitwxs@foxmail.com
  * @since 2022-03-19 17:36
  */

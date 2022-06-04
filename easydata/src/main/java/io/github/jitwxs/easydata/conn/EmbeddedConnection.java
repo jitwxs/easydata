@@ -9,6 +9,7 @@ import io.github.jitwxs.easydata.core.loader.JsonLoadingSource;
 import io.github.jitwxs.easydata.core.loader.LoaderProperties;
 import io.github.jitwxs.easydata.core.loader.LoadingSource;
 import io.github.jitwxs.easydata.core.loader.MatrixLoadingSource;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -20,12 +21,12 @@ import java.util.Optional;
  * @since 2022-05-18 21:21
  */
 @Slf4j
+@AllArgsConstructor
 public class EmbeddedConnection implements IConnection {
+    /**
+     * 数据类型
+     */
     private final FileFormatEnum fileFormatEnum;
-
-    public EmbeddedConnection(final FileFormatEnum fileFormatEnum) {
-        this.fileFormatEnum = fileFormatEnum;
-    }
 
     @Override
     public Optional<LoadingSource<?>> loading(LoaderProperties properties) {
