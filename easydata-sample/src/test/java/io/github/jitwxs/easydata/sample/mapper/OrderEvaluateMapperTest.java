@@ -1,6 +1,7 @@
 package io.github.jitwxs.easydata.sample.mapper;
 
 import io.github.jitwxs.easydata.core.mybatis.MyBatisMapperInspect;
+import io.github.jitwxs.easydata.core.mybatis.action.ColumnsMapperInspectAction;
 import io.github.jitwxs.easydata.core.mybatis.action.IMapperInspectAction;
 import io.github.jitwxs.easydata.core.mybatis.action.ResultMapAttributeMapperInspectAction;
 import io.github.jitwxs.easydata.sample.bean.OrderEvaluate;
@@ -18,7 +19,8 @@ public class OrderEvaluateMapperTest extends MyBatisMapperInspect<OrderEvaluateM
     @Override
     public List<IMapperInspectAction> actionList() {
         return Arrays.asList(
-                new ResultMapAttributeMapperInspectAction("ResultMap", new String[]{"sId", "javaBeanUnknownFields"})
+                new ResultMapAttributeMapperInspectAction("ResultMap", new String[]{"sId", "javaBeanUnknownFields"}),
+                new ColumnsMapperInspectAction("columns", "ResultMap")
         );
     }
 }

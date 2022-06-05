@@ -13,6 +13,8 @@ import org.apache.ibatis.session.Configuration;
 import java.util.Set;
 
 /**
+ * inspect mybatis mapper file resultMap with entity attribute is match
+ *
  * @author jitwxs@foxmail.com
  * @since 2022-06-05 9:39
  */
