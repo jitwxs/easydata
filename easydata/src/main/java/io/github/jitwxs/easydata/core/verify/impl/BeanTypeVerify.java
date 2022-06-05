@@ -15,10 +15,7 @@ import org.apache.commons.lang3.ClassUtils;
 import org.assertj.core.api.ObjectAssert;
 import org.assertj.core.api.RecursiveComparisonAssert;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 
 import static io.github.jitwxs.easydata.core.verify.EasyVerify.COLLECTION_TYPE_VERIFY;
@@ -134,14 +131,14 @@ public class BeanTypeVerify {
             } else {
                 RecursiveComparisonAssert<?> anAssert = assertThat(a).usingRecursiveComparison();
 
-                final String[] ignoreFields = instance.toIgnoreFields();
-                if (ignoreFields.length > 0) {
-                    anAssert = anAssert.ignoringFields(ignoreFields);
+                final Set<String> ignoreFields = instance.getIgnoreFields();
+                if (CollectionUtils.isNotEmpty(ignoreFields)) {
+                    anAssert = anAssert.ignoringFields(ignoreFields.toArray(new String[0]));
                 }
 
-                final String[] validateFields = instance.toValidateFields();
-                if (validateFields.length > 0) {
-                    anAssert = anAssert.comparingOnlyFields(validateFields);
+                final Set<String> validateFields = instance.getValidateFields();
+                if (CollectionUtils.isNotEmpty(validateFields)) {
+                    anAssert = anAssert.comparingOnlyFields(validateFields.toArray(new String[0]));
                 }
 
                 for (Map.Entry<Class<?>, BaseComp> entry : instance.getCompConfigs().entrySet()) {
@@ -217,7 +214,7 @@ public class BeanTypeVerify {
      * @return 需要比对的字段列表
      */
     private Set<String> initialValidFields(Function<Object, Collection<String>> pendingFieldsFunc, VerifyInstance instance) {
-        final Set<String> doValidFields = Sets.newHashSet(instance.toValidateFields());
+        final HashSet<String> doValidFields = Sets.newHashSet(instance.getValidateFields());
 
         if (CollectionUtils.isEmpty(doValidFields)) {
             final Collection<String> pendingFields = pendingFieldsFunc.apply(null);
@@ -227,7 +224,7 @@ public class BeanTypeVerify {
             }
         }
 
-        doValidFields.removeAll(Sets.newHashSet(instance.toIgnoreFields()));
+        doValidFields.removeAll(Sets.newHashSet(instance.getIgnoreFields()));
 
         return doValidFields;
     }
