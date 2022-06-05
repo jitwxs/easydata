@@ -7,10 +7,14 @@ import io.github.jitwxs.easydata.core.mybatis.action.IMapperInspectRuntimeAction
 import io.github.jitwxs.easydata.core.mybatis.action.IMapperInspectStaticAction;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.ibatis.builder.xml.XMLMapperBuilder;
+import org.apache.ibatis.session.Configuration;
 import org.mockito.Mockito;
 import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,24 +40,40 @@ public abstract class MyBatisMapperInspect<T> {
      */
     private final Class<T> targetClass;
 
+    private final XMLMapperBuilder xmlMapperBuilder;
+
     private final List<IMapperInspectRuntimeAction> runtimeActions = new ArrayList<>();
 
     public abstract List<IMapperInspectAction> actionList();
 
     public MyBatisMapperInspect() {
+        // initial targetClass
         this.targetClass = (Class<T>) ReflectionUtils.getGenericSuperClass(this.getClass())[0];
         if (!this.targetClass.isInterface()) {
             throw new EasyDataException("MyBatis mapper T must be interface");
         }
 
+        // initial target
         this.target = Mockito.mock(this.targetClass, invocation -> {
             this.interceptorInvoke(invocation.getMethod(), invocation.getArguments());
             return null;
         });
 
+        // initial xmlMapperBuilder
+        final String xmlLocation = xmlLocation();
+        try (final InputStream is = targetClass.getResourceAsStream(xmlLocation)) {
+            final Configuration configuration = new Configuration();
+
+            this.xmlMapperBuilder = new XMLMapperBuilder(is, configuration, xmlLocation, configuration.getSqlFragments());
+            this.xmlMapperBuilder.parse();
+        } catch (IOException e) {
+            throw new EasyDataException(e);
+        }
+
+        // initial runtimeActions
         for (IMapperInspectAction action : CollectionUtils.emptyIfNull(actionList())) {
             if (action instanceof IMapperInspectStaticAction) {
-                ((IMapperInspectStaticAction) action).action();
+                ((IMapperInspectStaticAction) action).doAction(xmlMapperBuilder);
             } else if (action instanceof IMapperInspectRuntimeAction) {
                 runtimeActions.add((IMapperInspectRuntimeAction) action);
             }
@@ -90,7 +110,7 @@ public abstract class MyBatisMapperInspect<T> {
      */
     private void interceptorInvoke(final Method method, final Object[] arguments) {
         for (IMapperInspectRuntimeAction action : runtimeActions) {
-            action.action(method, arguments);
+            action.doAction(xmlMapperBuilder, method, arguments);
         }
     }
 }
