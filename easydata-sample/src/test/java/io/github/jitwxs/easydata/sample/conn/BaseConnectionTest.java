@@ -1,7 +1,6 @@
 package io.github.jitwxs.easydata.sample.conn;
 
 import io.github.jitwxs.easydata.conn.IConnection;
-import io.github.jitwxs.easydata.sample.LoggerStarter;
 import io.github.jitwxs.easydata.common.bean.MatrixBean;
 import io.github.jitwxs.easydata.common.enums.DataTypeEnum;
 import io.github.jitwxs.easydata.core.loader.LoaderProperties;
@@ -16,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @author jitwxs@foxmail.com
  * @since 2022-03-26 16:12
  */
-public class BaseConnectionTest extends LoggerStarter {
+public class BaseConnectionTest {
     public void assert0(final IConnection connection, final LoaderProperties properties) {
         final Optional<LoadingSource<?>> optional = connection.loading(properties);
 

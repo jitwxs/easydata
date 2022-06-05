@@ -18,8 +18,8 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 public class MySQLConnectionTest extends BaseConnectionTest {
     @Container
     private static final JdbcDatabaseContainer container = new MySQLContainer()
-            .withDatabaseName("express")
-            .withInitScript("easydata/sql/express.sql");
+            .withDatabaseName("easydata_sample")
+            .withInitScript("sql/easydata-sample-table.sql");
 
     @Test
     public void loading() {

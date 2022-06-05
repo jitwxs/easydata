@@ -33,9 +33,7 @@
 - [x] 任意两个对象（支持异构）的对象比较
 - [x] 数值类型对象比较，支持自定义精度误差
 - [x] 支持任意对象的类型转换
-- [ ] 支持校验 ResultMap 和查询字段是否完全匹配
-- [ ] 支持校验 ResultMap 与对应 POJO 实体字段是否完全匹配
-- [ ] 支持简单的 SQL 语句静态校验
+- [x] 支持 MyBatis Mapper 文件、SQL 语句静态校验
 
 ## Design Background
 
@@ -53,19 +51,19 @@
 
 ## Contribution
 
-当您遇到问题，请在 issuse 中提问，如果您有意愿贡献代码，也十分欢迎。
+当您遇到问题，请在 issues 中提问，如果您有意愿贡献代码，也十分欢迎。
 
-When you encounter a problem, please ask questions in ISSUSE, if you want to contribute the code, that also very welcome.
+When you encounter a problem, please ask questions in issues, if you want to contribute the code, that also very welcome.
 
-step1: 拷贝仓库 Fork repositary.
+step1: 拷贝仓库 Fork repository.
 
-step2: 贡献代码，需要包括单元测试 Contrubution code, with unit test.
+step2: 贡献代码，需要包括单元测试 Contribution code, with unit test.
 
 ```bash
 mvn clean package -Dmaven.test.skip=false -Pdevelop -B --file easydata/pom.xml
 ```
 
-step3: 提交 PR 到 master 分支，等待管理员审批 Pull request to master branch, wating administrator approval.
+step3: 提交 PR 到 master 分支，等待管理员审批 Pull request to master branch, waiting administrator approval.
 
 ## Reference
 
@@ -85,6 +83,6 @@ If this project brings you convenience, welcome to star to let more people disco
 >If you choose to donate, remember to note your nickname, I will register to this page.
 
 <div align="center">
-    <img src="https://cdn.jsdelivr.net/gh/jitwxs/cdn/blog/configuration/alipay_donate_full.jpg" height="200" style="float:left;margin-right:20px;margin-left: 310px">
-    <img src="https://cdn.jsdelivr.net/gh/jitwxs/cdn/blog/configuration/wechat_donate_full.jpg" height="200" style="float:left">
+    <img src="https://cdn.jsdelivr.net/gh/jitwxs/cdn/blog/configuration/alipay_donate_full.jpg" height="200" style="float:left;margin-right:20px;margin-left: 310px" alt="alipay_donate">
+    <img src="https://cdn.jsdelivr.net/gh/jitwxs/cdn/blog/configuration/wechat_donate_full.jpg" height="200" style="float:left" alt="wechat_donate">
 </div> 

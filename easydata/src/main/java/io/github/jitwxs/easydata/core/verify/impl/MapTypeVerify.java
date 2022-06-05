@@ -2,12 +2,13 @@ package io.github.jitwxs.easydata.core.verify.impl;
 
 import io.github.jitwxs.easydata.common.util.ObjectUtils;
 import io.github.jitwxs.easydata.core.verify.VerifyInstance;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import static io.github.jitwxs.easydata.core.verify.EasyVerify.BEAN_TYPE_VERIFY;
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author jitwxs@foxmail.com
@@ -15,14 +16,16 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class MapTypeVerify {
     public void check(Map a, Map b, VerifyInstance instance) {
-        // 数量比较
-        assertThat(a).hasSameSizeAs(b);
+        final Class<?> targetClass = this.fetchTargetClass(a, b);
 
-        // 类型统一
-        if (a.getClass() != b.getClass()) {
-            a = alignmentClass(HashMap.class, a);
-            b = alignmentClass(HashMap.class, b);
-        }
+        final Set<Object> ignoreElements = instance.getIgnoreElements();
+
+        a = this.alignmentClass(targetClass, a, ignoreElements);
+        b = this.alignmentClass(targetClass, b, ignoreElements);
+
+        // 不继续向下消费
+        instance = instance.clone();
+        instance.getIgnoreElements().clear();
 
         // 比较 keySet 是否相等
         BEAN_TYPE_VERIFY.check(a.keySet(), b.keySet(), instance);
@@ -33,11 +36,44 @@ public class MapTypeVerify {
         }
     }
 
-    private Map alignmentClass(Class<?> target, Map value) {
-        final Map newValue = (Map) ObjectUtils.create(target);
+    private Class<?> fetchTargetClass(final Map<?, ?> a, final Map<?, ?> b) {
+        if (a.getClass() == b.getClass()) {
+            return a.getClass();
+        }
 
-        newValue.putAll(value);
+        return HashMap.class;
+    }
 
-        return newValue;
+    /**
+     * 统一 class 类型
+     *
+     * @param target         要转换的目标类型
+     * @param oldBean        原始对象
+     * @param ignoreElements 忽略的元素
+     * @return 转换后的类型
+     */
+    private Map alignmentClass(Class<?> target, Map<?, ?> oldBean, Set<Object> ignoreElements) {
+        if (CollectionUtils.isEmpty(ignoreElements) && target == oldBean.getClass()) {
+            return oldBean;
+        }
+
+        final Map newBean = (Map) ObjectUtils.create(target);
+
+        oldBean.forEach((k, v) -> {
+            boolean isIgnore = false;
+
+            for (Object ignoreElement : ignoreElements) {
+                if (ignoreElement.equals(k)) {
+                    isIgnore = true;
+                    break;
+                }
+            }
+
+            if (!isIgnore) {
+                newBean.put(k, v);
+            }
+        });
+
+        return newBean;
     }
 }

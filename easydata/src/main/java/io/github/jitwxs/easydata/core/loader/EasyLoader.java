@@ -23,6 +23,13 @@ public class EasyLoader {
         this.connection = connection;
     }
 
+    /**
+     * 调用加载主方法
+     * @param types 加载数据类型
+     * @param properties 加载参数
+     * @return 加载结果
+     * @param <T> 加载数据类型
+     */
     public <T> List<T> loading(@NonNull final Class<T> types, @NonNull final LoaderProperties properties) {
         final Optional<LoadingSource<?>> data = this.connection.loading(properties);
 
