@@ -1,6 +1,8 @@
 package io.github.jitwxs.easydata.core.mock.mocker.implicit;
 
 import io.github.jitwxs.easydata.common.bean.MockConfig;
+import io.github.jitwxs.easydata.common.bean.ObjectImpl;
+import io.github.jitwxs.easydata.common.util.ObjectUtils;
 import io.github.jitwxs.easydata.core.mock.mocker.IMocker;
 import io.github.jitwxs.easydata.provider.ExplicitMockerProvider;
 import io.github.jitwxs.easydata.provider.ProviderFactory;
@@ -23,8 +25,12 @@ public class ClassMocker implements IMocker<Object> {
 
     @Override
     public Object mock(MockConfig mockConfig) {
+        // fault process
         if (clazz == Class.class) {
             return Object.class;
+        }
+        if (clazz == Object.class) {
+            return ObjectUtils.create(ObjectImpl.class);
         }
 
         IMocker<?> mocker;
@@ -46,5 +52,4 @@ public class ClassMocker implements IMocker<Object> {
         }
         return mocker.mock(mockConfig);
     }
-
 }
