@@ -5,7 +5,7 @@ import io.github.jitwxs.easydata.common.bean.FieldProperty;
 import io.github.jitwxs.easydata.common.cache.PropertyCache;
 import io.github.jitwxs.easydata.common.enums.ClassGroupEnum;
 import io.github.jitwxs.easydata.common.enums.GatherEnum;
-import io.github.jitwxs.easydata.common.exception.EasyVerifyEqualsException;
+import io.github.jitwxs.easydata.common.exception.EasyDataVerifyException;
 import io.github.jitwxs.easydata.core.verify.VerifyInstance;
 import io.github.jitwxs.easydata.core.verify.comp.BaseComp;
 import io.github.jitwxs.easydata.provider.ConvertProvider;
@@ -257,7 +257,7 @@ public class BeanTypeVerify {
             } catch (AssertionError assertionError) {
                 throw assertionError;
             } catch (Throwable throwable) {
-                throw new EasyVerifyEqualsException(throwable);
+                throw new EasyDataVerifyException(throwable);
             }
         }
     }

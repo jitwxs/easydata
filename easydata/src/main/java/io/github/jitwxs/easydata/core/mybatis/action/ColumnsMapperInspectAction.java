@@ -14,6 +14,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
+ * inspect mybatis mapper file resultMap with columns sql is match
+ *
  * @author jitwxs@foxmail.com
  * @since 2022-06-05 11:03
  */

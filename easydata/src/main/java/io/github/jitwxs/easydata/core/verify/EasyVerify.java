@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NonNull;
 import org.assertj.core.api.Assertions;
 
+import java.util.function.Supplier;
+
 /**
  * @author jitwxs@foxmail.com
  * @since 2022-03-20 21:41
@@ -25,6 +27,10 @@ public class EasyVerify {
 
     public static void notNull(final Object actual) {
         Assertions.assertThat(actual).isNotNull();
+    }
+
+    public static void notNull(final Object actual, final Supplier<String> descriptionSupplier) {
+        Assertions.assertThat(actual).as(descriptionSupplier).isNotNull();
     }
 
     public static VerifyInstance with(@NonNull final Object except, @NonNull final Object actual) {

@@ -38,4 +38,24 @@
         WHERE
         `id` = #{id}
     </select>
+
+    <select id="selectByIdAndName" resultMap="ResultMap">
+        SELECT
+        <include refid="columns" />
+        FROM
+        <include refid="table_name"/>
+        WHERE
+        `id` = #{id} AND `name` = #{name}
+    </select>
+
+    <select id="selectByCondition" resultMap="ResultMap">
+        SELECT
+        <include refid="columns" />
+        FROM
+        <include refid="table_name"/>
+        WHERE
+        <foreach collection="conditionMap" item="value" index="key" separator="AND">
+            ${key} = #{value}
+        </foreach>
+    </select>
 </mapper>
