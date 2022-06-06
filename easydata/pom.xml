@@ -6,7 +6,7 @@
 
     <groupId>io.github.jitwxs</groupId>
     <artifactId>easydata</artifactId>
-    <version>1.9-RELEASE</version>
+    <version>1.10-RELEASE</version>
     <packaging>jar</packaging>
 
     <name>easydata</name>

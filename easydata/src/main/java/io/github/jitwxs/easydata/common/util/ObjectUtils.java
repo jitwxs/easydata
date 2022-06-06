@@ -149,18 +149,20 @@ public class ObjectUtils {
     public static <T> T createProtoMessage(final Class<T> target,
                                            final Consumer<Object> newInstanceConsume,
                                            final ThrowableBiFunction<String, Type, Object> fieldGeneratorFunc) throws Throwable {
-        final Object invoke = ObjectUtils.createProtoBuilder(target);
-        if (invoke == null) {
+        final Object builder = ObjectUtils.createProtoBuilder(target);
+        if (builder == null) {
             return null;
         }
+
+        fillingProtoBuilderField(target, builder, fieldGeneratorFunc);
+
+        final T invoke = (T) ObjectUtils.buildProtoBuilder(builder);
 
         if (newInstanceConsume != null) {
             newInstanceConsume.accept(invoke);
         }
 
-        fillingProtoBuilderField(target, invoke, fieldGeneratorFunc);
-
-        return (T) ObjectUtils.buildProtoBuilder(invoke);
+        return invoke;
     }
 
     /**
@@ -179,17 +181,18 @@ public class ObjectUtils {
                                            final Consumer<Object> newInstanceConsume,
                                            final ThrowableBiFunction<String, Type, Object> fieldGeneratorFunc) throws Throwable {
         final T invoke = ObjectUtils.create(target);
+
         if (invoke == null) {
             return null;
-        }
-
-        if (newInstanceConsume != null) {
-            newInstanceConsume.accept(invoke);
         }
 
         final Class<?> protoMessageClass = ReflectionUtils.getProtoMessageClassByBuilder(target);
 
         fillingProtoBuilderField(protoMessageClass, invoke, fieldGeneratorFunc);
+
+        if (newInstanceConsume != null) {
+            newInstanceConsume.accept(invoke);
+        }
 
         return invoke;
     }

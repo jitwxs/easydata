@@ -41,6 +41,9 @@ public class FieldProperty {
 
     private Class<?> target;
 
+    /**
+     * 仅普通 java 对象有效，不支持 protobuf
+     */
     private Field field;
 
     /**
@@ -99,7 +102,6 @@ public class FieldProperty {
 
             final PropertyDescriptor descriptor = descriptorMap.get(fieldName);
 
-
             resultMap.put(fieldName, FieldProperty.builder()
                     .name(fieldName)
                     .type(ReflectionUtils.getFieldType(field, descriptor))
@@ -126,44 +128,29 @@ public class FieldProperty {
     private static Map<String, FieldProperty> createByProtoBean(final Class<?> baseTarget,
                                                                 final ClassGroupEnum classGroup,
                                                                 final Map<String, PropertyDescriptor> descriptorMap) {
-        final Class<?> messageClass;
         final Message.Builder builder;
         if (classGroup == ClassGroupEnum.PROTOBUF_MESSAGE) {
-            messageClass = baseTarget;
-
-            builder = (Message.Builder) ObjectUtils.createProtoBuilder(messageClass);
+            builder = (Message.Builder) ObjectUtils.createProtoBuilder(baseTarget);
         } else {
             builder = (Message.Builder) ObjectUtils.create(baseTarget);
-
-            messageClass = ObjectUtils.buildProtoBuilder(builder).getClass();
         }
-
-        final Map<String, Field> fieldMap = Arrays.stream(messageClass.getDeclaredFields())
-                .collect(Collectors.toMap(e -> processProtoFieldName(e.getName()), Function.identity()));
 
         final Map<String, FieldProperty> resultMap = new HashMap<>();
 
         for (Descriptors.FieldDescriptor fieldDescriptor : builder.getDescriptorForType().getFields()) {
             final String fieldName = fieldDescriptor.getName();
 
-            final PropertyDescriptor descriptor = descriptorMap.get(fieldName);
-            if (descriptor == null) {
-                continue;
-            }
-
-            final Field field = fieldMap.get(fieldName);
-
-            if (isSkipField(field)) {
+            final PropertyDescriptor propertyDescriptor = descriptorMap.get(fieldName);
+            if (propertyDescriptor == null) {
                 continue;
             }
 
             resultMap.put(fieldName, FieldProperty.builder()
                     .name(fieldName)
-                    .type(descriptor.getPropertyType())
-                    .target(descriptor.getPropertyType())
-                    .field(field)
-                    .readFunc(ReflectionUtils.getReadFunc(fieldName, descriptor, null))
-                    .writeFunc(ReflectionUtils.getWriteFunc(fieldName, descriptor, null))
+                    .type(propertyDescriptor.getPropertyType())
+                    .target(propertyDescriptor.getPropertyType())
+                    .readFunc(ReflectionUtils.getReadFunc(fieldName, propertyDescriptor, null))
+                    .writeFunc(ReflectionUtils.getWriteFunc(fieldName, propertyDescriptor, null))
                     .build());
         }
 

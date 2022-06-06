@@ -42,4 +42,11 @@ public class EasyMockTest {
 
         assertNotNull(user);
     }
+
+    @Test
+    public void testMockProtoOneof() {
+        final MessageProto.OrderEvaluateOperation operation = EasyMock.run(MessageProto.OrderEvaluateOperation.class);
+
+        assertNotNull(operation);
+    }
 }
