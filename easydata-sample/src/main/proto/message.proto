@@ -19,3 +19,43 @@ message OrderEvaluate {
   int64 updateDate = 13;
   string protoBeanUnknownFields = 14;
 }
+
+message OrderEvaluateOperation {
+  string id = 1;
+  string userId = 2;
+
+  oneof operation {
+      InsertOrderEvaluateOperation insertOperation = 11;
+      UpdateOrderEvaluateOperation updateOperation = 12;
+      DeleteOrderEvaluateOperation deleteOperation = 13;
+  }
+
+  oneof language {
+    ChineseLanguage chinese = 14;
+    EnglishLanguage english = 15;
+  }
+
+  InsertOrderEvaluateOperation insertOperationOut = 16;
+
+  reserved 3 to 10;
+}
+
+message InsertOrderEvaluateOperation {
+    int32 id = 1;
+}
+
+message UpdateOrderEvaluateOperation {
+  int32 id = 1;
+}
+
+message DeleteOrderEvaluateOperation {
+  int32 id = 1;
+}
+
+message ChineseLanguage {
+  int32 id = 1;
+}
+
+message EnglishLanguage {
+  int32 id = 1;
+}

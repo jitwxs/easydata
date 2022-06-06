@@ -7,6 +7,7 @@ import io.github.jitwxs.easydata.sample.bean.Student;
 import io.github.jitwxs.easydata.sample.bean.UserInfo;
 import io.github.jitwxs.easydata.sample.enums.SexEnum;
 import io.github.jitwxs.easydata.sample.message.EnumProto;
+import io.github.jitwxs.easydata.sample.message.MessageProto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
@@ -18,8 +19,7 @@ import java.util.stream.Stream;
 
 import static io.github.jitwxs.easydata.core.mock.EasyMock.run;
 import static java.util.Collections.*;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * 相同简单类型的 Equals 比较
@@ -142,5 +142,20 @@ public class SameSimpleClassITypeVerifyTest {
                 .build();
 
         assertDoesNotThrow(() -> EasyVerify.with(user1, user2).ignoredFields("_id").validateFields("age").verify());
+    }
+
+    @Test
+    public void testMockProtoOneof() {
+        final MessageProto.OrderEvaluateOperation operation1 = MessageProto.OrderEvaluateOperation.newBuilder()
+                .setInsertOperation(MessageProto.InsertOrderEvaluateOperation.newBuilder().setId(1).build())
+                .setUpdateOperation(MessageProto.UpdateOrderEvaluateOperation.newBuilder().setId(2).build())
+                .setDeleteOperation(MessageProto.DeleteOrderEvaluateOperation.newBuilder().setId(3).build())
+                .build();
+
+        final MessageProto.OrderEvaluateOperation operation2 = MessageProto.OrderEvaluateOperation.newBuilder()
+                .setDeleteOperation(MessageProto.DeleteOrderEvaluateOperation.newBuilder().setId(3).build())
+                .build();
+
+        EasyVerify.with(operation1, operation2).verify();
     }
 }
