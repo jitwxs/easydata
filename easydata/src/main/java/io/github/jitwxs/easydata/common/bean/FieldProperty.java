@@ -99,7 +99,6 @@ public class FieldProperty {
 
             final PropertyDescriptor descriptor = descriptorMap.get(fieldName);
 
-
             resultMap.put(fieldName, FieldProperty.builder()
                     .name(fieldName)
                     .type(ReflectionUtils.getFieldType(field, descriptor))
@@ -153,7 +152,7 @@ public class FieldProperty {
 
             final Field field = fieldMap.get(fieldName);
 
-            if (isSkipField(field)) {
+            if (field == null || isSkipField(field)) {
                 continue;
             }
 
