@@ -8,6 +8,7 @@ import io.github.jitwxs.easydata.common.enums.ClassGroupEnum;
 import io.github.jitwxs.easydata.common.exception.EasyDataMockException;
 import io.github.jitwxs.easydata.common.function.ThrowableBiFunction;
 import io.github.jitwxs.easydata.common.util.ObjectUtils;
+import io.github.jitwxs.easydata.core.mock.BeanMockInterceptor;
 import io.github.jitwxs.easydata.core.mock.mocker.BaseMocker;
 import io.github.jitwxs.easydata.core.mock.mocker.IMocker;
 import io.github.jitwxs.easydata.provider.ConvertProvider;
@@ -15,6 +16,7 @@ import io.github.jitwxs.easydata.provider.ProviderFactory;
 import lombok.AllArgsConstructor;
 
 import java.lang.reflect.Type;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 /**
@@ -33,13 +35,27 @@ public class BeanMocker implements IMocker<Object> {
         }
 
         try {
+            final Optional<? extends BeanMockInterceptor<?>> interceptorOptional = mockConfig.getBeanMockerInterceptor(this.target);
+
             final ThrowableBiFunction<String, Type, Object> fieldGeneratorFunc = (name, type) -> {
+                // interceptor
+                if (interceptorOptional.isPresent()) {
+                    final BeanMockInterceptor<?> interceptor = interceptorOptional.get();
+
+                    final Object res = interceptor.mock(name, mockConfig);
+                    if (res == null || res == BeanMockInterceptor.MockRes.SKIP_MOCK) {
+                        return null;
+                    } else if (res != BeanMockInterceptor.MockRes.CALL_MOCK) {
+                        return res;
+                    }
+                }
+
                 // contrastClass 支持
                 final Class<?> contrastClass = mockConfig.getContrastClass();
                 if (contrastClass != null) {
                     final FieldProperty property = PropertyCache.tryGet(contrastClass, name);
 
-                    if (property != null) {
+                    if (property != null && type instanceof Class) {
                         final Object value = new BaseMocker<>(property.getType()).mock(mockConfig);
                         return ProviderFactory.delegate(ConvertProvider.class).convert(value, (Class<?>) type);
                     }

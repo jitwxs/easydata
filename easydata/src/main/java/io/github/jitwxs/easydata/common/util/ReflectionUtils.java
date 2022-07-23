@@ -172,7 +172,7 @@ public class ReflectionUtils {
             throw new EasyDataException("newInstance protobuf builder error: " + protoBuilderClass);
         }
 
-        final Object protoMessage = ObjectUtils.buildProtoBuilder(emptyBuilder);
+        final Object protoMessage = ObjectUtils.buildBuilder(emptyBuilder);
         if (protoMessage == null) {
             throw new EasyDataException("newInstance protobuf message error: " + protoBuilderClass);
         }
