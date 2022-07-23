@@ -1,6 +1,6 @@
 <h1 align="center">easydata</h1>
-<p align="center">在单元测试中更容易的处理数据，加载 / Mock / 转换 / 验证全流程覆盖...</p>
-<p align="center">Easy process data in unit test, load/mock/convert/verify...</p>
+<p align="center">致力于 Java 一站式数据处理，实现数据的加载,构造,转换,验证...</p>
+<p align="center">Dedicated to Java one-stop data processing, support data load, mock, convert, verify...</p>
 <p align="center">
   <a href="https://github.com/jitwxs/easydata/actions">
     <img src="https://github.com/jitwxs/easydata/actions/workflows/build.yml/badge.svg?branch=master" />
@@ -20,20 +20,47 @@
 </p>
 <hr/>
 
-[快速开始 Quick start](https://github.com/jitwxs/easydata/wiki/Quick-Start) | [文档 Documentation](https://github.com/jitwxs/easydata/wiki) | [变更记录 Changelog](https://github.com/jitwxs/easydata/releases) | [代码示例 Code examples](https://github.com/jitwxs/easydata/tree/master/easydata-sample) | [报告问题 Report an issue](https://github.com/jitwxs/easydata/issues/new)
+[快速开始 Quick start](https://github.com/jitwxs/easydata/wiki/Quick-Start) | [文档 Document](https://github.com/jitwxs/easydata/wiki) | [变更记录 Changelog](https://github.com/jitwxs/easydata/releases) | [代码示例 Code examples](https://github.com/jitwxs/easydata/tree/master/easydata-sample) | [报告问题 Report an issue](https://github.com/jitwxs/easydata/issues/new)
 
 ## Feature
 
-- [x] 本地 CSV, JSON 文件解析
-- [x] 内存字符串数据解析
-- [x] 远程 MySQL SELECT 查询结果解析
-- [x] 任意类型对象生成
-- [x] Map, List 等集合、泛型类型对象生成
-- [x] 个性化字符串数据生成【邮箱、身份证号、姓名等】
-- [x] 任意两个对象（支持异构）的对象比较
-- [x] 数值类型对象比较，支持自定义精度误差
-- [x] 支持任意对象的类型转换
-- [x] 支持 MyBatis Mapper 文件、SQL 语句静态校验
+easydata 的核心由以下几部分所构成：
+
+**数据加载 Data Loading**
+
+Data Loading 模块期望能够以更轻量级的方式读取本地文件或数据库中的结构性数据，并转换成 Java Bean。
+
+The Data Loading module expects to be able to read structural data from a local file or database and convert it into Java beans in a more lightweight api.
+
+- [x] 本地 CSV, JSON 文件加载 loading local csv, json file
+- [x] 字符串数据加载 loading string data
+- [x] 远程 MySQL 查询结果加载 loading remote mysql query result
+
+**数据构造 Data Mock**
+
+数据构造模块用于生成一个对象，并填充它的属性，这在单元测试中十分有用。
+
+The Data Mock module is used to generate a mock object, which is often useful in unit testing.
+
+- [x] 任意 java 或 protobuf 类型的对象生成 Object generation of any java or protobuf type
+- [x] 支持数组、集合、泛型等复杂类型对象生成 Support for generating complex type objects such as arrays, collections, generics, and so on
+- [x] 字符串数据支持个性化数据生成，例如：邮箱、身份证号、姓名等 String data supports personalized data generation, such as mailboxes, ID numbers, names, and so on
+
+**数据转换 Data Convert**
+
+Data Convert 模块实现将任意对象转换成另一类型的对象，如果它支持的话。
+
+The Data Convert module implements converting any object into another type of object, if it is supported.
+
+(4) 数据验证 Data Verify
+
+Data Verify 模块是一个断言框架，基于 assertj 实现，但拥有更轻量级的 API 和更丰富的功能。
+
+The Data Verify module is an assert framework, based on the [assertj](https://github.com/assertj/assertj-core) implementation, but with a lighter-weight API and richer functionality.
+
+- [x] 任意两个对象（支持异构）的对象比较 An object comparison of any two objects that support heterogeneity
+- [x] 数值类型对象比较，支持自定义精度误差 Numerical type object comparison, support custom precision error
+- [x] 支持 MyBatis Mapper 文件、SQL 语句静态校验 Support MyBatis Mapper files, static validation of SQL statements
 
 ## Design Background
 
@@ -71,6 +98,7 @@ step3: 提交 PR 到 master 分支，等待管理员审批 Pull request to maste
 
 - https://github.com/jsonzou/jmockdata
 - https://github.com/binarywang/java-testdata-generator
+- https://github.com/j-easy/easy-random
 
 ## Donate
 
