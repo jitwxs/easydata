@@ -2,6 +2,7 @@ package io.github.jitwxs.easydata.common.util;
 
 import io.github.jitwxs.easydata.common.bean.FieldProperty;
 import io.github.jitwxs.easydata.common.cache.PropertyCache;
+import io.github.jitwxs.easydata.common.enums.ClassGroupEnum;
 import io.github.jitwxs.easydata.common.function.ThrowableBiFunction;
 import io.github.jitwxs.easydata.common.function.ThrowableFunction;
 import lombok.extern.slf4j.Slf4j;
@@ -33,13 +34,20 @@ public class ObjectUtils {
      * @param <T>    create object's generic
      * @return instance
      */
+    @SuppressWarnings("unchecked")
     public static <T> T create(Class<T> target) {
         try {
+            // 基于构造方法
             return delegate.create(target);
         } catch (ReflectionException e) {
-            log.error("ObjectUtils create error, target: {}", target, e);
-            return null;
+            // 基于 builder 构造器
+            final Object builder = createBuilder(target, ClassGroupEnum.Group.NATIVE);
+            if (builder != null) {
+                return (T) buildBuilder(builder);
+            }
         }
+
+        return null;
     }
 
     /**
@@ -59,14 +67,27 @@ public class ObjectUtils {
      * 根据 class 创建 protobuf builder 对象
      *
      * @param target create object's class
+     * @param group  specify class type
      * @return protobuf builder object instance
      */
-    public static Object createProtoBuilder(Class<?> target) {
+    public static Object createBuilder(Class<?> target, ClassGroupEnum.Group group) {
         try {
-            final Method builder = Whitebox.getMethod(target, "newBuilder");
+            final String methodName;
+            switch (group) {
+                case NATIVE:
+                    methodName = "builder";
+                    break;
+                case PROTOBUF:
+                    methodName = "newBuilder";
+                    break;
+                default:
+                    throw new UnsupportedOperationException();
+            }
+
+            final Method builder = Whitebox.getMethod(target, methodName);
             return builder.invoke(null);
         } catch (Exception e) {
-            log.error("ObjectUtils createProto error, target: {}", target, e);
+            log.error("ObjectUtils createBuilder error, target: {}", target, e);
             return null;
         }
     }
@@ -74,18 +95,18 @@ public class ObjectUtils {
     /**
      * 将 protobuf builder 对象，构造成 proto 对象
      *
-     * @param protoBuilder protobuf builder object instance
+     * @param builderBean builder object instance
      * @return protobuf object instance
      */
-    public static Object buildProtoBuilder(Object protoBuilder) {
-        final Class<?> target = protoBuilder.getClass();
+    public static Object buildBuilder(Object builderBean) {
+        final Class<?> target = builderBean.getClass();
 
         try {
             final Method build = Whitebox.getMethod(target, "build");
 
-            return build.invoke(protoBuilder);
+            return build.invoke(builderBean);
         } catch (Exception e) {
-            log.error("ObjectUtils buildProtoBuilder error, target: {}", target, e);
+            log.error("ObjectUtils buildBuilder error, target: {}", target, e);
             return null;
         }
     }
@@ -146,17 +167,18 @@ public class ObjectUtils {
      *                                   and the underlying method is inaccessible.
      * @throws InvocationTargetException if the underlying method throws an exception.
      */
+    @SuppressWarnings("unchecked")
     public static <T> T createProtoMessage(final Class<T> target,
                                            final Consumer<Object> newInstanceConsume,
                                            final ThrowableBiFunction<String, Type, Object> fieldGeneratorFunc) throws Throwable {
-        final Object builder = ObjectUtils.createProtoBuilder(target);
+        final Object builder = ObjectUtils.createBuilder(target, ClassGroupEnum.Group.PROTOBUF);
         if (builder == null) {
             return null;
         }
 
         fillingProtoBuilderField(target, builder, fieldGeneratorFunc);
 
-        final T invoke = (T) ObjectUtils.buildProtoBuilder(builder);
+        final T invoke = (T) ObjectUtils.buildBuilder(builder);
 
         if (newInstanceConsume != null) {
             newInstanceConsume.accept(invoke);

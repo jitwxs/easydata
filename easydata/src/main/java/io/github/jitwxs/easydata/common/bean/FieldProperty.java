@@ -130,7 +130,7 @@ public class FieldProperty {
                                                                 final Map<String, PropertyDescriptor> descriptorMap) {
         final Message.Builder builder;
         if (classGroup == ClassGroupEnum.PROTOBUF_MESSAGE) {
-            builder = (Message.Builder) ObjectUtils.createProtoBuilder(baseTarget);
+            builder = (Message.Builder) ObjectUtils.createBuilder(baseTarget, ClassGroupEnum.Group.PROTOBUF);
         } else {
             builder = (Message.Builder) ObjectUtils.create(baseTarget);
         }

@@ -2,7 +2,9 @@ package io.github.jitwxs.easydata.common.bean;
 
 import io.github.jitwxs.easydata.common.enums.MockStringEnum;
 import io.github.jitwxs.easydata.common.exception.EasyDataMockException;
+import io.github.jitwxs.easydata.core.mock.BeanMockInterceptor;
 import lombok.Getter;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.RandomUtils;
 
 import java.lang.reflect.ParameterizedType;
@@ -10,6 +12,7 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author jitwxs@foxmail.com
@@ -74,12 +77,15 @@ public class MockConfig {
      */
     private final Map<String, Object> beanCache = new HashMap<>();
 
+    private final Map<Class<?>, BeanMockInterceptor<?>> beanMockInterceptorMap = new HashMap<>();
+
+    @SuppressWarnings("rawtypes")
     public MockConfig init(Type type) {
         if (type instanceof ParameterizedType) {
             Class clazz = (Class) ((ParameterizedType) type).getRawType();
             Type[] types = ((ParameterizedType) type).getActualTypeArguments();
             TypeVariable[] typeVariables = clazz.getTypeParameters();
-            if (typeVariables != null && typeVariables.length > 0) {
+            if (typeVariables.length > 0) {
                 for (int index = 0; index < typeVariables.length; index++) {
                     typeVariableCache.put(typeVariables[index].getName(), types[index]);
                 }
@@ -123,7 +129,7 @@ public class MockConfig {
     /**
      * @param startInclusive the smallest value that can be returned, must be non-negative
      * @param endExclusive   the upper bound (not included)
-     * @return return mockConfig instance in chain invoke
+     * @return mockConfig instance in chain invoke
      */
     public MockConfig setIntRange(int startInclusive, int endExclusive) {
         if (endExclusive < startInclusive) {
@@ -171,5 +177,37 @@ public class MockConfig {
 
         this.sizeRange = new int[]{startInclusive, endExclusive};
         return this;
+    }
+
+    /**
+     * 注册 BeanMocker 拦截器
+     *
+     * @param clazz       类型
+     * @param interceptor BeanMocker 拦截器
+     * @param <T>         类型泛型
+     * @return mockConfig instance in chain invoke
+     */
+    public <T> MockConfig registerBeanMockerInterceptor(Class<T> clazz, BeanMockInterceptor<T> interceptor) {
+        this.beanMockInterceptorMap.put(clazz, interceptor);
+
+        return this;
+    }
+
+    /**
+     * 获取 BeanMocker 拦截器
+     *
+     * @param clazz 类型
+     * @param <T>   类型泛型
+     * @return BeanMocker 拦截器
+     */
+    @SuppressWarnings("unchecked")
+    public <T> Optional<BeanMockInterceptor<T>> getBeanMockerInterceptor(Class<T> clazz) {
+        if (MapUtils.isEmpty(this.beanMockInterceptorMap)) {
+            return Optional.empty();
+        }
+
+        final BeanMockInterceptor<T> interceptor = (BeanMockInterceptor<T>) this.beanMockInterceptorMap.get(clazz);
+
+        return Optional.ofNullable(interceptor);
     }
 }
