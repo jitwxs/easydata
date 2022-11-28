@@ -3,6 +3,7 @@ package io.github.jitwxs.easydata.common.util;
 import io.github.jitwxs.easydata.common.bean.FieldProperty;
 import io.github.jitwxs.easydata.common.cache.PropertyCache;
 import io.github.jitwxs.easydata.common.enums.ClassGroupEnum;
+import io.github.jitwxs.easydata.common.exception.EasyDataException;
 import io.github.jitwxs.easydata.common.function.ThrowableBiFunction;
 import io.github.jitwxs.easydata.common.function.ThrowableFunction;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +11,7 @@ import org.apache.ibatis.reflection.ReflectionException;
 import org.apache.ibatis.reflection.factory.DefaultObjectFactory;
 import org.apache.ibatis.reflection.factory.ObjectFactory;
 import org.powermock.reflect.Whitebox;
+import org.powermock.reflect.exceptions.MethodNotFoundException;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -34,7 +36,6 @@ public class ObjectUtils {
      * @param <T>    create object's generic
      * @return instance
      */
-    @SuppressWarnings("unchecked")
     public static <T> T create(Class<T> target) {
         try {
             // 基于构造方法
@@ -47,7 +48,7 @@ public class ObjectUtils {
             }
         }
 
-        return null;
+        throw new EasyDataException("failed create object, please try provide create function to resolve this exception");
     }
 
     /**
@@ -86,6 +87,8 @@ public class ObjectUtils {
 
             final Method builder = Whitebox.getMethod(target, methodName);
             return builder.invoke(null);
+        } catch (MethodNotFoundException e) {
+            return null;
         } catch (Exception e) {
             log.error("ObjectUtils createBuilder error, target: {}", target, e);
             return null;
@@ -167,7 +170,6 @@ public class ObjectUtils {
      *                                   and the underlying method is inaccessible.
      * @throws InvocationTargetException if the underlying method throws an exception.
      */
-    @SuppressWarnings("unchecked")
     public static <T> T createProtoMessage(final Class<T> target,
                                            final Consumer<Object> newInstanceConsume,
                                            final ThrowableBiFunction<String, Type, Object> fieldGeneratorFunc) throws Throwable {

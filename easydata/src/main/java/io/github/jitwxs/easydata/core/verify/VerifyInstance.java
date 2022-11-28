@@ -1,17 +1,10 @@
 package io.github.jitwxs.easydata.core.verify;
 
 import io.github.jitwxs.easydata.common.enums.ClassDiffVerifyStrategyEnum;
-import io.github.jitwxs.easydata.common.util.ObjectUtils;
-import io.github.jitwxs.easydata.common.util.ReflectionUtils;
-import io.github.jitwxs.easydata.core.verify.comp.BaseComp;
 import lombok.Getter;
 import lombok.NonNull;
-import org.reflections.Reflections;
 
-import java.lang.reflect.Modifier;
 import java.util.*;
-
-import static java.util.Collections.singletonList;
 
 /**
  * @author jitwxs@foxmail.com
@@ -30,8 +23,6 @@ public class VerifyInstance implements Cloneable {
     private final Set<String> validateFields = new HashSet<>();
 
     private final Map<Class<?>, Object> precisionConfigs = new HashMap<>();
-
-    private Map<Class<?>, BaseComp> compConfigs;
 
     /**
      * 忽略类型的差异
@@ -110,30 +101,7 @@ public class VerifyInstance implements Cloneable {
      * 真正执行 verify 的方法
      */
     public void verify() {
-        this.collect();
-
         EasyVerify.BEAN_TYPE_VERIFY.check(except, actual, this);
-    }
-
-    private void collect() {
-        // 初始化 compConfigs
-        compConfigs = new HashMap<>();
-        new Reflections(BaseComp.class.getPackage().getName()).getSubTypesOf(BaseComp.class).forEach(c -> {
-            if (Modifier.isInterface(c.getModifiers())) {
-                return;
-            }
-
-            final Class<?> targetType = (Class<?>) ReflectionUtils.getGenericSuperClass(c)[0];
-
-            final BaseComp comp;
-            if (precisionConfigs.containsKey(targetType)) {
-                comp = ObjectUtils.create(c, singletonList(targetType), singletonList(precisionConfigs.get(targetType)));
-            } else {
-                comp = ObjectUtils.create(c);
-            }
-
-            compConfigs.put(targetType, comp);
-        });
     }
 
     @Override

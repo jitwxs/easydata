@@ -7,6 +7,7 @@ import io.github.jitwxs.easydata.common.exception.EasyDataConvertException;
 import io.github.jitwxs.easydata.common.exception.EasyDataMockException;
 import io.github.jitwxs.easydata.common.function.ThrowableBiFunction;
 import io.github.jitwxs.easydata.common.util.ObjectUtils;
+import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Type;
 
@@ -14,6 +15,7 @@ import java.lang.reflect.Type;
  * @author jitwxs@foxmail.com
  * @since 2022-05-14 15:31
  */
+@Slf4j
 public class ObjectConvert implements IConvert<Object> {
 
     @Override
@@ -42,10 +44,11 @@ public class ObjectConvert implements IConvert<Object> {
                     return ObjectUtils.createProtoMessage(target, null, fieldGeneratorFunc);
                 case PROTOBUF_BUILDER:
                     return ObjectUtils.createProtoBuilder(target, null, fieldGeneratorFunc);
-                case NATIVE:
+                case NATIVE_CLASS:
                     return ObjectUtils.createJava(target, field -> false, null, fieldGeneratorFunc);
                 default:
-                    throw new UnsupportedOperationException();
+                    log.warn("ObjectConvert can't convert type: {}, please check the logic is correct", target);
+                    return null;
             }
         } catch (Throwable e) {
             throw new EasyDataMockException(e);

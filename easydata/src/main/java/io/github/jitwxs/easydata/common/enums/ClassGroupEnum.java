@@ -4,6 +4,8 @@ import com.google.protobuf.Message;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.lang.reflect.Modifier;
+
 /**
  * @author jitwxs@foxmail.com
  * @since 2022-05-21 17:38
@@ -20,12 +22,20 @@ public enum ClassGroupEnum {
      */
     PROTOBUF_BUILDER(ClassGroupEnum.Group.PROTOBUF),
     /**
-     * 原生类型
+     * 原生 interface 类型
      */
-    NATIVE(ClassGroupEnum.Group.NATIVE);
+    NATIVE_INTERFACE(ClassGroupEnum.Group.NATIVE),
+    /**
+     * 原生 abstract 类型
+     */
+    NATIVE_ABSTRACT(ClassGroupEnum.Group.NATIVE),
+    /**
+     * 原生 class 类型
+     */
+    NATIVE_CLASS(ClassGroupEnum.Group.NATIVE);
 
     private final Group group;
-    
+
     public enum Group {
         PROTOBUF, NATIVE
     }
@@ -36,7 +46,16 @@ public enum ClassGroupEnum {
         } else if (Message.Builder.class.isAssignableFrom(target)) {
             return PROTOBUF_BUILDER;
         } else {
-            return NATIVE;
+            final int modifiers = target.getModifiers();
+
+            if (Modifier.isInterface(modifiers)) {
+                return NATIVE_INTERFACE;
+            }
+
+            if (Modifier.isAbstract(modifiers)) {
+                return NATIVE_ABSTRACT;
+            }
+            return NATIVE_CLASS;
         }
     }
 }

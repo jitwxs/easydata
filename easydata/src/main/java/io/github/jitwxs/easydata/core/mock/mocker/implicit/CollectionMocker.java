@@ -1,7 +1,6 @@
 package io.github.jitwxs.easydata.core.mock.mocker.implicit;
 
 import io.github.jitwxs.easydata.common.bean.MockConfig;
-import io.github.jitwxs.easydata.common.exception.EasyDataMockException;
 import io.github.jitwxs.easydata.common.util.ObjectUtils;
 import io.github.jitwxs.easydata.core.mock.mocker.BaseMocker;
 import io.github.jitwxs.easydata.core.mock.mocker.IMocker;
@@ -33,9 +32,6 @@ public class CollectionMocker implements IMocker<Object> {
         final Class<?> actualClass = interfaceDefaultImplMap.getOrDefault(clazz, clazz);
 
         final Collection<Object> result = (Collection<Object>) ObjectUtils.create(actualClass);
-        if (result == null) {
-            throw new EasyDataMockException("Not Support CollectionMocker For: " + clazz);
-        }
 
         final BaseMocker<?> baseMocker = new BaseMocker<>(genericType);
 

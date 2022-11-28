@@ -7,12 +7,11 @@ import io.github.jitwxs.easydata.common.enums.ClassGroupEnum;
 import io.github.jitwxs.easydata.common.enums.GatherEnum;
 import io.github.jitwxs.easydata.common.exception.EasyDataVerifyException;
 import io.github.jitwxs.easydata.core.verify.VerifyInstance;
-import io.github.jitwxs.easydata.core.verify.comp.BaseComp;
+import io.github.jitwxs.easydata.core.verify.comp.EasyVerifyComp;
 import io.github.jitwxs.easydata.provider.ConvertProvider;
 import io.github.jitwxs.easydata.provider.ProviderFactory;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ClassUtils;
-import org.assertj.core.api.ObjectAssert;
 import org.assertj.core.api.RecursiveComparisonAssert;
 
 import java.util.*;
@@ -28,16 +27,16 @@ import static org.assertj.core.api.Assertions.fail;
  * @since 2022-03-26 20:38
  */
 public class BeanTypeVerify {
-    public void check(Object a, Object b, VerifyInstance instance) {
-        final Class<?> aClass = a.getClass(), bClass = b.getClass();
+    public void check(Object except, Object actual, VerifyInstance instance) {
+        final Class<?> exceptClass = except.getClass(), actualClass = actual.getClass();
 
         // 类型强校验
         if (instance.getClassDiffVerifyStrategy() == null) {
-            assertThat(a).hasSameClassAs(b);
+            assertThat(actual).hasSameClassAs(except);
         }
 
-        final Optional<GatherEnum> gatherA = GatherEnum.delegate(aClass);
-        final Optional<GatherEnum> gatherB = GatherEnum.delegate(bClass);
+        final Optional<GatherEnum> gatherA = GatherEnum.delegate(exceptClass);
+        final Optional<GatherEnum> gatherB = GatherEnum.delegate(actualClass);
 
         // 一个复杂类型、一个非复杂类型
         if (gatherA.isPresent() ^ gatherB.isPresent()) {
@@ -49,15 +48,15 @@ public class BeanTypeVerify {
             final GatherEnum gatherEnum = gatherA.get();
             switch (gatherEnum) {
                 case COLLECTION:
-                    COLLECTION_TYPE_VERIFY.check((Collection) a, (Collection) b, instance);
+                    COLLECTION_TYPE_VERIFY.check((Collection) except, (Collection) actual, instance);
                     break;
                 case MAP:
-                    MAP_TYPE_VERIFY.check((Map) a, (Map) b, instance);
+                    MAP_TYPE_VERIFY.check((Map) except, (Map) actual, instance);
                     break;
             }
         } else {
             // 两个都是非复杂类型
-            this.doOneEquals(a, aClass, b, bClass, instance);
+            this.doOneEquals(except, exceptClass, actual, actualClass, instance);
         }
     }
 
@@ -91,17 +90,17 @@ public class BeanTypeVerify {
         return true;
     }
 
-    protected void doOneEquals(Object a, Class<?> aClass, Object b, Class<?> bClass, VerifyInstance instance) {
-        if (aClass == bClass) {
-            this.doOneEqualsWithSameClass(a, b, aClass, instance);
+    protected void doOneEquals(Object except, Class<?> exceptClass, Object actual, Class<?> actualClass, VerifyInstance instance) {
+        if (exceptClass == actualClass) {
+            this.doOneEqualsWithSameClass(except, actual, exceptClass, instance);
         } else {
             switch (instance.getClassDiffVerifyStrategy()) {
                 case CONVERT_SAME_CLASS:
-                    final Object bValue = ProviderFactory.delegate(ConvertProvider.class).convert(b, aClass);
-                    this.doOneEqualsWithSameClass(a, bValue, aClass, instance);
+                    final Object newActual = ProviderFactory.delegate(ConvertProvider.class).convert(actual, exceptClass);
+                    this.doOneEqualsWithSameClass(except, newActual, exceptClass, instance);
                     break;
                 case VERIFY_SAME_FIELD:
-                    this.doOneEqualsWithDifferentClass(a, aClass, b, bClass, instance);
+                    this.doOneEqualsWithDifferentClass(except, exceptClass, actual, actualClass, instance);
                     break;
             }
         }
@@ -110,15 +109,15 @@ public class BeanTypeVerify {
     /**
      * 单组相同类型的对象比对
      *
-     * @param a        对象 A
-     * @param b        对象 B
-     * @param target   类型
+     * @param except   except object
+     * @param actual   actual object
+     * @param target   the object class
      * @param instance 上下文属性
      * @throws AssertionError if {@code actual} is not equal to {@code expected}. This method will throw a
      *                        {@code org.junit.ComparisonFailure} instead if JUnit is in the classpath and the given objects are not
      *                        equal.
      */
-    private void doOneEqualsWithSameClass(Object a, Object b, Class<?> target, VerifyInstance instance) {
+    private void doOneEqualsWithSameClass(Object except, Object actual, Class<?> target, VerifyInstance instance) {
         if (isEnableRecursiveCompare(target)) {
 
             final ClassGroupEnum classGroup = ClassGroupEnum.delegate(target);
@@ -127,9 +126,9 @@ public class BeanTypeVerify {
             if (classGroup.getGroup() == ClassGroupEnum.Group.PROTOBUF) {
                 final Set<String> doValidFields = this.initialValidFields(e -> PropertyCache.tryGet(target).getReadable().keySet(), instance);
 
-                this.doVerifyByEachField(doValidFields, a, target, b, target, instance);
+                this.doVerifyByEachField(doValidFields, except, target, actual, target, instance);
             } else {
-                RecursiveComparisonAssert<?> anAssert = assertThat(a).usingRecursiveComparison();
+                RecursiveComparisonAssert<?> anAssert = assertThat(actual).usingRecursiveComparison();
 
                 final Set<String> ignoreFields = instance.getIgnoreFields();
                 if (CollectionUtils.isNotEmpty(ignoreFields)) {
@@ -141,38 +140,31 @@ public class BeanTypeVerify {
                     anAssert = anAssert.comparingOnlyFields(validateFields.toArray(new String[0]));
                 }
 
-                for (Map.Entry<Class<?>, BaseComp> entry : instance.getCompConfigs().entrySet()) {
-                    anAssert = anAssert.withComparatorForType(entry.getValue(), entry.getKey());
-                }
+                anAssert = EasyVerifyComp.usingComparatorForType(anAssert, instance.getPrecisionConfigs());
 
-                anAssert.isEqualTo(b);
+                anAssert.isEqualTo(except);
             }
         } else {
-            ObjectAssert<Object> anAssert = assertThat(a);
-
-            final BaseComp comp = instance.getCompConfigs().get(target);
-            if (comp != null) {
-                anAssert = anAssert.usingComparator(comp);
-            }
-
-            anAssert.isEqualTo(b);
+            EasyVerifyComp
+                    .usingComparator(assertThat(actual), target, instance.getPrecisionConfigs())
+                    .isEqualTo(except);
         }
     }
 
     /**
      * 单组相同类型的对象比对
      *
-     * @param a        对象 A
-     * @param b        对象 B
-     * @param aClass   对象 A 类型
-     * @param bClass   对象 B 类型
-     * @param instance 上下文属性
+     * @param except      except object
+     * @param actual      actual object
+     * @param exceptClass the except object class
+     * @param actualClass the actual object class
+     * @param instance    上下文属性
      * @throws AssertionError if {@code actual} is not equal to {@code expected}. This method will throw a
      *                        {@code org.junit.ComparisonFailure} instead if JUnit is in the classpath and the given objects are not
      *                        equal.
      */
-    private void doOneEqualsWithDifferentClass(Object a, Class<?> aClass, Object b, Class<?> bClass, VerifyInstance instance) {
-        final boolean aEnableRecursiveCompare = isEnableRecursiveCompare(aClass), bEnableRecursiveCompare = isEnableRecursiveCompare(bClass);
+    private void doOneEqualsWithDifferentClass(Object except, Class<?> exceptClass, Object actual, Class<?> actualClass, VerifyInstance instance) {
+        final boolean aEnableRecursiveCompare = isEnableRecursiveCompare(exceptClass), bEnableRecursiveCompare = isEnableRecursiveCompare(actualClass);
 
         // 一个需要递归，一个不需要递归
         if (aEnableRecursiveCompare ^ bEnableRecursiveCompare) {
@@ -181,24 +173,19 @@ public class BeanTypeVerify {
 
         if (aEnableRecursiveCompare) {
             final Set<String> doValidFields = this.initialValidFields(e -> {
-                final Set<String> aSet = PropertyCache.tryGet(aClass).getReadable().keySet();
-                final Set<String> bSet = PropertyCache.tryGet(bClass).getReadable().keySet();
+                final Set<String> aSet = PropertyCache.tryGet(exceptClass).getReadable().keySet();
+                final Set<String> bSet = PropertyCache.tryGet(actualClass).getReadable().keySet();
 
                 return CollectionUtils.intersection(aSet, bSet);
             }, instance);
 
-            this.doVerifyByEachField(doValidFields, a, aClass, b, bClass, instance);
+            this.doVerifyByEachField(doValidFields, except, exceptClass, actual, actualClass, instance);
         } else {
-            ObjectAssert<Object> anAssert = assertThat(a);
+            final Object newActual = ProviderFactory.delegate(ConvertProvider.class).convert(actual, exceptClass);
 
-            final Object bValue = ProviderFactory.delegate(ConvertProvider.class).convert(b, aClass);
-
-            final BaseComp comp = instance.getCompConfigs().get(aClass);
-            if (comp != null) {
-                anAssert = anAssert.usingComparator(comp);
-            }
-
-            anAssert.isEqualTo(bValue);
+            EasyVerifyComp
+                    .usingComparator(assertThat(newActual), exceptClass, instance.getPrecisionConfigs())
+                    .isEqualTo(except);
         }
     }
 
@@ -229,31 +216,23 @@ public class BeanTypeVerify {
         return doValidFields;
     }
 
-    private void doVerifyByEachField(final Set<String> validFields, Object a, Class<?> aClass, Object b, Class<?> bClass, VerifyInstance instance) {
+    private void doVerifyByEachField(final Set<String> validFields, Object except, Class<?> exceptClass, Object actual, Class<?> actualClass, VerifyInstance instance) {
         for (String fieldName : validFields) {
             try {
-                final FieldProperty aProperty = PropertyCache.tryGet(aClass, fieldName);
-                final FieldProperty bProperty = PropertyCache.tryGet(bClass, fieldName);
+                final FieldProperty exceptProperty = PropertyCache.tryGet(exceptClass, fieldName), actualProperty = PropertyCache.tryGet(actualClass, fieldName);
 
-                final Class<?> propertyClass = aProperty.getTarget();
-                final Object aValue = aProperty.getReadFunc().apply(a);
+                final Class<?> propertyClass = exceptProperty.getTarget();
+                final Object exceptValue = exceptProperty.getReadFunc().apply(except);
 
-                Object bValue = bProperty.getReadFunc().apply(b);
-                if (bProperty.getTarget() != propertyClass) {
-                    bValue = ProviderFactory.delegate(ConvertProvider.class).convert(bValue, propertyClass);
+                Object actualValue = actualProperty.getReadFunc().apply(actual);
+                if (actualProperty.getTarget() != propertyClass) {
+                    actualValue = ProviderFactory.delegate(ConvertProvider.class).convert(actualValue, propertyClass);
                 }
 
-                ObjectAssert<Object> anAssert = assertThat(aValue);
-
-                final BaseComp comp = instance.getCompConfigs().get(propertyClass);
-                if (comp != null) {
-                    anAssert = anAssert.usingComparator(comp);
-                }
-
-                anAssert
+                EasyVerifyComp
+                        .usingComparator(assertThat(actualValue), propertyClass, instance.getPrecisionConfigs())
                         .as("fieldName: %s", fieldName)
-                        .isEqualTo(bValue);
-
+                        .isEqualTo(exceptValue);
             } catch (AssertionError assertionError) {
                 throw assertionError;
             } catch (Throwable throwable) {

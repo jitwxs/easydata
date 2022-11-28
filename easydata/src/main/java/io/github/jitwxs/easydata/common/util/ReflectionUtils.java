@@ -168,10 +168,6 @@ public class ReflectionUtils {
 
     public static Class<?> getProtoMessageClassByBuilder(final Class<?> protoBuilderClass) {
         final Object emptyBuilder = ObjectUtils.create(protoBuilderClass);
-        if (emptyBuilder == null) {
-            throw new EasyDataException("newInstance protobuf builder error: " + protoBuilderClass);
-        }
-
         final Object protoMessage = ObjectUtils.buildBuilder(emptyBuilder);
         if (protoMessage == null) {
             throw new EasyDataException("newInstance protobuf message error: " + protoBuilderClass);
