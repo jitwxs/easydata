@@ -11,8 +11,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * @since 1.11
- * @date 2022-11-27 22:21
+ * @since 2022-11-27 22:21
  */
 public class EasyVerifyComp {
     /**
@@ -22,6 +21,7 @@ public class EasyVerifyComp {
      *
      * @param anAssert         RecursiveComparisonAssert
      * @param precisionConfigs precisionConfigs
+     * @return the param {@code anAssert}
      */
     public static RecursiveComparisonAssert usingComparatorForType(RecursiveComparisonAssert anAssert, final Map<Class<?>, Object> precisionConfigs) {
         for (Map.Entry<Class<?>, Object> entry : precisionConfigs.entrySet()) {
@@ -44,6 +44,8 @@ public class EasyVerifyComp {
      * @param anAssert         extends AbstractAssert
      * @param target           comparator type
      * @param precisionConfigs precisionConfigs
+     * @param <T>              the {@code anAssert} type
+     * @return the param {@code anAssert}
      */
     public static <T extends AbstractAssert> T usingComparator(T anAssert, final Class<?> target, final Map<Class<?>, Object> precisionConfigs) {
         final Comparator comparator = EasyVerifyComp.getComparator(Optional.ofNullable(precisionConfigs.get(target)), target);
