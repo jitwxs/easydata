@@ -14,6 +14,7 @@ import io.github.jitwxs.easydata.core.mock.mocker.IMocker;
 import io.github.jitwxs.easydata.provider.ConvertProvider;
 import io.github.jitwxs.easydata.provider.ProviderFactory;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Type;
 import java.util.Optional;
@@ -22,6 +23,7 @@ import java.util.function.Consumer;
 /**
  * java bean
  */
+@Slf4j
 @AllArgsConstructor
 public class BeanMocker implements IMocker<Object> {
 
@@ -71,10 +73,11 @@ public class BeanMocker implements IMocker<Object> {
                     return ObjectUtils.createProtoMessage(target, newInstanceConsume, fieldGeneratorFunc);
                 case PROTOBUF_BUILDER:
                     return ObjectUtils.createProtoBuilder(target, newInstanceConsume, fieldGeneratorFunc);
-                case NATIVE:
+                case NATIVE_CLASS:
                     return ObjectUtils.createJava(target, field -> field.isAnnotationPresent(EasyMockIgnore.class), newInstanceConsume, fieldGeneratorFunc);
                 default:
-                    throw new UnsupportedOperationException();
+                    log.warn("BeanMocker can't mock type: {}, please check the logic is correct", target);
+                    return null;
             }
         } catch (Throwable e) {
             throw new EasyDataMockException(e);

@@ -20,6 +20,8 @@ public class LongConvert implements IConvert<Long> {
             if (NumberUtils.isParsable(target)) {
                 return Long.parseLong(target);
             }
+        } else if (sourceClass == Integer.class || source == Short.class) {
+            return Long.parseLong(String.valueOf(source));
         }
 
         final LocalDateTime ldt = provider().convert(source, LocalDateTime.class);

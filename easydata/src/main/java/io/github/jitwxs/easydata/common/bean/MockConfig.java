@@ -180,6 +180,19 @@ public class MockConfig {
     }
 
     /**
+     * manual add bean cache, when the {@code bean add to the cache}, the mock always return this bean
+     *
+     * @param bean the cache bean
+     * @return this
+     * @since 1.11
+     */
+    public MockConfig addBeanCache(final Object bean) {
+        this.beanCache.put(bean.getClass().getName(), bean);
+
+        return this;
+    }
+
+    /**
      * 注册 BeanMocker 拦截器
      *
      * @param clazz       类型
@@ -200,7 +213,6 @@ public class MockConfig {
      * @param <T>   类型泛型
      * @return BeanMocker 拦截器
      */
-    @SuppressWarnings("unchecked")
     public <T> Optional<BeanMockInterceptor<T>> getBeanMockerInterceptor(Class<T> clazz) {
         if (MapUtils.isEmpty(this.beanMockInterceptorMap)) {
             return Optional.empty();
