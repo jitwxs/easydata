@@ -228,18 +228,21 @@ public class ObjectUtils {
 
         for (Map.Entry<String, FieldProperty> entry : PropertyCache.tryGet(protoMessageClass).getReadable().entrySet()) {
             final String fieldName = entry.getKey();
+            final FieldProperty fieldProperty = entry.getValue();
 
-            final String writeMethodName = "set" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
+            // support protobuf repeat grammar
+            final String writeMethodName = (fieldProperty.getTarget() == Iterable.class ? "addAll" : "set") +
+                    fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
 
             Method method = null;
             try {
-                method = protoBuilderClass.getDeclaredMethod(writeMethodName, entry.getValue().getTarget());
+                method = protoBuilderClass.getDeclaredMethod(writeMethodName, fieldProperty.getTarget());
             } catch (NoSuchMethodException e) {
                 log.error("ObjectUtils fillingProtoBuilderField error, protoMessageClass: {}, field: {}", protoMessageClass, fieldName);
             }
 
             if (method != null) {
-                final Object fieldValue = fieldGeneratorFunc.apply(fieldName, entry.getValue().getType());
+                final Object fieldValue = fieldGeneratorFunc.apply(fieldName, fieldProperty.getType());
                 if (fieldValue != null) {
                     method.invoke(protoBuilder, fieldValue);
                 }

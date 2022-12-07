@@ -3,6 +3,11 @@ syntax = "proto3";
 option java_package = "io.github.jitwxs.easydata.sample.message";
 option java_outer_classname = "MessageProto";
 
+message OrderEvaluateManage {
+  string id = 1;
+  repeated OrderEvaluate orderEvaluate = 2;
+}
+
 message OrderEvaluate {
   string id = 1;
   bool hasOpen = 2;

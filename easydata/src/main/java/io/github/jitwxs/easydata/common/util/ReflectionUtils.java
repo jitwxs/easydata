@@ -6,6 +6,7 @@ import io.github.jitwxs.easydata.common.function.ThrowableBiFunction;
 import io.github.jitwxs.easydata.common.function.ThrowableFunction;
 import org.powermock.reflect.Whitebox;
 
+import java.beans.IndexedPropertyDescriptor;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -98,15 +99,25 @@ public class ReflectionUtils {
      * @return 读方法 (object, result)
      */
     public static ThrowableFunction<Object, ?> getReadFunc(final String fieldName, final PropertyDescriptor descriptor, final Field field) {
-        if (descriptor != null) {
-            final Method method = descriptor.getReadMethod();
+        if (descriptor == null) {
+            return null;
+        }
 
-            if (method != null) {
-                return bean -> {
-                    method.setAccessible(true);
-                    return method.invoke(bean);
-                };
-            }
+        final Method method;
+
+        // support protobuf repeat grammar
+        if (descriptor instanceof IndexedPropertyDescriptor) {
+            final IndexedPropertyDescriptor propertyDescriptor = (IndexedPropertyDescriptor) descriptor;
+            method = propertyDescriptor.getIndexedReadMethod();
+        } else {
+            method = descriptor.getReadMethod();
+        }
+
+        if (method != null) {
+            return bean -> {
+                method.setAccessible(true);
+                return method.invoke(bean);
+            };
         }
 
         if (field != null) {
@@ -127,14 +138,25 @@ public class ReflectionUtils {
      * @return 写方法 (object, field_value, result)
      */
     public static ThrowableBiFunction<Object, Object, ?> getWriteFunc(final String fieldName, final PropertyDescriptor descriptor, final Field field) {
-        if (descriptor != null) {
-            final Method method = descriptor.getWriteMethod();
-            if (method != null) {
-                return (bean, fieldValue) -> {
-                    method.setAccessible(true);
-                    return method.invoke(bean, fieldValue);
-                };
-            }
+        if (descriptor == null) {
+            return null;
+        }
+
+        final Method method;
+
+        // support protobuf repeat grammar
+        if (descriptor instanceof IndexedPropertyDescriptor) {
+            final IndexedPropertyDescriptor propertyDescriptor = (IndexedPropertyDescriptor) descriptor;
+            method = propertyDescriptor.getIndexedWriteMethod();
+        } else {
+            method = descriptor.getWriteMethod();
+        }
+
+        if (method != null) {
+            return (bean, fieldValue) -> {
+                method.setAccessible(true);
+                return method.invoke(bean, fieldValue);
+            };
         }
 
         if (field != null) {
@@ -148,13 +170,13 @@ public class ReflectionUtils {
     }
 
     /**
-     * 获取字段的 {@link Type}
+     * 获取字段的 {@link Type}，优先使用 field 属性
      *
      * @param field      字段
      * @param descriptor 基于自省机制的字段描述
      * @return {@link Type}
      */
-    public static Type getFieldType(final Field field, final PropertyDescriptor descriptor) {
+    public static Type getPropertyType(final Field field, final PropertyDescriptor descriptor) {
         if (field != null) {
             final Type type = field.getGenericType();
 
@@ -163,7 +185,41 @@ public class ReflectionUtils {
             }
         }
 
-        return descriptor.getPropertyType();
+        // support protobuf repeat grammar
+        if (descriptor instanceof IndexedPropertyDescriptor) {
+            final IndexedPropertyDescriptor propertyDescriptor = (IndexedPropertyDescriptor) descriptor;
+            return new ParameterizedType() {
+                @Override
+                public Type[] getActualTypeArguments() {
+                    return new Type[]{propertyDescriptor.getIndexedPropertyType()};
+                }
+
+                @Override
+                public Type getRawType() {
+                    return List.class;
+                }
+
+                @Override
+                public Type getOwnerType() {
+                    return null;
+                }
+            };
+        } else {
+            return descriptor.getPropertyType();
+        }
+    }
+
+    public static Class<?> getPropertyClass(final Field field, final PropertyDescriptor descriptor) {
+        if (field != null) {
+            return field.getType();
+        }
+
+        // support protobuf repeat grammar
+        if (descriptor instanceof IndexedPropertyDescriptor) {
+            return Iterable.class;
+        } else {
+            return descriptor.getPropertyType();
+        }
     }
 
     public static Class<?> getProtoMessageClassByBuilder(final Class<?> protoBuilderClass) {

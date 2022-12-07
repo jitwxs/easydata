@@ -104,8 +104,8 @@ public class FieldProperty {
 
             resultMap.put(fieldName, FieldProperty.builder()
                     .name(fieldName)
-                    .type(ReflectionUtils.getFieldType(field, descriptor))
-                    .target(field.getType())
+                    .type(ReflectionUtils.getPropertyType(field, descriptor))
+                    .target(ReflectionUtils.getPropertyClass(field, descriptor))
                     .field(field)
                     .readFunc(ReflectionUtils.getReadFunc(fieldName, descriptor, field))
                     .writeFunc(ReflectionUtils.getWriteFunc(fieldName, descriptor, field))
@@ -147,8 +147,8 @@ public class FieldProperty {
 
             resultMap.put(fieldName, FieldProperty.builder()
                     .name(fieldName)
-                    .type(propertyDescriptor.getPropertyType())
-                    .target(propertyDescriptor.getPropertyType())
+                    .type(ReflectionUtils.getPropertyType(null, propertyDescriptor))
+                    .target(ReflectionUtils.getPropertyClass(null, propertyDescriptor))
                     .readFunc(ReflectionUtils.getReadFunc(fieldName, propertyDescriptor, null))
                     .writeFunc(ReflectionUtils.getWriteFunc(fieldName, propertyDescriptor, null))
                     .build());
