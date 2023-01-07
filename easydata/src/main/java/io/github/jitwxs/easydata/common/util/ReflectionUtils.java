@@ -2,16 +2,16 @@ package io.github.jitwxs.easydata.common.util;
 
 import com.google.common.collect.ObjectArrays;
 import io.github.jitwxs.easydata.common.exception.EasyDataException;
+import io.github.jitwxs.easydata.common.exception.EasyDataVerifyException;
 import io.github.jitwxs.easydata.common.function.ThrowableBiFunction;
 import io.github.jitwxs.easydata.common.function.ThrowableFunction;
+import org.apache.ibatis.annotations.Param;
 import org.powermock.reflect.Whitebox;
 
 import java.beans.IndexedPropertyDescriptor;
 import java.beans.PropertyDescriptor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.*;
 import java.util.List;
 
 /**
@@ -230,6 +230,41 @@ public class ReflectionUtils {
         }
 
         return protoMessage.getClass();
+    }
+
+    public static String[] listMethodParamNames(final Method method) {
+        final Parameter[] parameters = method.getParameters();
+        if (parameters.length == 0) {
+            return new String[0];
+        }
+
+        final Annotation[][] annotations = method.getParameterAnnotations();
+        if (parameters.length != annotations.length) {
+            throw new EasyDataVerifyException("Parameter or annotation length not equals");
+        }
+
+        final String[] paramNames = new String[parameters.length];
+
+        for (int i = 0; i < parameters.length; i++) {
+            String key = null;
+
+            // using annotation first
+            for (Annotation annotation : annotations[i]) {
+                if (annotation instanceof Param) {
+                    key = ((Param) annotation).value();
+                    break;
+                }
+            }
+
+            // fault by parameter name
+            if (key == null) {
+                key = parameters[i].getName();
+            }
+
+            paramNames[i] = key;
+        }
+
+        return paramNames;
     }
 
     private static Class<?> resolveActualClass(final Type type) {

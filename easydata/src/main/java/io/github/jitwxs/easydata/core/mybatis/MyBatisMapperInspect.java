@@ -73,7 +73,7 @@ public abstract class MyBatisMapperInspect<T> {
         // initial runtimeActions
         for (IMapperInspectAction action : CollectionUtils.emptyIfNull(actionList())) {
             if (action instanceof IMapperInspectStaticAction) {
-                ((IMapperInspectStaticAction) action).doAction(xmlMapperBuilder);
+                ((IMapperInspectStaticAction) action).doAction(xmlMapperBuilder, targetClass);
             } else if (action instanceof IMapperInspectRuntimeAction) {
                 runtimeActions.add((IMapperInspectRuntimeAction) action);
             }

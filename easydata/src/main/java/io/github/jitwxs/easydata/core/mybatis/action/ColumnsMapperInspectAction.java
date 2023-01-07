@@ -32,7 +32,7 @@ public class ColumnsMapperInspectAction implements IMapperInspectStaticAction {
     private final String resultMapId;
 
     @Override
-    public void doAction(XMLMapperBuilder xmlMapperBuilder) {
+    public void doAction(XMLMapperBuilder xmlMapperBuilder, final Class<?> mapperClass) {
         final Configuration configuration = xmlMapperBuilder.getConfiguration();
 
         final ResultMap resultMap = configuration.getResultMap(resultMapId);
