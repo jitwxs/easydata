@@ -44,7 +44,8 @@ public class OrderEvaluateMapperTest extends MyBatisMapperInspect<OrderEvaluateM
         return Arrays.asList(
                 new ResultMapAttributeMapperInspectAction("ResultMap", new String[]{"sId", "javaBeanUnknownFields"}),
                 new ColumnsMapperInspectAction("columns", "ResultMap"),
-                new SqlStatementMapperInspectAction()
+                new SqlStatementMapperInspectAction(),
+                new MethodParamNamesMapperInspectAction()
         );
     }
 }

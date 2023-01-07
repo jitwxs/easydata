@@ -31,7 +31,7 @@ public class ResultMapAttributeMapperInspectAction implements IMapperInspectStat
     private final String[] ignoreFields;
 
     @Override
-    public void doAction(XMLMapperBuilder xmlMapperBuilder) {
+    public void doAction(XMLMapperBuilder xmlMapperBuilder, final Class<?> mapperClass) {
         final Configuration configuration = xmlMapperBuilder.getConfiguration();
 
         final ResultMap resultMap = configuration.getResultMap(resultMapId);

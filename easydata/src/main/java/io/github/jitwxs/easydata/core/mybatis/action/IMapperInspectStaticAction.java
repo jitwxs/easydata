@@ -7,5 +7,5 @@ import org.apache.ibatis.builder.xml.XMLMapperBuilder;
  * @since 2022-06-05 0:45
  */
 public interface IMapperInspectStaticAction extends IMapperInspectAction {
-    void doAction(final XMLMapperBuilder xmlMapperBuilder);
+    void doAction(final XMLMapperBuilder xmlMapperBuilder, final Class<?> mapperClass);
 }
