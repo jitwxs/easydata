@@ -31,7 +31,7 @@ public class MatrixLoadingSource extends LoadingSource<MatrixBean> {
         final List<K> results = new ArrayList<>();
 
         for (String[] lines : source.getDataList()) {
-            final K one = ObjectUtils.create(target);
+            final K one = ObjectUtils.create(target, null);
 
             for (int i = 0; i < lines.length; i++) {
                 final String title = source.getTitle(i), value = lines[i];

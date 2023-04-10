@@ -191,7 +191,7 @@ public class EasyMockTest {
                 .load(getClass().getClassLoader(), ClassLoadingStrategy.Default.WRAPPER)
                 .getLoaded();
 
-        return (TypeKit<?>) ObjectUtils.create(virtualClass);
+        return (TypeKit<?>) ObjectUtils.create(virtualClass, null);
     }
 
     @Test

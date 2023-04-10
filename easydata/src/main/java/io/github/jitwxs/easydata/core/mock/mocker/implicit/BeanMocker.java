@@ -74,7 +74,8 @@ public class BeanMocker implements IMocker<Object> {
                 case PROTOBUF_BUILDER:
                     return ObjectUtils.createProtoBuilder(target, newInstanceConsume, fieldGeneratorFunc);
                 case NATIVE_CLASS:
-                    return ObjectUtils.createJava(target, field -> field.isAnnotationPresent(EasyMockIgnore.class), newInstanceConsume, fieldGeneratorFunc);
+                    return ObjectUtils.createJava(target, mockConfig.getConstructorSupplier(target),
+                            field -> field.isAnnotationPresent(EasyMockIgnore.class), newInstanceConsume, fieldGeneratorFunc);
                 default:
                     log.warn("BeanMocker can't mock type: {}, please check the logic is correct", target);
                     return null;

@@ -51,7 +51,7 @@ public class CollectionTypeVerify {
             return oldBean;
         }
 
-        final Collection newBean = (Collection) ObjectUtils.create(target);
+        final Collection newBean = (Collection) ObjectUtils.create(target, null);
 
         for (Object item : oldBean) {
             boolean isIgnore = false;

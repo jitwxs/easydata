@@ -30,16 +30,16 @@ public class ClassMocker implements IMocker<Object> {
             return Object.class;
         }
         if (clazz == Object.class) {
-            return ObjectUtils.create(ObjectImpl.class);
+            return ObjectUtils.create(ObjectImpl.class, null);
         }
 
         IMocker<?> mocker;
         if (clazz.isArray()) {
             mocker = new ArrayMocker(clazz);
         } else if (Map.class.isAssignableFrom(clazz)) {
-            mocker = new MapMocker(genericTypes);
+            mocker = new MapMocker(clazz, genericTypes);
         } else if (Collection.class.isAssignableFrom(clazz)) {
-            mocker = new CollectionMocker(clazz, genericTypes[0]);
+            mocker = new CollectionMocker(clazz, genericTypes);
         } else if (clazz.isEnum()) {
             mocker = new EnumMocker<>(clazz);
         } else if (Map.Entry.class.isAssignableFrom(clazz)) {

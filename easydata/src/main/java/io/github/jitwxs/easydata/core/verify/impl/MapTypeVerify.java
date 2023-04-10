@@ -57,7 +57,7 @@ public class MapTypeVerify {
             return oldBean;
         }
 
-        final Map newBean = (Map) ObjectUtils.create(target);
+        final Map newBean = (Map) ObjectUtils.create(target, null);
 
         oldBean.forEach((k, v) -> {
             boolean isIgnore = false;

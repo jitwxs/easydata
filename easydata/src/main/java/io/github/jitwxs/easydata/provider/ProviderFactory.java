@@ -27,7 +27,7 @@ public class ProviderFactory extends EasyDataEntrance {
                 return;
             }
 
-            providerMap.put(c, ObjectUtils.create(c));
+            providerMap.put(c, ObjectUtils.create(c, null));
         });
     }
 

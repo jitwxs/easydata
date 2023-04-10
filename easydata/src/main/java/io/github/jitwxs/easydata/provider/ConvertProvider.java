@@ -33,7 +33,7 @@ public class ConvertProvider extends Provider<IConvert, Class<?>> {
             if (Modifier.isInterface(c.getModifiers())) {
                 return;
             }
-            resultList.add(ObjectUtils.create(c));
+            resultList.add(ObjectUtils.create(c, null));
         });
 
         return resultList;
