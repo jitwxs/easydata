@@ -24,7 +24,7 @@ public class StringGeneratorProvider extends Provider<IStringGenerator, MockStri
             if (Modifier.isInterface(c.getModifiers())) {
                 return;
             }
-            resultList.add(ObjectUtils.create(c));
+            resultList.add(ObjectUtils.create(c, null));
         });
 
         return resultList;

@@ -20,6 +20,7 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * @author jitwxs@foxmail.com
@@ -32,16 +33,22 @@ public class ObjectUtils {
     /**
      * 根据 class 创建对象，智能调用构造方法
      *
-     * @param target create object's class
-     * @param <T>    create object's generic
+     * @param target              create object's class
+     * @param constructorSupplier 构造器方法
+     * @param <T>                 create object's generic
      * @return instance
      */
-    public static <T> T create(Class<T> target) {
+    public static <T> T create(Class<T> target, Supplier<T> constructorSupplier) {
         try {
-            // 基于构造方法
+            // 基于默认无参构造方法
             return delegate.create(target);
         } catch (ReflectionException e) {
-            // 基于 builder 构造器
+            // 使用提供的构造器方法
+            if (constructorSupplier != null) {
+                return constructorSupplier.get();
+            }
+
+            // 使用 builder 构造器兜底
             final Object builder = createBuilder(target, ClassGroupEnum.Group.NATIVE);
             if (builder != null) {
                 return (T) buildBuilder(builder);
@@ -49,19 +56,6 @@ public class ObjectUtils {
         }
 
         throw new EasyDataException("failed create object, please try provide create function to resolve this exception");
-    }
-
-    /**
-     * 根据 class 创建对象，指定构造方法
-     *
-     * @param target              create object's class
-     * @param <T>                 create object's generic
-     * @param constructorArgTypes 构造方法参数类型
-     * @param constructorArgs     构造方法参数
-     * @return instance
-     */
-    public static <T> T create(Class<T> target, List<Class<?>> constructorArgTypes, List<Object> constructorArgs) {
-        return delegate.create(target, constructorArgTypes, constructorArgs);
     }
 
     /**
@@ -118,6 +112,7 @@ public class ObjectUtils {
      * 构造 proto 对象，并填充属性
      *
      * @param target                   proto 对象类型
+     * @param constructorSupplier      构造器方法
      * @param fieldIgnoreGeneratorFunc 属性是否忽略判断
      * @param newInstanceConsume       当对象构造完毕后，回调消费方法
      * @param fieldGeneratorFunc       属性生成方法
@@ -129,10 +124,11 @@ public class ObjectUtils {
      * @throws Throwable                 内部流程处理异常
      */
     public static <T> T createJava(final Class<T> target,
+                                   final Supplier<T> constructorSupplier,
                                    final ThrowableFunction<Field, Boolean> fieldIgnoreGeneratorFunc,
                                    final Consumer<Object> newInstanceConsume,
                                    final ThrowableBiFunction<String, Type, Object> fieldGeneratorFunc) throws Throwable {
-        final Object invoke = ObjectUtils.create(target);
+        final Object invoke = ObjectUtils.create(target, constructorSupplier);
 
         if (newInstanceConsume != null) {
             newInstanceConsume.accept(invoke);
@@ -204,7 +200,7 @@ public class ObjectUtils {
     public static <T> T createProtoBuilder(final Class<T> target,
                                            final Consumer<Object> newInstanceConsume,
                                            final ThrowableBiFunction<String, Type, Object> fieldGeneratorFunc) throws Throwable {
-        final T invoke = ObjectUtils.create(target);
+        final T invoke = ObjectUtils.create(target, null);
 
         if (invoke == null) {
             return null;

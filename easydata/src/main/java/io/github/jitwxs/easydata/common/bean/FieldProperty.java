@@ -132,7 +132,7 @@ public class FieldProperty {
         if (classGroup == ClassGroupEnum.PROTOBUF_MESSAGE) {
             builder = (Message.Builder) ObjectUtils.createBuilder(baseTarget, ClassGroupEnum.Group.PROTOBUF);
         } else {
-            builder = (Message.Builder) ObjectUtils.create(baseTarget);
+            builder = (Message.Builder) ObjectUtils.create(baseTarget, null);
         }
 
         final Map<String, FieldProperty> resultMap = new HashMap<>();

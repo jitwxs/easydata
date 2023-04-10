@@ -29,7 +29,7 @@ public class ExplicitMockerProvider extends Provider<IMocker, Class<?>> {
             if (Modifier.isInterface(c.getModifiers())) {
                 return;
             }
-            resultList.add(ObjectUtils.create(c));
+            resultList.add(ObjectUtils.create(c, null));
         });
 
         return resultList;

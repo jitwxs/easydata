@@ -45,7 +45,7 @@ public class ObjectConvert implements IConvert<Object> {
                 case PROTOBUF_BUILDER:
                     return ObjectUtils.createProtoBuilder(target, null, fieldGeneratorFunc);
                 case NATIVE_CLASS:
-                    return ObjectUtils.createJava(target, field -> false, null, fieldGeneratorFunc);
+                    return ObjectUtils.createJava(target, null, field -> false, null, fieldGeneratorFunc);
                 default:
                     log.warn("ObjectConvert can't convert type: {}, please check the logic is correct", target);
                     return null;

@@ -99,25 +99,23 @@ public class ReflectionUtils {
      * @return 读方法 (object, result)
      */
     public static ThrowableFunction<Object, ?> getReadFunc(final String fieldName, final PropertyDescriptor descriptor, final Field field) {
-        if (descriptor == null) {
-            return null;
-        }
+        if (descriptor != null) {
+            final Method method;
 
-        final Method method;
+            // support protobuf repeat grammar
+            if (descriptor instanceof IndexedPropertyDescriptor) {
+                final IndexedPropertyDescriptor propertyDescriptor = (IndexedPropertyDescriptor) descriptor;
+                method = propertyDescriptor.getIndexedReadMethod();
+            } else {
+                method = descriptor.getReadMethod();
+            }
 
-        // support protobuf repeat grammar
-        if (descriptor instanceof IndexedPropertyDescriptor) {
-            final IndexedPropertyDescriptor propertyDescriptor = (IndexedPropertyDescriptor) descriptor;
-            method = propertyDescriptor.getIndexedReadMethod();
-        } else {
-            method = descriptor.getReadMethod();
-        }
-
-        if (method != null) {
-            return bean -> {
-                method.setAccessible(true);
-                return method.invoke(bean);
-            };
+            if (method != null) {
+                return bean -> {
+                    method.setAccessible(true);
+                    return method.invoke(bean);
+                };
+            }
         }
 
         if (field != null) {
@@ -138,25 +136,23 @@ public class ReflectionUtils {
      * @return 写方法 (object, field_value, result)
      */
     public static ThrowableBiFunction<Object, Object, ?> getWriteFunc(final String fieldName, final PropertyDescriptor descriptor, final Field field) {
-        if (descriptor == null) {
-            return null;
-        }
+        if (descriptor != null) {
+            final Method method;
 
-        final Method method;
+            // support protobuf repeat grammar
+            if (descriptor instanceof IndexedPropertyDescriptor) {
+                final IndexedPropertyDescriptor propertyDescriptor = (IndexedPropertyDescriptor) descriptor;
+                method = propertyDescriptor.getIndexedWriteMethod();
+            } else {
+                method = descriptor.getWriteMethod();
+            }
 
-        // support protobuf repeat grammar
-        if (descriptor instanceof IndexedPropertyDescriptor) {
-            final IndexedPropertyDescriptor propertyDescriptor = (IndexedPropertyDescriptor) descriptor;
-            method = propertyDescriptor.getIndexedWriteMethod();
-        } else {
-            method = descriptor.getWriteMethod();
-        }
-
-        if (method != null) {
-            return (bean, fieldValue) -> {
-                method.setAccessible(true);
-                return method.invoke(bean, fieldValue);
-            };
+            if (method != null) {
+                return (bean, fieldValue) -> {
+                    method.setAccessible(true);
+                    return method.invoke(bean, fieldValue);
+                };
+            }
         }
 
         if (field != null) {
@@ -223,7 +219,7 @@ public class ReflectionUtils {
     }
 
     public static Class<?> getProtoMessageClassByBuilder(final Class<?> protoBuilderClass) {
-        final Object emptyBuilder = ObjectUtils.create(protoBuilderClass);
+        final Object emptyBuilder = ObjectUtils.create(protoBuilderClass, null);
         final Object protoMessage = ObjectUtils.buildBuilder(emptyBuilder);
         if (protoMessage == null) {
             throw new EasyDataException("newInstance protobuf message error: " + protoBuilderClass);

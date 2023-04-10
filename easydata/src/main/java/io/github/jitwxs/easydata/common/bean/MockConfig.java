@@ -13,6 +13,7 @@ import java.lang.reflect.TypeVariable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 /**
  * @author jitwxs@foxmail.com
@@ -78,6 +79,8 @@ public class MockConfig {
     private final Map<String, Object> beanCache = new HashMap<>();
 
     private final Map<Class<?>, BeanMockInterceptor<?>> beanMockInterceptorMap = new HashMap<>();
+
+    private final Map<Class<?>, Supplier>  constructorSupplierMap = new HashMap<>();
 
     @SuppressWarnings("rawtypes")
     public MockConfig init(Type type) {
@@ -204,6 +207,22 @@ public class MockConfig {
         this.beanMockInterceptorMap.put(clazz, interceptor);
 
         return this;
+    }
+
+    /**
+     * 手动指定构造器方法
+     *
+     * @param constructorSupplier 构造器初始化方法
+     * @return mockConfig instance in chain invoke
+     */
+    public MockConfig registerConstructorSupplier(Supplier<?> constructorSupplier) {
+        this.constructorSupplierMap.put(constructorSupplier.get().getClass(), constructorSupplier);
+
+        return this;
+    }
+
+    public Supplier getConstructorSupplier(final Class<?> target) {
+        return this.constructorSupplierMap.get(target);
     }
 
     /**
