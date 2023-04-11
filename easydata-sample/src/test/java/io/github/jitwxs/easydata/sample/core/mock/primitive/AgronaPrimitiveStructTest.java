@@ -39,7 +39,7 @@ public class AgronaPrimitiveStructTest {
     @Test
     @DisplayName("agrona | value map")
     public void testAgronaVMap() {
-        final Supplier<MockConfig> mockConfigSupplier = () -> new MockConfig().registerConstructorSupplier(() -> new Object2IntHashMap(-1));
+        final Supplier<MockConfig> mockConfigSupplier = () -> new MockConfig().registerConstructorSupplier(Object2IntHashMap.class, () -> new Object2IntHashMap(-1));
 
         // initial with TypeKit
         final Object2IntHashMap<String> map = assertDoesNotThrow(() -> EasyMock.run(new TypeKit<Object2IntHashMap<String>>() {
@@ -54,7 +54,7 @@ public class AgronaPrimitiveStructTest {
     @Test
     @DisplayName("agrona | key-value map")
     public void testAgronaKVMap() {
-        final Supplier<MockConfig> mockConfigSupplier = () -> new MockConfig().registerConstructorSupplier(() -> new Long2LongHashMap(-1));
+        final Supplier<MockConfig> mockConfigSupplier = () -> new MockConfig().registerConstructorSupplier(Long2LongHashMap.class, () -> new Long2LongHashMap(-1));
 
         // initial with TypeKit
         final Long2LongHashMap map = assertDoesNotThrow(() -> EasyMock.run(new TypeKit<Long2LongHashMap>() {

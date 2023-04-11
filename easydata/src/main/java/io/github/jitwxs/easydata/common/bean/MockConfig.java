@@ -212,11 +212,12 @@ public class MockConfig {
     /**
      * 手动指定构造器方法
      *
+     * @param target target
      * @param constructorSupplier 构造器初始化方法
      * @return mockConfig instance in chain invoke
      */
-    public MockConfig registerConstructorSupplier(Supplier<?> constructorSupplier) {
-        this.constructorSupplierMap.put(constructorSupplier.get().getClass(), constructorSupplier);
+    public MockConfig registerConstructorSupplier(final Class<?> target, Supplier<?> constructorSupplier) {
+        this.constructorSupplierMap.put(target, constructorSupplier);
 
         return this;
     }
