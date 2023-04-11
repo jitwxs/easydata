@@ -72,7 +72,7 @@
         <dependency>
             <groupId>io.github.jitwxs</groupId>
             <artifactId>easydata</artifactId>
-            <version>1.15-RELEASE</version>
+            <version>1.16-RELEASE</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
