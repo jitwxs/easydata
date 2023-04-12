@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.lang.reflect.Type;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * java bean
@@ -77,6 +78,10 @@ public class BeanMocker implements IMocker<Object> {
                     return ObjectUtils.createJava(target, mockConfig.getConstructorSupplier(target),
                             field -> field.isAnnotationPresent(EasyMockIgnore.class), newInstanceConsume, fieldGeneratorFunc);
                 default:
+                    final Supplier<?> defaultSupplier = mockConfig.getConstructorSupplier(target);
+                    if (defaultSupplier != null) {
+                        return defaultSupplier.get();
+                    }
                     log.warn("BeanMocker can't mock type: {}, please check the logic is correct", target);
                     return null;
             }
