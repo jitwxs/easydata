@@ -32,7 +32,7 @@ public class BeanMocker implements IMocker<Object> {
 
     @Override
     public Object mock(MockConfig mockConfig) {
-        final Object cacheBean = mockConfig.getBeanCache().get(target.getName());
+        final Object cacheBean = mockConfig.getBeanCache().get(target);
         if (cacheBean != null) {
             return cacheBean;
         }
@@ -67,7 +67,7 @@ public class BeanMocker implements IMocker<Object> {
                 return new BaseMocker<>(type).mock(mockConfig);
             };
 
-            final Consumer<Object> newInstanceConsume = bean -> mockConfig.getBeanCache().put(target.getName(), bean);
+            final Consumer<Object> newInstanceConsume = bean -> mockConfig.getBeanCache().put(target, bean);
 
             switch (ClassGroupEnum.delegate(target)) {
                 case PROTOBUF_MESSAGE:

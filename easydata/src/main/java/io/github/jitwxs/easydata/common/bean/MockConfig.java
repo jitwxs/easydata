@@ -76,7 +76,7 @@ public class MockConfig {
     /**
      * Bean缓存
      */
-    private final Map<String, Object> beanCache = new HashMap<>();
+    private final Map<Class<?>, Object> beanCache = new HashMap<>();
 
     private final Map<Class<?>, BeanMockInterceptor<?>> beanMockInterceptorMap = new HashMap<>();
 
@@ -190,7 +190,19 @@ public class MockConfig {
      * @since 1.11
      */
     public MockConfig addBeanCache(final Object bean) {
-        this.beanCache.put(bean.getClass().getName(), bean);
+        return addBeanCache(bean.getClass(), bean);
+    }
+
+    /**
+     * manual add bean cache, when the {@code bean add to the cache}, the mock always return this bean
+     *
+     * @param target specify cache key
+     * @param bean the cache bean
+     * @return this
+     * @since 1.17
+     */
+    public MockConfig addBeanCache(final Class<?> target, final Object bean) {
+        this.beanCache.put(target, bean);
 
         return this;
     }
@@ -215,6 +227,7 @@ public class MockConfig {
      * @param target target
      * @param constructorSupplier 构造器初始化方法
      * @return mockConfig instance in chain invoke
+     * @since 1.15
      */
     public MockConfig registerConstructorSupplier(final Class<?> target, Supplier<?> constructorSupplier) {
         this.constructorSupplierMap.put(target, constructorSupplier);
