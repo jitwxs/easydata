@@ -145,9 +145,13 @@ public class ObjectUtils {
                 continue;
             }
 
-            final Object fieldValue = fieldGeneratorFunc.apply(fieldName, field.getGenericType());
-            if (fieldValue != null) {
-                property.getWriteFunc().apply(invoke, fieldValue);
+            try {
+                final Object fieldValue = fieldGeneratorFunc.apply(fieldName, field.getGenericType());
+                if (fieldValue != null) {
+                    property.getWriteFunc().apply(invoke, fieldValue);
+                }
+            } catch (Exception e) {
+                log.warn("ObjectUtils#createJava setField failure, target: {}, field: {}", target, fieldName);
             }
         }
 

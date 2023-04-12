@@ -15,7 +15,11 @@ public class NotNoArgsConstructorBeanTest {
         assertTrue(exception.getMessage().contains("failed create object"));
 
         final NotNoArgsConstructorBean except = new NotNoArgsConstructorBean(1, 2D);
-        final NotNoArgsConstructorBean actual = assertDoesNotThrow(() -> EasyMock.run(NotNoArgsConstructorBean.class, new MockConfig().addBeanCache(except)));
-        EasyVerify.with(except, actual).verify();
+
+        EasyVerify.with(except, assertDoesNotThrow(() -> EasyMock.run(NotNoArgsConstructorBean.class,
+                new MockConfig().addBeanCache(except)))).verify();
+
+        EasyVerify.with(except, assertDoesNotThrow(() -> EasyMock.run(NotNoArgsConstructorBean.class,
+                new MockConfig().addBeanCache(NotNoArgsConstructorBean.class, except)))).verify();
     }
 }
